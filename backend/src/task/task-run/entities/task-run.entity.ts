@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import type { Relation } from 'typeorm';
-import { Task } from './task.entity';
+import { Task } from 'src/task/entities/task.entity';
 
 @Entity()
 export class TaskRun {

@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from 'src/task/task.service';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
-import { ExecuteTaskRunDto } from 'src/task/dto/execute-task-run.dto';
+import { Get, Param } from '@nestjs/common';
+import { ApiParam } from '@nestjs/swagger';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -17,13 +18,12 @@ export class TaskController {
     return this.taskService.create(createTaskDto);
   }
 
-  @Post('execute')
+  @Post(':name/execute')
   @ApiOperation({ summary: 'Execute a task by name' })
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string' },
         commandArguments: {
           type: 'object',
           example: {
@@ -38,28 +38,26 @@ export class TaskController {
           },
         },
       },
-      required: ['name'],
     },
   })
   @ApiResponse({ status: 200, description: 'Task executed successfully.' })
   async execute(
+    @Param('name') name: string,
     @Body() // TODO: create DTO for executing(and queuing) tasks, update command arguments to be allowed to be shared between commands, if names fit
     body: {
-      name: string;
       commandArguments?: Record<string, Record<string, string>>;
     },
   ) {
-    const { name, commandArguments } = body;
+    const { commandArguments } = body;
     return this.taskService.executeByName(name, commandArguments);
   }
 
-  @Post('queue')
+  @Post(':name/queue')
   @ApiOperation({ summary: 'Queue a task by name' })
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string' },
         commandArguments: {
           type: 'object',
           example: {
@@ -80,62 +78,30 @@ export class TaskController {
   })
   @ApiResponse({ status: 201, description: 'Task queued successfully.' })
   async queue(
+    @Param('name') name: string,
     @Body()
     body: {
-      name: string;
       commandArguments?: Record<string, Record<string, string>>;
       priority?: number;
     },
   ) {
-    const { name, commandArguments, priority } = body;
+    const { commandArguments, priority } = body;
     await this.taskService.queueByName(name, commandArguments, priority, true);
     return { message: `Task "${name}" queued successfully` };
   }
-
-  // TODO: move to their own (sub-)module
-  // TaskRun Configuration Endpoints
-
-  @Get('runs')
-  @ApiOperation({ summary: 'Get all task run configurations' })
-  @ApiResponse({
-    status: 200,
-    description: 'Task run configurations retrieved successfully.',
-  })
-  async getAllTaskRuns() {
-    return this.taskService.findAllTaskRuns();
+  @Get()
+  @ApiOperation({ summary: 'Get all tasks' })
+  @ApiResponse({ status: 200, description: 'List of all tasks.' })
+  async findAll() {
+    return this.taskService.findAll();
   }
 
-  @Get('runs/favorites')
-  @ApiOperation({ summary: 'Get all favorited task run configurations' })
-  @ApiResponse({
-    status: 200,
-    description: 'Favorited task run configurations retrieved successfully.',
-  })
-  async getFavoritedTaskRuns() {
-    return this.taskService.findFavoritedTaskRuns();
-  }
-
-  @Post('runs/execute')
-  @ApiOperation({ summary: 'Execute a task using a task run configuration' })
-  @ApiBody({ type: ExecuteTaskRunDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Task run configuration executed successfully.',
-  })
-  async executeTaskRun(@Body() executeTaskRunDto: ExecuteTaskRunDto) {
-    const { taskRunName, queued } = executeTaskRunDto;
-    return this.taskService.executeTaskRun(taskRunName, queued);
-  }
-
-  @Patch('runs/:name/favorite')
-  @ApiOperation({
-    summary: 'Toggle favorite status of a task run configuration',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Task run configuration favorite status toggled successfully.',
-  })
-  async toggleTaskRunFavorite(@Param('name') name: string) {
-    return this.taskService.toggleTaskRunFavorite(name);
+  @Get(':name')
+  @ApiOperation({ summary: 'Get a task by name' })
+  @ApiParam({ name: 'name', type: 'string', description: 'Task name' })
+  @ApiResponse({ status: 200, description: 'Task found.' })
+  @ApiResponse({ status: 404, description: 'Task not found.' })
+  async findByName(@Param('name') name: string) {
+    return this.taskService.findByName(name);
   }
 }

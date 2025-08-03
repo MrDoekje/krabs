@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import type { Relation } from 'typeorm';
-import { TaskCommand } from '../../task/entities/task-command.entity';
+import { TaskCommand } from 'src/task/task-command/entities/task-command.entity';
 
 @Entity()
 export class Command {

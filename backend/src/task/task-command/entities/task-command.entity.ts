@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import type { Relation } from 'typeorm';
-import { Task } from './task.entity';
-import { Command } from '../../command/entities/command.entity';
+import { Task } from 'src/task/entities/task.entity';
+import { Command } from 'src/command/entities/command.entity';
 
 @Entity()
 export class TaskCommand {

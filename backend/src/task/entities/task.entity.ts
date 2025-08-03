@@ -7,9 +7,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import type { Relation } from 'typeorm';
-import { TaskResult } from 'src/task/entities/task-result.entity';
-import { TaskCommand } from './task-command.entity';
-import { Command } from '../../command/entities/command.entity';
+import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
+import { TaskCommand } from 'src/task/task-command/entities/task-command.entity';
 
 @Entity()
 export class Task {
@@ -41,13 +40,4 @@ export class Task {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  /**
-   * Get commands in execution order
-   */
-  get commands(): Command[] {
-    return this.taskCommands
-      .sort((a, b) => a.executionOrder - b.executionOrder)
-      .map((tc) => tc.command);
-  }
 }

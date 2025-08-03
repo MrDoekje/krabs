@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TaskModule } from './task/task.module';
-import { ExecutorModule } from './executor/executor.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
+import { CommandModule } from 'src/command/command.module';
+import { TaskRunModule } from 'src/task/task-run/task-run.module';
 
 @Module({
   imports: [
@@ -18,10 +19,10 @@ import { BullModule } from '@nestjs/bullmq';
         port: 6379,
       },
     }),
-    ExecutorModule,
-    TaskModule,
-    // CommandModule,
+    CommandModule,
+    TaskRunModule,
     // ArgumentModule,
+    TaskModule,
   ],
 })
 export class AppModule {}
