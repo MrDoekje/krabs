@@ -4,6 +4,7 @@ import { TaskService } from 'src/task/task.service';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { Get, Param } from '@nestjs/common';
 import { ApiParam } from '@nestjs/swagger';
+import { Task } from './entities/task.entity';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -89,10 +90,10 @@ export class TaskController {
     await this.taskService.queueByName(name, commandArguments, priority, true);
     return { message: `Task "${name}" queued successfully` };
   }
+
   @Get()
   @ApiOperation({ summary: 'Get all tasks' })
-  @ApiResponse({ status: 200, description: 'List of all tasks.' })
-  async findAll() {
+  async findAll(): Promise<Task[]> {
     return this.taskService.findAll();
   }
 

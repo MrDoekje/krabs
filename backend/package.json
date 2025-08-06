@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "swagger": "nest build -b swc --type-check && node dist/swagger.js",
     "start": "nest start",
     "start:repl": "nest start --entryFile repl",
     "start:dev": "nest start -b swc --type-check --watch",

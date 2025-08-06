@@ -11,3 +11,5 @@
 - Make it easy to view in frontend
 
 - Create controller for viewing the queue of tasks
+
+- Better config handling

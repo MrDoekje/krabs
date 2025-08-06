@@ -1,0 +1,603 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/task-run": {
+      "get": {
+        "operationId": "TaskRunController_getAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Task run configurations retrieved successfully."
+          }
+        },
+        "summary": "Get all task run configurations",
+        "tags": [
+          "TaskRun"
+        ]
+      }
+    },
+    "/task-run/favorites": {
+      "get": {
+        "operationId": "TaskRunController_findFavorited",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Favorited task run configurations retrieved successfully."
+          }
+        },
+        "summary": "Get all favorited task run configurations",
+        "tags": [
+          "TaskRun"
+        ]
+      }
+    },
+    "/task-run/{id}/execute": {
+      "post": {
+        "operationId": "TaskRunController_execute",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteTaskRunDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task run configuration executed successfully."
+          }
+        },
+        "summary": "Execute a task using a task run configuration",
+        "tags": [
+          "TaskRun"
+        ]
+      }
+    },
+    "/task-run/{id}/favorite": {
+      "patch": {
+        "operationId": "TaskRunController_toggleFavorite",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task run configuration favorite status toggled successfully."
+          }
+        },
+        "summary": "Toggle favorite status of a task run configuration",
+        "tags": [
+          "TaskRun"
+        ]
+      }
+    },
+    "/tasks": {
+      "post": {
+        "operationId": "TaskController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created successfully."
+          }
+        },
+        "summary": "Create a new task",
+        "tags": [
+          "tasks"
+        ]
+      },
+      "get": {
+        "operationId": "TaskController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all tasks",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{name}/execute": {
+      "post": {
+        "operationId": "TaskController_execute",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "commandArguments": {
+                    "type": "object",
+                    "example": {
+                      "commandName1": {
+                        "argumentName1": "argumentValue1",
+                        "argumentName2": "argumentValue2"
+                      },
+                      "commandName2": {
+                        "argumentName3": "argumentValue3",
+                        "argumentName4": "argumentValue4"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task executed successfully."
+          }
+        },
+        "summary": "Execute a task by name",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{name}/queue": {
+      "post": {
+        "operationId": "TaskController_queue",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "commandArguments": {
+                    "type": "object",
+                    "example": {
+                      "commandName1": {
+                        "argumentName1": "argumentValue1",
+                        "argumentName2": "argumentValue2"
+                      },
+                      "commandName2": {
+                        "argumentName3": "argumentValue3",
+                        "argumentName4": "argumentValue4"
+                      }
+                    }
+                  },
+                  "priority": {
+                    "type": "number",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task queued successfully."
+          }
+        },
+        "summary": "Queue a task by name",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/tasks/{name}": {
+      "get": {
+        "operationId": "TaskController_findByName",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "description": "Task name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task found."
+          },
+          "404": {
+            "description": "Task not found."
+          }
+        },
+        "summary": "Get a task by name",
+        "tags": [
+          "tasks"
+        ]
+      }
+    },
+    "/task-result/{taskName}": {
+      "get": {
+        "operationId": "TaskResultController_getResultsByTaskName",
+        "parameters": [
+          {
+            "name": "taskName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskResult"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get task results by task name",
+        "tags": [
+          "TaskResult"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Krabs API",
+    "description": "The Krabs API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "krabs",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "ExecuteTaskRunDto": {
+        "type": "object",
+        "properties": {
+          "queued": {
+            "type": "boolean",
+            "description": "Whether the task should be queued or executed immediately.\n@type {boolean}\n@default false",
+            "default": false
+          }
+        }
+      },
+      "CreateArgumentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the argument."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates if the argument is required."
+          }
+        },
+        "required": [
+          "name",
+          "required"
+        ]
+      },
+      "CreateCommandDto": {
+        "type": "object",
+        "properties": {
+          "wd": {
+            "type": "string",
+            "description": "The working directory for the command.\n@type {string}"
+          },
+          "name": {
+            "type": "string",
+            "description": "The command to be executed, for now including arguments\n@type {string}"
+          },
+          "command": {
+            "type": "string",
+            "description": "The command to be executed, for now including arguments\n@type {string}"
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "Optional flag to indicate if the command is optional, if so it will not block the task on fail.\n@type {boolean}\n@default false"
+          },
+          "format": {
+            "type": "string",
+            "description": "The format for the command arguments.\nThis is used to format the arguments when they are passed to the command.\n@type {string}\n@default '--{{name}}={{value}}'",
+            "default": "--{{name}}={{value}}"
+          },
+          "arguments": {
+            "description": "The list of arguments for the command.\n@type {CreateArgumentDto[]}",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateArgumentDto"
+            }
+          }
+        },
+        "required": [
+          "wd",
+          "name",
+          "command",
+          "format"
+        ]
+      },
+      "CreateTaskDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the task.\n@type {string}"
+          },
+          "description": {
+            "type": "string",
+            "description": "An optional description of the task.\n@type {string}"
+          },
+          "commands": {
+            "description": "The list of commands associated with the task\n@type {CommandDto[]}",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateCommandDto"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "TaskResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task": {
+            "$ref": "#/components/schemas/Task"
+          },
+          "output": {
+            "type": "string",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "task",
+          "output",
+          "error",
+          "success",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "queued": {
+            "type": "boolean"
+          },
+          "taskCommands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskCommand"
+            }
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskResult"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "queued",
+          "taskCommands",
+          "results",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "Argument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "commands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Command"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "required",
+          "commands"
+        ]
+      },
+      "Command": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "wd": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "arguments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Argument"
+            }
+          },
+          "format": {
+            "type": "string"
+          },
+          "optional": {
+            "type": "boolean"
+          },
+          "taskCommands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskCommand"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "wd",
+          "name",
+          "command",
+          "arguments",
+          "format",
+          "optional",
+          "taskCommands"
+        ]
+      },
+      "TaskCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task": {
+            "$ref": "#/components/schemas/Task"
+          },
+          "command": {
+            "$ref": "#/components/schemas/Command"
+          },
+          "executionOrder": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "task",
+          "command",
+          "executionOrder",
+          "createdAt",
+          "updatedAt"
+        ]
+      }
+    }
+  }
+}

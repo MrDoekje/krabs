@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "re-sdk": "cd ./backend && npm run swagger && cd ../ && npm run SDK",
+    "SDK": "kiota generate -l typescript -d swagger.json -c KrabsSDK -o ./frontend/src/krabs-sdk"
+  }
+}
