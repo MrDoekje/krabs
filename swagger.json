@@ -1,6 +1,148 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/commands": {
+      "get": {
+        "operationId": "CommandController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Command"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      },
+      "post": {
+        "operationId": "CommandController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommandDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Command"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      }
+    },
+    "/commands/{id}": {
+      "get": {
+        "operationId": "CommandController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Command"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      },
+      "put": {
+        "operationId": "CommandController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommandDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Command"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      },
+      "delete": {
+        "operationId": "CommandController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      }
+    },
     "/task-run": {
       "get": {
         "operationId": "TaskRunController_getAll",
@@ -105,10 +247,16 @@
         },
         "responses": {
           "201": {
-            "description": "Task created successfully."
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
           }
         },
-        "summary": "Create a new task",
         "tags": [
           "tasks"
         ]
@@ -137,12 +285,12 @@
         ]
       }
     },
-    "/tasks/{name}/execute": {
+    "/tasks/{id}/execute": {
       "post": {
         "operationId": "TaskController_execute",
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -155,43 +303,27 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "commandArguments": {
-                    "type": "object",
-                    "example": {
-                      "commandName1": {
-                        "argumentName1": "argumentValue1",
-                        "argumentName2": "argumentValue2"
-                      },
-                      "commandName2": {
-                        "argumentName3": "argumentValue3",
-                        "argumentName4": "argumentValue4"
-                      }
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/ExecuteTaskDto"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Task executed successfully."
+          "201": {
+            "description": ""
           }
         },
-        "summary": "Execute a task by name",
         "tags": [
           "tasks"
         ]
       }
     },
-    "/tasks/{name}/queue": {
+    "/tasks/{id}/queue": {
       "post": {
         "operationId": "TaskController_queue",
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -225,7 +357,7 @@
                   }
                 },
                 "required": [
-                  "name"
+                  "id"
                 ]
               }
             }
@@ -242,15 +374,14 @@
         ]
       }
     },
-    "/tasks/{name}": {
+    "/tasks/{id}": {
       "get": {
         "operationId": "TaskController_findByName",
         "parameters": [
           {
-            "name": "name",
+            "name": "id",
             "required": true,
             "in": "path",
-            "description": "Task name",
             "schema": {
               "type": "string"
             }
@@ -258,13 +389,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Task found."
-          },
-          "404": {
-            "description": "Task not found."
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
           }
         },
-        "summary": "Get a task by name",
         "tags": [
           "tasks"
         ]
@@ -303,6 +437,148 @@
           "TaskResult"
         ]
       }
+    },
+    "/arguments": {
+      "get": {
+        "operationId": "ArgumentController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Argument"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Argument"
+        ]
+      },
+      "post": {
+        "operationId": "ArgumentController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArgumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Argument"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Argument"
+        ]
+      }
+    },
+    "/arguments/{id}": {
+      "get": {
+        "operationId": "ArgumentController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Argument"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Argument"
+        ]
+      },
+      "put": {
+        "operationId": "ArgumentController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateArgumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Argument"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Argument"
+        ]
+      },
+      "delete": {
+        "operationId": "ArgumentController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Argument"
+        ]
+      }
     }
   },
   "info": {
@@ -320,95 +596,6 @@
   "servers": [],
   "components": {
     "schemas": {
-      "ExecuteTaskRunDto": {
-        "type": "object",
-        "properties": {
-          "queued": {
-            "type": "boolean",
-            "description": "Whether the task should be queued or executed immediately.\n@type {boolean}\n@default false",
-            "default": false
-          }
-        }
-      },
-      "CreateArgumentDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The name of the argument."
-          },
-          "required": {
-            "type": "boolean",
-            "description": "Indicates if the argument is required."
-          }
-        },
-        "required": [
-          "name",
-          "required"
-        ]
-      },
-      "CreateCommandDto": {
-        "type": "object",
-        "properties": {
-          "wd": {
-            "type": "string",
-            "description": "The working directory for the command.\n@type {string}"
-          },
-          "name": {
-            "type": "string",
-            "description": "The command to be executed, for now including arguments\n@type {string}"
-          },
-          "command": {
-            "type": "string",
-            "description": "The command to be executed, for now including arguments\n@type {string}"
-          },
-          "optional": {
-            "type": "boolean",
-            "description": "Optional flag to indicate if the command is optional, if so it will not block the task on fail.\n@type {boolean}\n@default false"
-          },
-          "format": {
-            "type": "string",
-            "description": "The format for the command arguments.\nThis is used to format the arguments when they are passed to the command.\n@type {string}\n@default '--{{name}}={{value}}'",
-            "default": "--{{name}}={{value}}"
-          },
-          "arguments": {
-            "description": "The list of arguments for the command.\n@type {CreateArgumentDto[]}",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CreateArgumentDto"
-            }
-          }
-        },
-        "required": [
-          "wd",
-          "name",
-          "command",
-          "format"
-        ]
-      },
-      "CreateTaskDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The name of the task.\n@type {string}"
-          },
-          "description": {
-            "type": "string",
-            "description": "An optional description of the task.\n@type {string}"
-          },
-          "commands": {
-            "description": "The list of commands associated with the task\n@type {CommandDto[]}",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CreateCommandDto"
-            }
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
       "TaskResult": {
         "type": "object",
         "properties": {
@@ -494,30 +681,37 @@
           "updatedAt"
         ]
       },
-      "Argument": {
+      "TaskCommand": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
-          },
-          "name": {
             "type": "string"
           },
-          "required": {
-            "type": "boolean"
+          "task": {
+            "$ref": "#/components/schemas/Task"
           },
-          "commands": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Command"
-            }
+          "command": {
+            "$ref": "#/components/schemas/Command"
+          },
+          "executionOrder": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
           "id",
-          "name",
-          "required",
-          "commands"
+          "task",
+          "command",
+          "executionOrder",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "Command": {
@@ -565,38 +759,142 @@
           "taskCommands"
         ]
       },
-      "TaskCommand": {
+      "Argument": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
-          },
-          "task": {
-            "$ref": "#/components/schemas/Task"
-          },
-          "command": {
-            "$ref": "#/components/schemas/Command"
-          },
-          "executionOrder": {
             "type": "number"
           },
-          "createdAt": {
-            "format": "date-time",
+          "name": {
             "type": "string"
           },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
+          "required": {
+            "type": "boolean"
+          },
+          "commands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Command"
+            }
           }
         },
         "required": [
           "id",
-          "task",
-          "command",
-          "executionOrder",
-          "createdAt",
-          "updatedAt"
+          "name",
+          "required",
+          "commands"
         ]
+      },
+      "CreateArgumentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the argument."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates if the argument is required."
+          }
+        },
+        "required": [
+          "name",
+          "required"
+        ]
+      },
+      "CreateCommandDto": {
+        "type": "object",
+        "properties": {
+          "wd": {
+            "type": "string",
+            "description": "The working directory for the command.\n@type {string}"
+          },
+          "name": {
+            "type": "string",
+            "description": "The command to be executed, for now including arguments\n@type {string}"
+          },
+          "command": {
+            "type": "string",
+            "description": "The command to be executed, for now including arguments\n@type {string}"
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "Optional flag to indicate if the command is optional, if so it will not block the task on fail.\n@type {boolean}\n@default false"
+          },
+          "format": {
+            "type": "string",
+            "description": "The format for the command arguments.\nThis is used to format the arguments when they are passed to the command.\n@type {string}\n@default '--{{name}}={{value}}'",
+            "default": "--{{name}}={{value}}"
+          },
+          "arguments": {
+            "description": "The list of arguments for the command.\n@type {CreateArgumentDto[]}",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateArgumentDto"
+            }
+          }
+        },
+        "required": [
+          "wd",
+          "name",
+          "command",
+          "format"
+        ]
+      },
+      "ExecuteTaskRunDto": {
+        "type": "object",
+        "properties": {
+          "queued": {
+            "type": "boolean",
+            "description": "Whether the task should be queued or executed immediately.\n@type {boolean}\n@default false",
+            "default": false
+          }
+        }
+      },
+      "CreateTaskDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the task.\n@type {string}"
+          },
+          "description": {
+            "type": "string",
+            "description": "An optional description of the task.\n@type {string}"
+          },
+          "commands": {
+            "description": "The list of commands associated with the task\n@type {CommandDto[]}",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateCommandDto"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ExecuteTaskDto": {
+        "type": "object",
+        "properties": {
+          "commandArguments": {
+            "type": "object",
+            "description": "Arguments per named command (per named argument)"
+          }
+        }
+      },
+      "UpdateArgumentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the argument."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates if the argument is required."
+          }
+        }
       }
     }
   }

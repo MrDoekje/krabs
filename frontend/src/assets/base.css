@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -96,7 +97,29 @@
   font-weight: normal;
 }
 
-body {
+@layer base {
+    *,
+    *::before,
+    *::after {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-weight: normal;
+
+    }
+
+    /* For Firefox. */
+    * {
+        scrollbar-width: none;
+    }
+
+    /* For WebKit (Chrome & Safari). */
+    ::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
@@ -121,7 +144,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+} */
 
 @theme inline {
   --color-background: var(--background);

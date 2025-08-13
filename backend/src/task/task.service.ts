@@ -85,6 +85,7 @@ export class TaskService {
   }
 
   /**
+   * TODO: move to task-repl module/service instead
    * Find a task by name
    */
   async findByName(name: string): Promise<Task> {
@@ -129,6 +130,20 @@ export class TaskService {
   }
 
   /**
+   * Execute a task immediately by id with supplied arguments
+   */
+  async executeById(
+    tadkId: string,
+    commandArguments: Record<string, Record<string, string>> = {},
+  ): Promise<void> {
+    this.logger.log(`Executing task: ${tadkId}`);
+
+    const task = await this.findById(tadkId);
+    void this.executeTask(task, commandArguments, true);
+  }
+
+  /**
+   * TODO: move to task-repl module/service instead
    * Execute a task immediately by name with supplied arguments
    */
   async executeByName(
@@ -141,19 +156,12 @@ export class TaskService {
     void this.executeTask(task, commandArguments, true);
   }
 
-  /**
-   * Queue a task by name with supplied arguments
-   */
-  async queueByName(
-    taskName: string,
+  private async queueTask(
+    task: Task,
     commandArguments: Record<string, Record<string, string>> = {},
     priority = 0,
     saveAsRun = false,
-  ): Promise<void> {
-    this.logger.log(`Queueing task: ${taskName}`);
-
-    const task = await this.findByName(taskName);
-
+  ) {
     await this.taskQueue.add(
       'execute-task',
       {
@@ -174,6 +182,41 @@ export class TaskService {
     // Update task status to queued
     task.queued = true;
     await this.taskRepository.save(task);
+  }
+
+  /**
+   * Queue a task by id with supplied arguments
+   */
+  async queueById(
+    taskId: string,
+    commandArguments: Record<string, Record<string, string>> = {},
+    priority = 0,
+    saveAsRun = false,
+  ): Promise<void> {
+    this.logger.log(`Queueing task: ${taskId}`);
+
+    const task = await this.findById(taskId);
+
+    await this.queueTask(task, commandArguments, priority, saveAsRun);
+
+    this.logger.log(`Task ${taskId} queued successfully`);
+  }
+
+  /**
+   * TODO: move to task-repl module/service instead
+   * Queue a task by name with supplied arguments
+   */
+  async queueByName(
+    taskName: string,
+    commandArguments: Record<string, Record<string, string>> = {},
+    priority = 0,
+    saveAsRun = false,
+  ): Promise<void> {
+    this.logger.log(`Queueing task: ${taskName}`);
+
+    const task = await this.findByName(taskName);
+
+    await this.queueTask(task, commandArguments, priority, saveAsRun);
 
     this.logger.log(`Task ${taskName} queued successfully`);
   }
@@ -201,6 +244,16 @@ export class TaskService {
   }
 
   /**
+   * Delete a task by id
+   */
+  async deleteById(taskId: string): Promise<void> {
+    const task = await this.findById(taskId);
+    await this.taskRepository.remove(task);
+    this.logger.log(`Task ${taskId} deleted successfully`);
+  }
+
+  /**
+   * TODO: move to task-repl module/service instead
    * Delete a task by name
    */
   async deleteByName(taskName: string): Promise<void> {

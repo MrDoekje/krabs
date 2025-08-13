@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
 import { CommandModule } from 'src/command/command.module';
 import { TaskRunModule } from 'src/task/task-run/task-run.module';
+import { ArgumentModule } from 'src/argument/argument.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { TaskRunModule } from 'src/task/task-run/task-run.module';
     }),
     CommandModule,
     TaskRunModule,
-    // ArgumentModule,
+    ArgumentModule,
     TaskModule,
   ],
 })

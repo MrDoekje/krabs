@@ -140,6 +140,24 @@ export function createCreateTaskDtoFromDiscriminatorValue(parseNode: ParseNode |
 /**
  * Creates a new instance of the appropriate class based on discriminator value
  * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {ExecuteTaskDto_commandArguments}
+ */
+// @ts-ignore
+export function createExecuteTaskDto_commandArgumentsFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoExecuteTaskDto_commandArguments;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {ExecuteTaskDto}
+ */
+// @ts-ignore
+export function createExecuteTaskDtoFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoExecuteTaskDto;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
  * @returns {ExecuteTaskRunDto}
  */
 // @ts-ignore
@@ -186,6 +204,15 @@ export function createTaskFromDiscriminatorValue(parseNode: ParseNode | undefine
 // @ts-ignore
 export function createTaskResultFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
     return deserializeIntoTaskResult;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {UpdateArgumentDto}
+ */
+// @ts-ignore
+export function createUpdateArgumentDtoFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoUpdateArgumentDto;
 }
 /**
  * The deserialization information for the current model
@@ -262,6 +289,27 @@ export function deserializeIntoCreateTaskDto(createTaskDto: Partial<CreateTaskDt
 }
 /**
  * The deserialization information for the current model
+ * @param ExecuteTaskDto The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoExecuteTaskDto(executeTaskDto: Partial<ExecuteTaskDto> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
+        "commandArguments": n => { executeTaskDto.commandArguments = n.getObjectValue<ExecuteTaskDto_commandArguments>(createExecuteTaskDto_commandArgumentsFromDiscriminatorValue); },
+    }
+}
+/**
+ * The deserialization information for the current model
+ * @param ExecuteTaskDto_commandArguments The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoExecuteTaskDto_commandArguments(executeTaskDto_commandArguments: Partial<ExecuteTaskDto_commandArguments> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
+    }
+}
+/**
+ * The deserialization information for the current model
  * @param ExecuteTaskRunDto The instance to deserialize into.
  * @returns {Record<string, (node: ParseNode) => void>}
  */
@@ -321,6 +369,29 @@ export function deserializeIntoTaskResult(taskResult: Partial<TaskResult> | unde
         "task": n => { taskResult.task = n.getObjectValue<Task>(createTaskFromDiscriminatorValue); },
         "updatedAt": n => { taskResult.updatedAt = n.getDateValue(); },
     }
+}
+/**
+ * The deserialization information for the current model
+ * @param UpdateArgumentDto The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoUpdateArgumentDto(updateArgumentDto: Partial<UpdateArgumentDto> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
+        "name": n => { updateArgumentDto.name = n.getStringValue(); },
+        "required": n => { updateArgumentDto.required = n.getBooleanValue(); },
+    }
+}
+export interface ExecuteTaskDto extends AdditionalDataHolder, Parsable {
+    /**
+     * Arguments per named command (per named argument)
+     */
+    commandArguments?: ExecuteTaskDto_commandArguments | null;
+}
+/**
+ * Arguments per named command (per named argument)
+ */
+export interface ExecuteTaskDto_commandArguments extends AdditionalDataHolder, Parsable {
 }
 export interface ExecuteTaskRunDto extends AdditionalDataHolder, Parsable {
     /**
@@ -408,6 +479,29 @@ export function serializeCreateTaskDto(writer: SerializationWriter, createTaskDt
 }
 /**
  * Serializes information the current object
+ * @param ExecuteTaskDto The instance to serialize from.
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeExecuteTaskDto(writer: SerializationWriter, executeTaskDto: Partial<ExecuteTaskDto> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!executeTaskDto || isSerializingDerivedType) { return; }
+    writer.writeObjectValue<ExecuteTaskDto_commandArguments>("commandArguments", executeTaskDto.commandArguments, serializeExecuteTaskDto_commandArguments);
+    writer.writeAdditionalData(executeTaskDto.additionalData);
+}
+/**
+ * Serializes information the current object
+ * @param ExecuteTaskDto_commandArguments The instance to serialize from.
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeExecuteTaskDto_commandArguments(writer: SerializationWriter, executeTaskDto_commandArguments: Partial<ExecuteTaskDto_commandArguments> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!executeTaskDto_commandArguments || isSerializingDerivedType) { return; }
+    writer.writeAdditionalData(executeTaskDto_commandArguments.additionalData);
+}
+/**
+ * Serializes information the current object
  * @param ExecuteTaskRunDto The instance to serialize from.
  * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
  * @param writer Serialization writer to use to serialize this model
@@ -471,6 +565,19 @@ export function serializeTaskResult(writer: SerializationWriter, taskResult: Par
     writer.writeObjectValue<Task>("task", taskResult.task, serializeTask);
     writer.writeDateValue("updatedAt", taskResult.updatedAt);
     writer.writeAdditionalData(taskResult.additionalData);
+}
+/**
+ * Serializes information the current object
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param UpdateArgumentDto The instance to serialize from.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeUpdateArgumentDto(writer: SerializationWriter, updateArgumentDto: Partial<UpdateArgumentDto> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!updateArgumentDto || isSerializingDerivedType) { return; }
+    writer.writeStringValue("name", updateArgumentDto.name);
+    writer.writeBooleanValue("required", updateArgumentDto.required);
+    writer.writeAdditionalData(updateArgumentDto.additionalData);
 }
 export interface Task extends AdditionalDataHolder, Parsable {
     /**
@@ -561,6 +668,16 @@ export interface TaskResult extends AdditionalDataHolder, Parsable {
      * The updatedAt property
      */
     updatedAt?: Date | null;
+}
+export interface UpdateArgumentDto extends AdditionalDataHolder, Parsable {
+    /**
+     * The name of the argument.
+     */
+    name?: string | null;
+    /**
+     * Indicates if the argument is required.
+     */
+    required?: boolean | null;
 }
 /* tslint:enable */
 /* eslint-enable */

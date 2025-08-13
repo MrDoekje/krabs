@@ -57,7 +57,7 @@ export interface QueuePostRequestBody extends AdditionalDataHolder, Parsable {
 export interface QueuePostRequestBody_commandArguments extends AdditionalDataHolder, Parsable {
 }
 /**
- * Builds and executes requests for operations under /tasks/{name}/queue
+ * Builds and executes requests for operations under /tasks/{id}/queue
  */
 export interface QueueRequestBuilder extends BaseRequestBuilder<QueueRequestBuilder> {
     /**
@@ -101,7 +101,7 @@ export function serializeQueuePostRequestBody_commandArguments(writer: Serializa
 /**
  * Uri template for the request builder.
  */
-export const QueueRequestBuilderUriTemplate = "{+baseurl}/tasks/{name}/queue";
+export const QueueRequestBuilderUriTemplate = "{+baseurl}/tasks/{id}/queue";
 /**
  * Metadata for all the requests in the request builder.
  */
