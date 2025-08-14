@@ -79,7 +79,7 @@ const addNewCommand = () => {
 </script>
 
 <template>
-  <div class="mx-auto p-6 flex flex-col gap-y-6">
+  <div class="mx-auto w-full p-6 flex flex-col gap-y-6">
     <div class="flex flex-col gap-y-1">
       <h1 class="text-3xl font-bold">Create New Task</h1>
       <p class="text-muted-foreground">
@@ -184,13 +184,13 @@ const addNewCommand = () => {
 
         <div v-if="selectedCommands.length > 0" class="flex flex-col gap-y-2">
           <span>Added Commands ({{ selectedCommands.length }})</span>
-          <div class="flex gap-y-2">
+          <div class="flex flex-col gap-2">
             <div
               v-for="(command, index) in selectedCommands"
               :key="`${command.name}-${index}`"
-              class="flex items-center gap-3 p-3 border rounded-lg bg-muted/50"
+              class="flex items-center grow gap-3 p-3 border rounded-lg bg-muted/50"
             >
-              <div class="flex flex-col gap-1 min-w-0 flex-1">
+              <div class="flex flex-col gap-2 min-w-0 flex-1">
                 <div class="flex items-center gap-2">
                   <Badge variant="secondary" class="text-xs">{{ index + 1 }}</Badge>
                   <span class="font-medium">{{ command.name }}</span>
@@ -201,6 +201,19 @@ const addNewCommand = () => {
                 <span class="text-xs text-muted-foreground"
                   >Working directory: {{ command.wd }}</span
                 >
+                <div
+                  v-if="command.arguments && command.arguments.length > 0"
+                  class="flex flex-wrap gap-2 mt-1"
+                >
+                  <span
+                    v-for="(arg, argIdx) in command.arguments"
+                    :key="`arg-${argIdx}`"
+                    class="inline-flex items-center px-2 py-0.5 rounded bg-muted text-xs"
+                  >
+                    <span class="font-semibold">{{ arg.name }}</span>
+                    <span v-if="arg.required" class="ml-1 text-red-500">(required)</span>
+                  </span>
+                </div>
               </div>
               <div class="flex items-center gap-1">
                 <Button

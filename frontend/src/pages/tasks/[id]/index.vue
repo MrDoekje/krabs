@@ -62,27 +62,33 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
 
 <template>
   <div class="min-h-screen p-6">
-    <div class="max-w-6xl mx-auto flex flex-col gap-y-6">
-      <div class="flex items-center gap-4">
-        <router-link :to="{ name: '/tasks/' }">
-          <Button variant="ghost" size="sm" class="flex gap-2">
-            <ArrowLeft class="h-4 w-4" />
-            Back
-          </Button>
-        </router-link>
-      </div>
+    <div class="flex flex-col gap-y-6">
       <Card v-if="task">
         <CardHeader>
           <div class="flex flex-col gap-y-2">
-            <CardTitle class="text-2xl">{{ task.name }}</CardTitle>
+            <div class="flex flex-row justify-between">
+              <CardTitle class="text-2xl">{{ task.name }}</CardTitle>
+
+              <router-link
+                v-if="task.id"
+                :to="{
+                  name: '/tasks/[id]/edit',
+                  params: { id: task.id },
+                }"
+              >
+                <Button variant="link"> Edit </Button>
+              </router-link>
+            </div>
             <CardDescription class="text-base max-w-3xl">
               {{ task.description }}
             </CardDescription>
+
             <Collapsible v-model:open="executeCollapsibleIsOpen" class="w-full space-y-2">
-              <div class="flex items-center justify-between space-x-4 px-2">
-                <h4 class="text-sm font-semibold">Run Task</h4>
+              <div class="flex items-center justify-between">
                 <CollapsibleTrigger as-child>
-                  <Button variant="ghost" size="sm" class="w-9 p-0">
+                  <Button variant="ghost" size="sm" class="">
+                    <h4 class="text-sm font-semibold">Run Task</h4>
+
                     <ChevronsUpDown class="h-4 w-4" />
                     <span class="sr-only">Toggle</span>
                   </Button>
@@ -96,16 +102,19 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
                     class="flex flex-col gap-2 border rounded-md p-3"
                   >
                     <div class="font-medium">{{ command.command?.name }}</div>
-                    <div v-if="command.command?.arguments && command.command.arguments.length">
+                    <div
+                      class="flex flex-col gap-2"
+                      v-if="command.command?.arguments && command.command.arguments.length"
+                    >
                       <template v-for="argument in command.command.arguments || []">
                         <div
                           :key="argument.id"
                           v-if="command.command.name != null && argument.name != null"
-                          class="flex items-center gap-2"
+                          class="flex gap-2"
                         >
                           <Label
                             :for="`${command.command.name}-${argument.name}`"
-                            class="text-sm min-w-[120px]"
+                            class="text-sm min-w-[120px] capitalize"
                           >
                             {{ argument.name }}
                           </Label>
@@ -176,13 +185,15 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
                     </code>
                     <div v-if="command.command?.arguments" class="text-sm text-gray-600">
                       <span class="font-medium">Parameters: </span>
-                      <span
-                        v-for="argument in command.command.arguments"
-                        :key="argument.id"
-                        class="mr-3"
-                      >
-                        {{ argument.name }}: {{ JSON.stringify(argument) }}
-                      </span>
+                      <div class="flex flex-col gap-1">
+                        <span
+                          v-for="argument in command.command.arguments"
+                          :key="argument.id"
+                          class="mr-3"
+                        >
+                          {{ argument.name }}: {{ argument.required }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -1,10 +1,11 @@
-<script setup lang="ts">
-import {  RouterView } from 'vue-router'
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <RouterView />
+  <SidebarProvider>
+    <app-sidebar />
+    <SidebarInset>
+      <app-header />
+      <RouterView />
+    </SidebarInset>
+  </SidebarProvider>
 </template>
-
-<style scoped>
-</style>

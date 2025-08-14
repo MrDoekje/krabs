@@ -58,22 +58,14 @@ const handleSave = async () => {
                   <FileText class="h-4 w-4" />
                   Name
                 </Label>
-                <Input
-                  id="name"
-                  v-model="command.name"
-                  placeholder="Enter command name"
-                />
+                <Input id="name" v-model="command.name" placeholder="Enter command name" />
               </div>
               <div class="flex gap-y-2">
                 <Label for="format" class="flex items-center flex gap-2">
                   <Code class="h-4 w-4" />
                   Format
                 </Label>
-                <Input
-                  id="format"
-                  v-model="command.format"
-                  placeholder="e.g., json, xml, text"
-                />
+                <Input id="format" v-model="command.format" placeholder="e.g., json, xml, text" />
               </div>
             </div>
 

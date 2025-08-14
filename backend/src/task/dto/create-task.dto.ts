@@ -34,9 +34,4 @@ export class CreateTaskDto {
   @Type(() => CreateCommandDto)
   @IsOptional()
   commands?: CreateCommandDto[];
-
-  // TODO: also allow running the task when creating it
-
-  // TODO:
-  // recurring
 }

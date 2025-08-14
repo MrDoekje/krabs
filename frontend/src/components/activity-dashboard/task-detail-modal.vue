@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { StatusBadge } from './status-badge'
+import StatusBadge from './status-badge.vue'
 import { Calendar, Terminal } from 'lucide-vue-next'
 import { computed } from 'vue'
 
@@ -33,7 +33,7 @@ const mockLogOutput = computed(() => {
   if (!props.taskResult) return ''
   const createdAt = new Date(props.taskResult.createdAt).toISOString()
   const taskName = props.taskResult.task.name
-  
+
   const successLog = `[${createdAt}] Task completed successfully
 [${createdAt}] Cleaning up resources...
 [${createdAt}] Task finished with status: SUCCESS`
@@ -63,9 +63,7 @@ const formatTimestamp = (dateString) => {
           <Terminal class="h-5 w-5" />
           Task Execution Details
         </DialogTitle>
-        <DialogDescription>
-          Full execution log and details for task run
-        </DialogDescription>
+        <DialogDescription> Full execution log and details for task run </DialogDescription>
       </DialogHeader>
 
       <div class="flex gap-y-4">
@@ -90,9 +88,7 @@ const formatTimestamp = (dateString) => {
         <div class="flex gap-y-2">
           <div class="flex items-center flex gap-2">
             <h3 class="text-lg font-semibold">Execution Log</h3>
-            <Badge variant="outline" class="text-xs">
-              ID: {{ taskResult.id }}
-            </Badge>
+            <Badge variant="outline" class="text-xs"> ID: {{ taskResult.id }} </Badge>
           </div>
           <ScrollArea class="h-[300px] w-full rounded-md border p-4">
             <pre class="text-sm font-mono whitespace-pre-wrap text-muted-foreground">
