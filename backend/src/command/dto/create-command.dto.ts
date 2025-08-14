@@ -59,4 +59,12 @@ export class CreateCommandDto {
   @ValidateNested({ each: true })
   @Type(() => CreateArgumentDto)
   arguments?: CreateArgumentDto[];
+
+  /**
+   * Optional task ID to associate the command with a specific task.
+   * @type {string}
+   */
+  @IsString()
+  @IsOptional()
+  taskId?: string;
 }

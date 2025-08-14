@@ -6,4 +6,6 @@ import { ArgumentController } from 'src/argument/argument.controller';
   providers: [],
   exports: [],
 })
-export class ArgumentModule {}
+export class ArgumentModule {
+  constructor() {}
+}

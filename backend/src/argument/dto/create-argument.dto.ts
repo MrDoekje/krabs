@@ -1,4 +1,4 @@
-import { IsString, IsBoolean } from 'class-validator';
+import { IsString, IsBoolean, IsOptional } from 'class-validator';
 
 export class CreateArgumentDto {
   /**
@@ -12,4 +12,11 @@ export class CreateArgumentDto {
    */
   @IsBoolean()
   required: boolean;
+
+  /**
+   * The ID of the command this argument belongs to (optional).
+   */
+  @IsOptional()
+  @IsString()
+  commandId?: string;
 }

@@ -10,6 +10,7 @@ import { Argument } from 'src/argument/entities/argument.entity';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { TaskExecutorService } from 'src/task/task-executor/task-executor.service';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -82,6 +83,68 @@ export class TaskService {
 
     // Return the task with all relationships loaded
     return savedTask;
+  }
+
+  /**
+   * Update an existing task by ID
+   */
+  async update(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
+    this.logger.log(`Updating task with ID: ${id}`);
+    const task = await this.findById(id);
+    if (!task) {
+      throw new NotFoundException(`Task with ID "${id}" not found`);
+    }
+    // Update task properties
+    if (updateTaskDto.name) {
+      task.name = updateTaskDto.name;
+    }
+    if (updateTaskDto.description) {
+      task.description = updateTaskDto.description;
+    }
+
+    if (updateTaskDto.commands && Array.isArray(updateTaskDto.commands)) {
+      // Remove existing TaskCommand relations for this task
+      const existingTaskCommands = await this.taskCommandRepository.find({
+        where: { task: { id: task.id } },
+        relations: ['command'],
+      });
+
+      // Map command IDs to their TaskCommand entities
+      const commandIdToTaskCommand = new Map(
+        existingTaskCommands.map((tc) => [tc.command.id, tc]),
+      );
+
+      // Collect command IDs from the new DTO
+      const newCommandIds = new Set(
+        updateTaskDto.commands.map((cmd) => cmd.id),
+      );
+
+      // Find TaskCommands to remove (not present in new DTO)
+      const toRemove = existingTaskCommands.filter(
+        (tc) => !newCommandIds.has(tc.command.id),
+      );
+      if (toRemove.length > 0) {
+        await this.taskCommandRepository.remove(toRemove);
+      }
+
+      // Prepare updates for TaskCommands whose order has changed
+      const updates: TaskCommand[] = [];
+      for (let i = 0; i < updateTaskDto.commands.length; i++) {
+        const commandDto = updateTaskDto.commands[i];
+        const taskCommand = commandIdToTaskCommand.get(commandDto.id);
+        if (taskCommand && taskCommand.executionOrder !== i) {
+          taskCommand.executionOrder = i;
+          updates.push(taskCommand);
+        }
+      }
+
+      if (updates.length > 0) {
+        await this.taskCommandRepository.save(updates);
+      }
+    }
+    await this.taskRepository.save(task);
+
+    return task;
   }
 
   /**

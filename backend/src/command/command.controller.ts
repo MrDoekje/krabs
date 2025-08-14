@@ -1,43 +1,37 @@
 import { CreateCommandDto } from './dto/create-command.dto';
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Param,
-  Body,
-  NotImplementedException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
 import { Command } from './entities/command.entity';
+import { CommandService } from './command.service';
 
 @Controller('commands')
 export class CommandController {
-  @Get()
-  findAll(): Command[] {
-    throw new NotImplementedException('This method is not implemented yet');
-  }
+  constructor(private readonly commandService: CommandService) {}
+
+  // @Get()
+  // findAll(): Command[] {
+  //   throw new NotImplementedException('This method is not implemented yet');
+  // }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Command {
-    throw new NotImplementedException('This method is not implemented yet');
+  findOne(@Param('id') id: string): Promise<Command> {
+    return this.commandService.findOne(id);
   }
 
   @Post()
-  create(@Body() createCommandDto: CreateCommandDto): Command {
-    throw new NotImplementedException('This method is not implemented yet');
+  async create(@Body() createCommandDto: CreateCommandDto): Promise<Command> {
+    return await this.commandService.create(createCommandDto);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateCommandDto: CreateCommandDto,
-  ): Command {
-    throw new NotImplementedException('This method is not implemented yet');
+  ): Promise<Command> {
+    return await this.commandService.update(id, updateCommandDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string): { deleted: boolean } {
-    throw new NotImplementedException('This method is not implemented yet');
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string): { deleted: boolean } {
+  //   throw new NotImplementedException('This method is not implemented yet');
+  // }
 }

@@ -1,37 +1,26 @@
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Argument } from 'src/argument/entities/argument.entity';
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Param,
-  Body,
-  NotFoundException,
-  NotImplementedException,
-} from '@nestjs/common';
+import { Controller, Post, Put, Param, Body } from '@nestjs/common';
 import { CreateArgumentDto } from 'src/argument/dto/create-argument.dto';
 import { UpdateArgumentDto } from 'src/argument/dto/update-argument.dto';
+import { ArgumentService } from 'src/argument/argument.service';
 
 @Controller('arguments')
 export class ArgumentController {
-  constructor() {}
+  constructor(private readonly argumentService: ArgumentService) {}
 
-  @Get()
-  findAll(): Promise<Argument[]> {
-    throw new NotImplementedException('This method is not implemented yet');
-  }
+  // @Get()
+  // findAll(): Promise<Argument[]> {
+  //   throw new NotImplementedException('This method is not implemented yet');
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: number): Promise<Argument> {
-    throw new NotImplementedException('This method is not implemented yet');
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: number): Promise<Argument> {
+  //   throw new NotImplementedException('This method is not implemented yet');
+  // }
 
   @Post()
   create(@Body() data: CreateArgumentDto): Promise<Argument> {
-    throw new NotImplementedException('This method is not implemented yet');
+    return this.argumentService.create(data);
   }
 
   @Put(':id')
@@ -39,11 +28,11 @@ export class ArgumentController {
     @Param('id') id: number,
     @Body() data: UpdateArgumentDto,
   ): Promise<Argument> {
-    throw new NotImplementedException('This method is not implemented yet');
+    return this.argumentService.update(id, data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: number): Promise<void> {
-    throw new NotImplementedException('This method is not implemented yet');
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: number): Promise<void> {
+  //   throw new NotImplementedException('This method is not implemented yet');
+  // }
 }
