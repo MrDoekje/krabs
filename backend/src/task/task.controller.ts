@@ -34,8 +34,6 @@ export class TaskController {
   }
 
   @Post(':id/queue')
-  @ApiOperation({ summary: 'Queue a task by name' })
-  @ApiResponse({ status: 201, description: 'Task queued successfully.' })
   async queue(@Param('id') id: string, @Body() body: QueueTaskDto) {
     const { commandArguments, priority } = body;
     await this.taskService.queueById(id, commandArguments, priority, true);
@@ -43,7 +41,6 @@ export class TaskController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all tasks' })
   async findAll(): Promise<Task[]> {
     return this.taskService.findAll();
   }

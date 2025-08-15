@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as fs from 'fs';
 import metadata from './metadata';
+import { CliModule } from './cli/cli-module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,9 +18,11 @@ async function bootstrap() {
 
   await SwaggerModule.loadPluginMetadata(metadata);
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config, {
+    include: [CliModule],
+  });
 
-  fs.writeFileSync('../swagger.json', JSON.stringify(document, null, 2));
+  fs.writeFileSync('../cli-swagger.json', JSON.stringify(document, null, 2));
 
   await app.close();
 }

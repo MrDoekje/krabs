@@ -5,6 +5,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { CommandModule } from 'src/command/command.module';
 import { TaskRunModule } from 'src/task/task-run/task-run.module';
 import { ArgumentModule } from 'src/argument/argument.module';
+import { CliModule } from './cli/cli-module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ArgumentModule } from 'src/argument/argument.module';
     TaskRunModule,
     ArgumentModule,
     TaskModule,
+    CliModule,
   ],
 })
 export class AppModule {}

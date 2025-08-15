@@ -236,7 +236,6 @@
             }
           }
         },
-        "summary": "Get all tasks",
         "tags": [
           "tasks"
         ]
@@ -368,10 +367,9 @@
         },
         "responses": {
           "201": {
-            "description": "Task queued successfully."
+            "description": ""
           }
         },
-        "summary": "Queue a task by name",
         "tags": [
           "tasks"
         ]
@@ -502,6 +500,72 @@
           "Argument"
         ]
       }
+    },
+    "/task/{name}/queue": {
+      "post": {
+        "operationId": "CliController_runQueueByName",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Cli"
+        ]
+      }
+    },
+    "/task/{name}/execute": {
+      "post": {
+        "operationId": "CliController_executeByName",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Cli"
+        ]
+      }
     }
   },
   "info": {
@@ -516,7 +580,11 @@
       "description": ""
     }
   ],
-  "servers": [],
+  "servers": [
+    {
+      "url": "http://localhost:3042"
+    }
+  ],
   "components": {
     "schemas": {
       "TaskResult": {

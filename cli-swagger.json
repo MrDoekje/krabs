@@ -1,0 +1,101 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/task/{name}/queue": {
+      "post": {
+        "operationId": "CliController_runQueueByName",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Cli"
+        ]
+      }
+    },
+    "/task/{name}/execute": {
+      "post": {
+        "operationId": "CliController_executeByName",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteTaskDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Cli"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Krabs API",
+    "description": "The Krabs API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "krabs",
+      "description": ""
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:3042"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "ExecuteTaskDto": {
+        "type": "object",
+        "properties": {
+          "commandArguments": {
+            "type": "object",
+            "description": "Arguments per named command (per named argument)"
+          }
+        }
+      }
+    }
+  }
+}
