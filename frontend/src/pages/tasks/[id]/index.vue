@@ -183,17 +183,9 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
                     <code class="block text-sm p-2 rounded border font-mono">
                       {{ command.command?.command }}
                     </code>
-                    <div v-if="command.command?.arguments" class="text-sm text-gray-600">
-                      <span class="font-medium">Parameters: </span>
-                      <div class="flex flex-col gap-1">
-                        <span
-                          v-for="argument in command.command.arguments"
-                          :key="argument.id"
-                          class="mr-3"
-                        >
-                          {{ argument.name }}: {{ argument.required }}
-                        </span>
-                      </div>
+                    <div>
+                      <span class="font-medium text-sm">Arguments: </span>
+                      <argument-list :arguments="command.command?.arguments" />
                     </div>
                   </div>
                 </div>

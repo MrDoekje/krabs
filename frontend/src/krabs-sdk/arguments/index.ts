@@ -19,21 +19,11 @@ export interface ArgumentsRequestBuilder extends BaseRequestBuilder<ArgumentsReq
      */
      byId(id: number) : ArgumentsItemRequestBuilder;
     /**
-     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
-     * @returns {Promise<Argument[]>}
-     */
-     get(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Argument[] | undefined>;
-    /**
      * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {Promise<Argument>}
      */
      post(body: CreateArgumentDto, requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Argument | undefined>;
-    /**
-     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
-     * @returns {RequestInformation}
-     */
-     toGetRequestInformation(requestConfiguration?: RequestConfiguration<object> | undefined) : RequestInformation;
     /**
      * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
@@ -58,12 +48,6 @@ export const ArgumentsRequestBuilderNavigationMetadata: Record<Exclude<keyof Arg
  * Metadata for all the requests in the request builder.
  */
 export const ArgumentsRequestBuilderRequestsMetadata: RequestsMetadata = {
-    get: {
-        uriTemplate: ArgumentsRequestBuilderUriTemplate,
-        responseBodyContentType: "application/json",
-        adapterMethodName: "sendCollection",
-        responseBodyFactory:  createArgumentFromDiscriminatorValue,
-    },
     post: {
         uriTemplate: ArgumentsRequestBuilderUriTemplate,
         responseBodyContentType: "application/json",

@@ -10,7 +10,7 @@ import { Argument } from 'src/argument/entities/argument.entity';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { TaskExecutorService } from 'src/task/task-executor/task-executor.service';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpdateTaskDto } from 'src/task/dto/update-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -102,6 +102,8 @@ export class TaskService {
       task.description = updateTaskDto.description;
     }
 
+    await this.taskRepository.save(task);
+
     if (updateTaskDto.commands && Array.isArray(updateTaskDto.commands)) {
       // Remove existing TaskCommand relations for this task
       const existingTaskCommands = await this.taskCommandRepository.find({
@@ -129,6 +131,7 @@ export class TaskService {
 
       // Prepare updates for TaskCommands whose order has changed
       const updates: TaskCommand[] = [];
+
       for (let i = 0; i < updateTaskDto.commands.length; i++) {
         const commandDto = updateTaskDto.commands[i];
         const taskCommand = commandIdToTaskCommand.get(commandDto.id);
@@ -141,8 +144,21 @@ export class TaskService {
       if (updates.length > 0) {
         await this.taskCommandRepository.save(updates);
       }
+
+      // Add new TaskCommands for commands not already present
+      for (let i = 0; i < updateTaskDto.commands.length; i++) {
+        const commandDto = updateTaskDto.commands[i];
+        if (!commandIdToTaskCommand.has(commandDto.id)) {
+          // Find the Command entity by id
+
+          const newTaskCommand = new TaskCommand();
+          newTaskCommand.task = task;
+          newTaskCommand.command = commandDto;
+          newTaskCommand.executionOrder = i;
+          await this.taskCommandRepository.save(newTaskCommand);
+        }
+      }
     }
-    await this.taskRepository.save(task);
 
     return task;
   }

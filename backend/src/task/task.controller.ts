@@ -1,12 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from 'src/task/task.service';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { Get, Param } from '@nestjs/common';
 import { Task } from 'src/task/entities/task.entity';
 import { ExecuteTaskDto } from 'src/task/dto/execute-tasks.dto';
-import { QueueTaskDto } from './dto/queue-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { QueueTaskDto } from 'src/task/dto/queue-task.dto';
+import { UpdateTaskDto } from 'src/task/dto/update-task.dto';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -18,7 +18,7 @@ export class TaskController {
     return this.taskService.create(createTaskDto);
   }
 
-  @Post(':id')
+  @Put(':id')
   async update(@Body() updateTaskDto: UpdateTaskDto, @Param('id') id: string) {
     return this.taskService.update(id, updateTaskDto);
   }

@@ -13,7 +13,10 @@ export class Argument {
   @Column()
   required: boolean;
 
-  @ManyToMany(() => Command, (command: Command) => command.arguments, {})
+  // TODO; should just be one to many
+  @ManyToMany(() => Command, (command: Command) => command.arguments, {
+    cascade: ['insert', 'update'],
+  })
   @JoinTable()
   commands: Relation<Command>[];
 }

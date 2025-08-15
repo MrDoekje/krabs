@@ -43,38 +43,38 @@ const handleCreateTask = async () => {
   } catch {}
 }
 
-const baseNewCommand: Command = {
-  name: '',
-  wd: '',
-  command: '',
-  format: '',
-  optional: true,
-  arguments: [],
-}
+// const baseNewCommand: Command = {
+//   name: '',
+//   wd: '',
+//   command: '',
+//   format: '',
+//   optional: true,
+//   arguments: [],
+// }
 
-const newCommand = ref(structuredClone(baseNewCommand))
-const addArgument = () => {
-  newCommand.value.arguments?.push({
-    name: '',
-    required: false,
-  })
-}
+// const newCommand = ref(structuredClone(baseNewCommand))
+// const addArgument = () => {
+//   newCommand.value.arguments?.push({
+//     name: '',
+//     required: false,
+//   })
+// }
 
-const removeArgument = (idx: number) => {
-  newCommand.value.arguments?.splice(idx, 1)
-}
+// const removeArgument = (idx: number) => {
+//   newCommand.value.arguments?.splice(idx, 1)
+// }
 
-const addNewCommand = () => {
-  if (!newCommand.value.name || !newCommand.value.wd || !newCommand.value.command) return
+const addNewCommand = (newCommand: CreateCommandDto) => {
+  if (!newCommand.name || !newCommand.wd || !newCommand.command) return
   selectedCommands.value.push({
     // shallow copy to avoid reference issues
-    ...newCommand.value,
-    arguments: newCommand.value.arguments?.map((arg) => ({
+    ...newCommand,
+    arguments: newCommand.arguments?.map((arg) => ({
       name: arg.name,
       required: arg.required,
     })),
   })
-  newCommand.value = structuredClone(baseNewCommand)
+  // newCommand = structuredClone(baseNewCommand)
 }
 </script>
 
@@ -114,73 +114,7 @@ const addNewCommand = () => {
         </CardTitle>
       </CardHeader>
       <CardContent class="flex flex-col gap-y-4">
-        <div class="flex gap-2">
-          <!-- Command creation form -->
-          <div class="flex flex-col gap-2 border rounded-lg p-4 bg-muted/30 w-full">
-            <div class="flex gap-2">
-              <div class="flex-1 flex flex-col gap-1.5">
-                <Label for="cmd-name">Name *</Label>
-                <Input id="cmd-name" v-model="newCommand.name" placeholder="Command name" />
-              </div>
-              <div class="flex-1 flex flex-col gap-1.5">
-                <Label for="cmd-wd">Working Directory *</Label>
-                <Input id="cmd-wd" v-model="newCommand.wd" placeholder="/path/to/dir" />
-              </div>
-              <div class="flex-1 flex flex-col gap-1.5">
-                <Label for="cmd-command">Command *</Label>
-                <Input
-                  id="cmd-command"
-                  v-model="newCommand.command"
-                  placeholder="e.g. npm run build"
-                />
-              </div>
-            </div>
-            <div class="flex gap-2 items-center">
-              <div class="flex-1 flex flex-col gap-1.5">
-                <Label for="cmd-format">Format</Label>
-                <Input
-                  id="cmd-format"
-                  v-model="newCommand.format"
-                  placeholder="--{{name}}={{value}}"
-                />
-              </div>
-              <Label class="flex gap-1.5">
-                <Switch v-model="newCommand.optional" />
-                Optional
-              </Label>
-            </div>
-            <!-- Arguments List -->
-            <div class="flex flex-col gap-1.5">
-              <Label>Arguments</Label>
-              <div
-                v-for="(arg, idx) in newCommand.arguments"
-                :key="idx"
-                class="flex gap-1.5 items-center"
-              >
-                <Input v-model="arg.name" placeholder="Argument name" class="w-40" />
-                <Label class="flex items-center gap-1.5">
-                  <Switch v-model="arg.required" />
-                  Required
-                </Label>
-                <Button variant="ghost" size="sm" @click="removeArgument(idx)">
-                  <X class="h-4 w-4" />
-                </Button>
-              </div>
-              <Button variant="outline" size="sm" class="self-start" @click="addArgument">
-                <Plus class="h-4 w-4 mr-1" /> Add Argument
-              </Button>
-            </div>
-            <div class="flex justify-end mt-2">
-              <Button
-                size="sm"
-                :disabled="!newCommand.name || !newCommand.wd || !newCommand.command"
-                @click="addNewCommand"
-              >
-                <Plus class="h-4 w-4 mr-1" /> Add Custom Command
-              </Button>
-            </div>
-          </div>
-        </div>
+        <k-create-command @create="addNewCommand" />
 
         <div v-if="selectedCommands.length > 0" class="flex flex-col gap-y-2">
           <span>Added Commands ({{ selectedCommands.length }})</span>
@@ -201,21 +135,9 @@ const addNewCommand = () => {
                 <span class="text-xs text-muted-foreground"
                   >Working directory: {{ command.wd }}</span
                 >
-                <div
-                  v-if="command.arguments && command.arguments.length > 0"
-                  class="flex flex-wrap gap-2 mt-1"
-                >
-                  <span
-                    v-for="(arg, argIdx) in command.arguments"
-                    :key="`arg-${argIdx}`"
-                    class="inline-flex items-center px-2 py-0.5 rounded bg-muted text-xs"
-                  >
-                    <span class="font-semibold">{{ arg.name }}</span>
-                    <span v-if="arg.required" class="ml-1 text-red-500">(required)</span>
-                  </span>
-                </div>
+                <argument-list :arguments="command.arguments" />
               </div>
-              <div class="flex items-center gap-1">
+              <div class="flex h-full flex-col self-start gap-1">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -232,7 +154,12 @@ const addNewCommand = () => {
                 >
                   <ChevronDown class="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" @click="handleRemoveCommand(index)">
+                <Button
+                  variant="ghost"
+                  class="mt-auto"
+                  size="sm"
+                  @click="handleRemoveCommand(index)"
+                >
                   <X class="h-4 w-4" />
                 </Button>
               </div>

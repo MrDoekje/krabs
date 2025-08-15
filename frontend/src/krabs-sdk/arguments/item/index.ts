@@ -16,11 +16,6 @@ export interface ArgumentsItemRequestBuilder extends BaseRequestBuilder<Argument
      */
      delete(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<ArrayBuffer | undefined>;
     /**
-     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
-     * @returns {Promise<Argument>}
-     */
-     get(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Argument | undefined>;
-    /**
      * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {Promise<Argument>}
@@ -31,11 +26,6 @@ export interface ArgumentsItemRequestBuilder extends BaseRequestBuilder<Argument
      * @returns {RequestInformation}
      */
      toDeleteRequestInformation(requestConfiguration?: RequestConfiguration<object> | undefined) : RequestInformation;
-    /**
-     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
-     * @returns {RequestInformation}
-     */
-     toGetRequestInformation(requestConfiguration?: RequestConfiguration<object> | undefined) : RequestInformation;
     /**
      * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
@@ -55,12 +45,6 @@ export const ArgumentsItemRequestBuilderRequestsMetadata: RequestsMetadata = {
         uriTemplate: ArgumentsItemRequestBuilderUriTemplate,
         adapterMethodName: "sendPrimitive",
         responseBodyFactory:  "ArrayBuffer",
-    },
-    get: {
-        uriTemplate: ArgumentsItemRequestBuilderUriTemplate,
-        responseBodyContentType: "application/json",
-        adapterMethodName: "send",
-        responseBodyFactory:  createArgumentFromDiscriminatorValue,
     },
     put: {
         uriTemplate: ArgumentsItemRequestBuilderUriTemplate,

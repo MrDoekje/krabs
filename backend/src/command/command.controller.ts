@@ -1,7 +1,8 @@
-import { CreateCommandDto } from './dto/create-command.dto';
+import { CreateCommandDto } from 'src/command/dto/create-command.dto';
 import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
-import { Command } from './entities/command.entity';
-import { CommandService } from './command.service';
+import { Command } from 'src/command/entities/command.entity';
+import { CommandService } from 'src/command/command.service';
+import { UpdateCommandDto } from './dto/update-command.dto';
 
 @Controller('commands')
 export class CommandController {
@@ -25,7 +26,7 @@ export class CommandController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() updateCommandDto: CreateCommandDto,
+    @Body() updateCommandDto: UpdateCommandDto,
   ): Promise<Command> {
     return await this.commandService.update(id, updateCommandDto);
   }

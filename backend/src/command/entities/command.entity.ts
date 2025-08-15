@@ -24,7 +24,7 @@ export class Command {
   @Column()
   command: string;
 
-  @ManyToMany(() => Argument, { eager: true })
+  @ManyToMany(() => Argument, { eager: true, cascade: ['insert', 'update'] })
   @JoinTable()
   arguments: Relation<Argument>[];
 

@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { CreateTaskDto, Task } from '@/krabs-sdk/models'
+import type { CreateTaskDto, Task, UpdateTaskDto } from '@/krabs-sdk/models'
 import { useKrabsSdk } from '@/lib/krabs-sdk'
 
 export const useTasksStore = defineStore('tasks', () => {
@@ -52,6 +52,17 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
+  const updateTask = async (taskId: string, task: UpdateTaskDto) => {
+    try {
+      const updatedTask = await krabsSdk.tasks.byId(taskId).put(task)
+      if (updatedTask != undefined && updatedTask.id) {
+        tasks.value[updatedTask.id] = updatedTask
+      }
+    } catch {
+      console.error('could not update task')
+    }
+  }
+
   const executeTask = async (
     taskId: string,
     executeArguments: Record<string, Record<string, unknown>>,
@@ -78,5 +89,15 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  return { tasks, getTask, getTaskList, loadTask, loadTasks, createTask, executeTask, queueTask }
+  return {
+    tasks,
+    getTask,
+    getTaskList,
+    loadTask,
+    loadTasks,
+    createTask,
+    executeTask,
+    queueTask,
+    updateTask,
+  }
 })

@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 // import { ExecutorService } from '../executor/executor.service';
 import { Command } from 'src/command/entities/command.entity';
-import { CommandResultDto } from './dto/command-result.dto';
+import { CommandResultDto } from 'src/command/dto/command-result.dto';
 import { spawn } from 'child_process';
-import { CreateCommandDto } from './dto/create-command.dto';
+import { CreateCommandDto } from 'src/command/dto/create-command.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from 'src/task/entities/task.entity';
@@ -120,6 +120,7 @@ export class CommandService {
     command.command = createCommandDto.command;
     command.optional = createCommandDto.optional ?? false;
     command.format = createCommandDto.format ?? '--{{name}}={{value}}';
+    command.arguments = [];
     if (createCommandDto.arguments && createCommandDto.arguments.length > 0) {
       for (const argDto of createCommandDto.arguments) {
         const argument = new Argument();
