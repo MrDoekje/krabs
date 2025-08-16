@@ -119,25 +119,13 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
         <div v-if="selectedCommands.length > 0" class="flex flex-col gap-y-2">
           <span>Added Commands ({{ selectedCommands.length }})</span>
           <div class="flex flex-col gap-2">
-            <div
+            <k-command
               v-for="(command, index) in selectedCommands"
+              v-model:command="selectedCommands[index]"
+              allow-edit
               :key="`${command.name}-${index}`"
-              class="flex items-center grow gap-3 p-3 border rounded-lg bg-muted/50"
             >
-              <div class="flex flex-col gap-2 min-w-0 flex-1">
-                <div class="flex items-center gap-2">
-                  <Badge variant="secondary" class="text-xs">{{ index + 1 }}</Badge>
-                  <span class="font-medium">{{ command.name }}</span>
-                </div>
-                <code class="text-sm text-muted-foreground bg-background px-2 py-1 rounded">{{
-                  command.command
-                }}</code>
-                <span class="text-xs text-muted-foreground"
-                  >Working directory: {{ command.wd }}</span
-                >
-                <argument-list :arguments="command.arguments" />
-              </div>
-              <div class="flex h-full flex-col self-start gap-1">
+              <template #actions>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -162,8 +150,8 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
                 >
                   <X class="h-4 w-4" />
                 </Button>
-              </div>
-            </div>
+              </template>
+            </k-command>
           </div>
         </div>
 

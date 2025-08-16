@@ -32,25 +32,19 @@
             </DialogContent>
           </Dialog>
         </div>
-        <div class="space-y-2">
-          <div
-            v-for="(element, index) in form.commands"
-            :key="element.id"
-            class="flex items-center justify-between p-3 border rounded bg-background"
+        <div class="space-y-2" v-if="form?.commands?.length">
+          <k-command
+            v-for="(command, index) in form.commands"
+            :key="command.id"
+            v-model:command="form.commands[index]"
+            allow-edit
           >
-            <div class="flex flex-col gap-1">
-              <div class="font-medium">{{ element.name }}</div>
-              <div class="text-xs text-muted-foreground">{{ element.command }}</div>
-              <Card class="bg-muted/20 p-4" v-if="element.arguments && element.arguments.length">
-                <argument-list :arguments="element.arguments" />
-              </Card>
-            </div>
-            <div class="flex gap-2 self-start">
+            <template #actions>
               <Button
-                @click="goToCommand(element.id)"
+                @click="goToCommand(command.id)"
                 size="icon"
                 variant="ghost"
-                :aria-label="`Edit ${element.name}`"
+                :aria-label="`Edit ${command.name}`"
               >
                 <Edit />
               </Button>
@@ -58,7 +52,7 @@
                 @click="removeCommand(index)"
                 size="icon"
                 variant="ghost"
-                :aria-label="`Remove ${element.name}`"
+                :aria-label="`Remove ${command.name}`"
               >
                 <Trash />
               </Button>
@@ -67,7 +61,7 @@
                 size="icon"
                 variant="ghost"
                 :disabled="index === 0"
-                :aria-label="`Move ${element.name} up`"
+                :aria-label="`Move ${command.name} up`"
               >
                 <ArrowUp />
               </Button>
@@ -76,12 +70,12 @@
                 size="icon"
                 variant="ghost"
                 :disabled="index === (form?.commands || []).length - 1"
-                :aria-label="`Move ${element.name} down`"
+                :aria-label="`Move ${command.name} down`"
               >
                 <ArrowDown />
               </Button>
-            </div>
-          </div>
+            </template>
+          </k-command>
         </div>
       </div>
       <Button type="submit" :loading="loading" class="w-full" v-if="isFormDirty"

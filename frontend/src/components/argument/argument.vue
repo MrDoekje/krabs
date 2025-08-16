@@ -1,12 +1,14 @@
 <template>
-  <div class="flex items-center gap-2 justify-between p-3 border rounded-lg">
-    <div>
-      <p class="font-medium font-mono text-sm">{{ arg.name }}</p>
-    </div>
-    <Badge :variant="arg.required ? 'default' : 'secondary'">
-      {{ arg.required ? 'Required' : 'Optional' }}
-    </Badge>
-  </div>
+  <Card class="grow bg-muted/40 border-0 py-2">
+    <CardContent class="px-4 flex items-center justify-between gap-6">
+      <div>
+        <p class="font-medium font-mono text-sm">{{ arg.name }}</p>
+      </div>
+      <Badge :variant="arg.required ? 'default' : 'secondary'">
+        {{ arg.required ? 'Required' : 'Optional' }}
+      </Badge>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup lang="ts">

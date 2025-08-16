@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { Plus, X } from 'lucide-vue-next'
+import { Parentheses, Plus, Variable, X } from 'lucide-vue-next'
 import type { CreateArgumentDto, CreateCommandDto } from '@/krabs-sdk/models'
 
 const emit = defineEmits<{
@@ -43,49 +43,40 @@ const addNewCommand = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 border rounded-lg p-4 bg-muted/30 w-full">
-    <div class="flex gap-2">
-      <div class="flex-1 flex flex-col gap-1.5">
-        <Label for="cmd-name">Name *</Label>
-        <Input id="cmd-name" v-model="newCommand.name" placeholder="Command name" />
-      </div>
-      <div class="flex-1 flex flex-col gap-1.5">
-        <Label for="cmd-wd">Working Directory *</Label>
-        <Input id="cmd-wd" v-model="newCommand.wd" placeholder="/path/to/dir" />
-      </div>
-      <div class="flex-1 flex flex-col gap-1.5">
-        <Label for="cmd-command">Command *</Label>
-        <Input id="cmd-command" v-model="newCommand.command" placeholder="e.g. npm run build" />
-      </div>
-    </div>
-    <div class="flex gap-2 items-center">
-      <div class="flex-1 flex flex-col gap-1.5">
-        <Label for="cmd-format">Format</Label>
-        <Input id="cmd-format" v-model="newCommand.format" placeholder="--{{name}}={{value}}" />
-      </div>
-      <Label class="flex gap-1.5">
-        <Switch v-model="newCommand.optional" />
-        Optional
-      </Label>
-    </div>
-    <div class="flex flex-col gap-1.5">
-      <Label>Arguments</Label>
-      <div v-for="(arg, idx) in newCommand.arguments" :key="idx" class="flex gap-1.5 items-center">
-        <k-manage-argument v-model:argument="newCommand.arguments[idx]" class="flex-1" />
-        <Button variant="ghost" size="sm" @click="removeArgument(idx)">
-          <X class="h-4 w-4" />
-        </Button>
-      </div>
-      <Button variant="outline" size="sm" class="self-start" @click="addArgument">
-        <Plus class="h-4 w-4 mr-1" /> Add Argument
-      </Button>
-    </div>
-    <slot
-      name="actions"
-      :disabled-add="!newCommand.name || !newCommand.wd || !newCommand.command"
-      :add-new="addNewCommand"
-    >
-      <div class="flex justify-end mt-2">
+  <Card class="bg-muted/30 border-0">
+    <CardContent class="flex flex-col gap-4">
+      <k-edit-command-info v-model:command="newCommand" />
+      <Card class="bg-muted/20 border-0">
+        <CardHeader>
+          <CardTitle class="flex items-center gap-2">
+            <Variable class="h-4 w-4" />
+            Arguments
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="flex flex-col gap-4">
+          <div
+            v-for="(arg, idx) in newCommand.arguments"
+            :key="idx"
+            class="flex gap-1.5 items-center"
+          >
+            <k-manage-argument v-model:argument="newCommand.arguments[idx]" class="flex-1" />
+            <Button variant="ghost" size="sm" @click="removeArgument(idx)">
+              <X class="h-4 w-4" />
+            </Button>
+          </div>
+          <Button variant="outline" size="sm" class="self-start" @click="addArgument">
+            <Plus class="h-4 w-4 mr-1" /> Add Argument
+          </Button>
+        </CardContent>
+      </Card>
+    </CardContent>
+
+    <CardFooter class="flex justify-end">
+      <slot
+        name="actions"
+        :disabled-add="!newCommand.name || !newCommand.wd || !newCommand.command"
+        :add-new="addNewCommand"
+      >
         <Button
           size="sm"
           :disabled="!newCommand.name || !newCommand.wd || !newCommand.command"
@@ -93,7 +84,7 @@ const addNewCommand = () => {
         >
           <Plus class="h-4 w-4 mr-1" /> Add Custom Command
         </Button>
-      </div>
-    </slot>
-  </div>
+      </slot>
+    </CardFooter>
+  </Card>
 </template>

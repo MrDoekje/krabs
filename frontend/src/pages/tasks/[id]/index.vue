@@ -1,19 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, ref, toRefs } from 'vue'
-import {
-  ArrowLeft,
-  ChevronsUpDown,
-  Play,
-  Plus,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Loader2,
-} from 'lucide-vue-next'
+import { ChevronsUpDown, Play, Plus, CheckCircle, XCircle, Loader2, Edit } from 'lucide-vue-next'
 import { useTasksStore } from '@/stores/tasks'
 import { useRoute } from 'vue-router'
 
-const { id } = useRoute('/tasks/[id]').params
+const { id } = useRoute('/tasks/[id]/').params
 
 const { getTask, loadTask, queueTask, executeTask } = useTasksStore()
 
@@ -168,27 +159,25 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
             </CardHeader>
             <CardContent>
               <div class="flex flex-col gap-y-4">
-                <div
+                <k-command
                   v-for="command in task.taskCommands"
+                  :command="command.command"
                   :key="command.id"
-                  class="flex-col items-start flex gap-4 p-4 border rounded-lg"
+                  allow-edit
                 >
-                  <div class="flex-shrink-0">
-                    <Badge variant="secondary" class="font-mono">
-                      {{ command.executionOrder }}
-                    </Badge>
-                  </div>
-                  <div class="flex-1 flex flex-col gap-y-2">
-                    <div class="font-medium">{{ command.command?.name }}</div>
-                    <code class="block text-sm p-2 rounded border font-mono">
-                      {{ command.command?.command }}
-                    </code>
-                    <div>
-                      <span class="font-medium text-sm">Arguments: </span>
-                      <argument-list :arguments="command.command?.arguments" />
-                    </div>
-                  </div>
-                </div>
+                  <template #actions>
+                    <router-link
+                      :to="{
+                        name: '/commands/[id]',
+                        params: { id: command.command?.id },
+                      }"
+                    >
+                      <Button variant="ghost" size="icon" aria-label="Edit Command">
+                        <Edit />
+                      </Button>
+                    </router-link>
+                  </template>
+                </k-command>
               </div>
             </CardContent>
           </Card>

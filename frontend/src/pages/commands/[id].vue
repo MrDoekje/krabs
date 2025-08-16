@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Save, FileText, Terminal, Folder, Code } from 'lucide-vue-next'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+import { Save } from 'lucide-vue-next'
 import { useCommandStore } from '@/stores/command'
 import { useRoute } from 'vue-router'
 import type { Argument, CreateArgumentDto, UpdateCommandDto } from '@/krabs-sdk/models'
@@ -53,23 +51,6 @@ const handleSave = async () => {
 
   isLoading.value = false
 }
-
-const baseNewArgument: CreateArgumentDto = {
-  name: '',
-  required: false,
-  commandId,
-}
-const newArgument = ref<CreateArgumentDto>(structuredClone(baseNewArgument))
-
-const resetNewArgument = () => {
-  newArgument.value = structuredClone(baseNewArgument)
-}
-
-const createAndAddArgument = async () => {
-  const createdArgument = await createArgument(newArgument.value)
-  command?.arguments?.push(createdArgument)
-  resetNewArgument()
-}
 </script>
 
 <template>
@@ -83,71 +64,7 @@ const createAndAddArgument = async () => {
       <CardContent class="flex flex-col gap-6">
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="lg:col-span-2">
-            <Card class="bg-muted/20">
-              <CardHeader>
-                <CardTitle class="flex items-center gap-2">
-                  <Terminal class="h-5 w-5" />
-                  Command Configuration
-                </CardTitle>
-                <CardDescription>Edit the command details and configuration</CardDescription>
-              </CardHeader>
-              <CardContent class="flex flex-col gap-y-6">
-                <div class="grid gap-4 sm:grid-cols-2">
-                  <div class="flex flex-col gap-y-2">
-                    <Label for="name" class="flex items-center gap-2">
-                      <FileText class="h-4 w-4" />
-                      Name
-                    </Label>
-                    <Input id="name" v-model="command.name" placeholder="Enter command name" />
-                  </div>
-                  <div class="flex flex-col gap-y-2">
-                    <Label for="format" class="flex items-center gap-2">
-                      <Code class="h-4 w-4" />
-                      Format
-                    </Label>
-                    <Input
-                      id="format"
-                      v-model="command.format"
-                      placeholder="e.g., --{{name}}={{value}}"
-                    />
-                  </div>
-                </div>
-
-                <div class="flex flex-col gap-y-2">
-                  <Label for="command" class="flex items-center gap-2">
-                    <Terminal class="h-4 w-4" />
-                    Command
-                  </Label>
-                  <Input
-                    id="command"
-                    v-model="command.command"
-                    placeholder="Enter the command to execute"
-                    class="font-mono"
-                  />
-                </div>
-
-                <div class="flex flex-col gap-y-2">
-                  <Label for="wd" class="flex items-center gap-2">
-                    <Folder class="h-4 w-4" />
-                    Working Directory
-                  </Label>
-                  <Textarea
-                    id="wd"
-                    v-model="command.wd"
-                    placeholder="Enter the working directory path"
-                    class="font-mono resize-none"
-                    rows="2"
-                  />
-                </div>
-
-                <div class="flex items-center gap-2">
-                  <Label for="optional" class="flex items-center gap-2">
-                    <Switch id="optional" type="checkbox" v-model="command.optional" class="mr-2" />
-                    Optional (will not block task on fail)
-                  </Label>
-                </div>
-              </CardContent>
-            </Card>
+            <k-edit-command-info v-model:command="command" />
           </div>
 
           <div class="flex flex-col gap-y-6">
@@ -156,23 +73,11 @@ const createAndAddArgument = async () => {
                 <CardTitle class="text-lg">Arguments</CardTitle>
               </CardHeader>
               <CardContent class="flex flex-col gap-y-6">
-                <argument-list allow-edit :arguments="command.arguments" />
-                <Dialog>
-                  <DialogTrigger as-child>
-                    <Button variant="outline" size="sm">Add Argument</Button>
-                  </DialogTrigger>
-                  <DialogContent class="flex flex-col gap-6">
-                    <k-manage-argument v-model:argument="newArgument" />
-                    <DialogFooter>
-                      <DialogClose as-child>
-                        <Button @click="resetNewArgument" variant="secondary"> Cancel </Button>
-                      </DialogClose>
-                      <DialogClose as-child>
-                        <Button @click="createAndAddArgument"> Add Argument </Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                <argument-list
+                  allow-edit
+                  v-model:arguments="command.arguments"
+                  :command-id="commandId"
+                />
               </CardContent>
             </Card>
           </div>
