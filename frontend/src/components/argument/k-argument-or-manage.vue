@@ -5,11 +5,11 @@
       <HoverCardTrigger as-child>
         <Argument :arg="arg" />
       </HoverCardTrigger>
-      <HoverCardContent class="flex flex-col gap-y-6">
+      <HoverCardContent class="flex flex-col gap-y-4">
         <k-manage-argument v-model:argument="editArgument" />
-        <div class="self-end flex flex-row gap-4">
+        <div class="self-end flex flex-row gap-2">
           <Button @click="saveChanges">Save</Button>
-          <Button variant="destructive" @click="doRemoveArgument">Remove</Button>
+          <Button variant="ghost" @click="doRemoveArgument">Remove</Button>
         </div>
       </HoverCardContent>
     </HoverCard>

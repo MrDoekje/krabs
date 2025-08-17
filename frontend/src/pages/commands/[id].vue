@@ -64,11 +64,11 @@ const handleSave = async () => {
       <CardContent class="flex flex-col gap-6">
         <div class="grid gap-6 lg:grid-cols-3">
           <div class="lg:col-span-2">
-            <k-edit-command-info v-model:command="command" />
+            <k-manage-command-info v-model:command="command" />
           </div>
 
           <div class="flex flex-col gap-y-6">
-            <Card class="bg-muted/20">
+            <Card class="bg-muted/30">
               <CardHeader>
                 <CardTitle class="text-lg">Arguments</CardTitle>
               </CardHeader>

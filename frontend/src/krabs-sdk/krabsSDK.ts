@@ -6,6 +6,8 @@ import { ArgumentsRequestBuilderNavigationMetadata, ArgumentsRequestBuilderReque
 // @ts-ignore
 import { CommandsRequestBuilderNavigationMetadata, CommandsRequestBuilderRequestsMetadata, type CommandsRequestBuilder } from './commands/index.js';
 // @ts-ignore
+import { TaskRequestBuilderNavigationMetadata, type TaskRequestBuilder } from './task/index.js';
+// @ts-ignore
 import { TaskResultRequestBuilderNavigationMetadata, type TaskResultRequestBuilder } from './taskResult/index.js';
 // @ts-ignore
 import { TaskRunRequestBuilderNavigationMetadata, TaskRunRequestBuilderRequestsMetadata, type TaskRunRequestBuilder } from './taskRun/index.js';
@@ -48,6 +50,9 @@ export function createKrabsSDK(requestAdapter: RequestAdapter) {
         serializationWriterFactory.registerDefaultSerializer(MultipartSerializationWriterFactory);
     }
     
+    if (requestAdapter.baseUrl === undefined || requestAdapter.baseUrl === null || requestAdapter.baseUrl === "") {
+        requestAdapter.baseUrl = "http://localhost:3042";
+    }
     const pathParameters: Record<string, unknown> = {
         "baseurl": requestAdapter.baseUrl,
     };
@@ -65,6 +70,10 @@ export interface KrabsSDK extends BaseRequestBuilder<KrabsSDK> {
      * The commands property
      */
     get commands(): CommandsRequestBuilder;
+    /**
+     * The task property
+     */
+    get task(): TaskRequestBuilder;
     /**
      * The taskResult property
      */
@@ -93,6 +102,9 @@ export const KrabsSDKNavigationMetadata: Record<Exclude<keyof KrabsSDK, KeysToEx
     commands: {
         requestsMetadata: CommandsRequestBuilderRequestsMetadata,
         navigationMetadata: CommandsRequestBuilderNavigationMetadata,
+    },
+    task: {
+        navigationMetadata: TaskRequestBuilderNavigationMetadata,
     },
     taskResult: {
         navigationMetadata: TaskResultRequestBuilderNavigationMetadata,

@@ -45,8 +45,8 @@ const addNewCommand = () => {
 <template>
   <Card class="bg-muted/30 border-0">
     <CardContent class="flex flex-col gap-4">
-      <k-edit-command-info v-model:command="newCommand" />
-      <Card class="bg-muted/20 border-0">
+      <k-manage-command-info v-model:command="newCommand" />
+      <Card class="bg-muted/30 border-0">
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
             <Variable class="h-4 w-4" />
@@ -57,7 +57,7 @@ const addNewCommand = () => {
           <div
             v-for="(arg, idx) in newCommand.arguments"
             :key="idx"
-            class="flex gap-1.5 items-center"
+            class="flex gap-4 items-center"
           >
             <k-manage-argument v-model:argument="newCommand.arguments[idx]" class="flex-1" />
             <Button variant="ghost" size="sm" @click="removeArgument(idx)">

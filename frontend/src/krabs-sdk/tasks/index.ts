@@ -19,7 +19,6 @@ export interface TasksRequestBuilder extends BaseRequestBuilder<TasksRequestBuil
      */
      byId(id: string) : TasksItemRequestBuilder;
     /**
-     * Get all tasks
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {Promise<Task[]>}
      */
@@ -31,7 +30,6 @@ export interface TasksRequestBuilder extends BaseRequestBuilder<TasksRequestBuil
      */
      post(body: CreateTaskDto, requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Task | undefined>;
     /**
-     * Get all tasks
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {RequestInformation}
      */

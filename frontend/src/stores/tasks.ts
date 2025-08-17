@@ -89,6 +89,15 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
+  const removeTask = async (taskId: string) => {
+    try {
+      await krabsSdk.tasks.byId(taskId).delete()
+      delete tasks.value[taskId]
+    } catch {
+      console.error('could not remove task')
+    }
+  }
+
   return {
     tasks,
     getTask,
@@ -99,5 +108,6 @@ export const useTasksStore = defineStore('tasks', () => {
     executeTask,
     queueTask,
     updateTask,
+    removeTask,
   }
 })

@@ -81,10 +81,16 @@ const handleTaskClick = (task: Task) => {
           <h3 class="text-lg font-semibold">No tasks found</h3>
           <p class="text-muted-foreground">Get started by creating your first task</p>
         </div>
-        <Button as="a" href="/create-task-screen">
-          <Plus class="mr-2 h-4 w-4" />
-          Create New Task
-        </Button>
+        <router-link
+          :to="{
+            name: '/tasks/new',
+          }"
+        >
+          <Button>
+            <Plus class="mr-2 h-4 w-4" />
+            Create New Task
+          </Button>
+        </router-link>
       </CardContent>
     </Card>
   </div>

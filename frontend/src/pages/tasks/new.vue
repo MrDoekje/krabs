@@ -119,7 +119,7 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
         <div v-if="selectedCommands.length > 0" class="flex flex-col gap-y-2">
           <span>Added Commands ({{ selectedCommands.length }})</span>
           <div class="flex flex-col gap-2">
-            <k-command
+            <k-command-or-manage
               v-for="(command, index) in selectedCommands"
               v-model:command="selectedCommands[index]"
               allow-edit
@@ -151,7 +151,7 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
                   <X class="h-4 w-4" />
                 </Button>
               </template>
-            </k-command>
+            </k-command-or-manage>
           </div>
         </div>
 

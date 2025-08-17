@@ -28,26 +28,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import {
-  RouterLink,
-  useRoute,
-  useRouter,
-  type RouteRecordNormalized,
-  type RouteRecordRaw,
-} from 'vue-router'
+import { RouterLink, useRoute, type RouteRecordNormalized, type RouteRecordRaw } from 'vue-router'
 
 const route = useRoute()
-const router = useRouter()
-
-// Helper to resolve route params in path
-function resolvePath(path: string, params: Record<string, any>) {
-  return path.replace(/:([^/]+)/g, (_, key) => params[key] ?? '')
-}
-
-// Ensure trailing slash utility
-function ensureTrailingSlash(path: string) {
-  return path.endsWith('/') ? path : path + '/'
-}
 
 const breadcrumbs = computed(() => {
   return route.matched

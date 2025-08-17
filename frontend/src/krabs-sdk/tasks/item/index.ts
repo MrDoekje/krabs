@@ -24,6 +24,11 @@ export interface TasksItemRequestBuilder extends BaseRequestBuilder<TasksItemReq
     get queue(): QueueRequestBuilder;
     /**
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {Promise<ArrayBuffer>}
+     */
+     delete(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<ArrayBuffer | undefined>;
+    /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {Promise<Task>}
      */
      get(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Task | undefined>;
@@ -33,6 +38,11 @@ export interface TasksItemRequestBuilder extends BaseRequestBuilder<TasksItemReq
      * @returns {Promise<Task>}
      */
      put(body: UpdateTaskDto, requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Task | undefined>;
+    /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {RequestInformation}
+     */
+     toDeleteRequestInformation(requestConfiguration?: RequestConfiguration<object> | undefined) : RequestInformation;
     /**
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {RequestInformation}
@@ -64,6 +74,11 @@ export const TasksItemRequestBuilderNavigationMetadata: Record<Exclude<keyof Tas
  * Metadata for all the requests in the request builder.
  */
 export const TasksItemRequestBuilderRequestsMetadata: RequestsMetadata = {
+    delete: {
+        uriTemplate: TasksItemRequestBuilderUriTemplate,
+        adapterMethodName: "sendPrimitive",
+        responseBodyFactory:  "ArrayBuffer",
+    },
     get: {
         uriTemplate: TasksItemRequestBuilderUriTemplate,
         responseBodyContentType: "application/json",
