@@ -9,8 +9,8 @@ import { useRoute } from 'vue-router'
 import type { Argument, CreateArgumentDto, UpdateCommandDto } from '@/krabs-sdk/models'
 import { useArgumentStore } from '@/stores/argument'
 
-const route = useRoute('/commands/[id]')
-const commandId = route.params.id
+const route = useRoute('/tasks/[taskId]/commands/[commandId]')
+const commandId = route.params.commandId
 
 const { loadCommand, getCommand, updateCommand } = useCommandStore()
 

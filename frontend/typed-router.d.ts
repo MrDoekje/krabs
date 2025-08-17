@@ -20,10 +20,10 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/activity/': RouteRecordInfo<'/activity/', '/activity', Record<never, never>, Record<never, never>>,
-    '/commands/[id]': RouteRecordInfo<'/commands/[id]', '/commands/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/tasks/': RouteRecordInfo<'/tasks/', '/tasks', Record<never, never>, Record<never, never>>,
-    '/tasks/[id]/': RouteRecordInfo<'/tasks/[id]/', '/tasks/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
-    '/tasks/[id]/edit': RouteRecordInfo<'/tasks/[id]/edit', '/tasks/:id/edit', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/tasks/[taskId]/': RouteRecordInfo<'/tasks/[taskId]/', '/tasks/:taskId', { taskId: ParamValue<true> }, { taskId: ParamValue<false> }>,
+    '/tasks/[taskId]/commands/[commandId]': RouteRecordInfo<'/tasks/[taskId]/commands/[commandId]', '/tasks/:taskId/commands/:commandId', { taskId: ParamValue<true>, commandId: ParamValue<true> }, { taskId: ParamValue<false>, commandId: ParamValue<false> }>,
+    '/tasks/[taskId]/edit': RouteRecordInfo<'/tasks/[taskId]/edit', '/tasks/:taskId/edit', { taskId: ParamValue<true> }, { taskId: ParamValue<false> }>,
     '/tasks/new': RouteRecordInfo<'/tasks/new', '/tasks/new', Record<never, never>, Record<never, never>>,
   }
 
@@ -46,20 +46,20 @@ declare module 'vue-router/auto-routes' {
       routes: '/activity/'
       views: never
     }
-    'src/pages/commands/[id].vue': {
-      routes: '/commands/[id]'
-      views: never
-    }
     'src/pages/tasks/index.vue': {
       routes: '/tasks/'
       views: never
     }
-    'src/pages/tasks/[id]/index.vue': {
-      routes: '/tasks/[id]/'
+    'src/pages/tasks/[taskId]/index.vue': {
+      routes: '/tasks/[taskId]/'
       views: never
     }
-    'src/pages/tasks/[id]/edit.vue': {
-      routes: '/tasks/[id]/edit'
+    'src/pages/tasks/[taskId]/commands/[commandId].vue': {
+      routes: '/tasks/[taskId]/commands/[commandId]'
+      views: never
+    }
+    'src/pages/tasks/[taskId]/edit.vue': {
+      routes: '/tasks/[taskId]/edit'
       views: never
     }
     'src/pages/tasks/new.vue': {

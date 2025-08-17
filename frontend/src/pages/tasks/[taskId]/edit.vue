@@ -133,9 +133,9 @@ import {
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const route = useRoute('/tasks/[id]/edit')
+const route = useRoute('/tasks/[taskId]/edit')
 const router = useRouter()
-const id = route.params.id as string
+const id = route.params.taskId as string
 
 const loading = ref(false)
 const showAddCommand = ref(false)
@@ -175,8 +175,8 @@ async function doUpdateTask() {
       commands: form.commands,
     })
     router.push({
-      name: '/tasks/[id]/',
-      params: { id },
+      name: '/tasks/[taskId]/',
+      params: { taskId: id },
     })
   } finally {
     loading.value = false
@@ -205,8 +205,8 @@ function removeCommand(idx: number) {
 
 function goToCommand(commandId: string) {
   router.push({
-    name: '/commands/[id]',
-    params: { id: commandId },
+    name: '/tasks/[taskId]/commands/[commandId]',
+    params: { taskId: id, commandId },
   })
 }
 

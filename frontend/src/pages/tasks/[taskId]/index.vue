@@ -15,7 +15,7 @@ import {
 import { useTasksStore } from '@/stores/tasks'
 import { useRoute } from 'vue-router'
 
-const { id } = useRoute('/tasks/[id]/').params
+const { taskId: id } = useRoute('/tasks/[taskId]/').params
 
 const { getTask, loadTask, queueTask, executeTask } = useTasksStore()
 
@@ -78,8 +78,8 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
               v-if="task.id"
               class="self-start"
               :to="{
-                name: '/tasks/[id]/edit',
-                params: { id: task.id },
+                name: '/tasks/[taskId]/edit',
+                params: { taskId: task.id },
               }"
             >
               <Button variant="ghost"> <Pencil></Pencil> </Button>
@@ -181,8 +181,8 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
                       <template #actions>
                         <router-link
                           :to="{
-                            name: '/commands/[id]',
-                            params: { id: command.command?.id },
+                            name: '/tasks/[taskId]/commands/[commandId]',
+                            params: { taskId: task.id, commandId: command.command?.id },
                           }"
                         >
                           <Button variant="ghost" size="icon" aria-label="Edit Command">

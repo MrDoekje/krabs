@@ -15,9 +15,9 @@ const tasks = getTaskList()
 
 const handleTaskClick = (task: Task) => {
   router.push({
-    name: '/tasks/[id]/',
+    name: '/tasks/[taskId]/',
     params: {
-      id: task.id as string,
+      taskId: task.id as string,
     },
   })
 }
