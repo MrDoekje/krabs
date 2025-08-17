@@ -242,6 +242,34 @@
       }
     },
     "/tasks/{id}": {
+      "get": {
+        "operationId": "TaskController_findById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tasks"
+        ]
+      },
       "put": {
         "operationId": "TaskController_update",
         "parameters": [
@@ -280,8 +308,8 @@
           "tasks"
         ]
       },
-      "get": {
-        "operationId": "TaskController_findByName",
+      "delete": {
+        "operationId": "TaskController_remove",
         "parameters": [
           {
             "name": "id",
@@ -294,14 +322,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Task"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "tags": [

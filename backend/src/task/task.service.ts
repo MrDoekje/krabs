@@ -208,6 +208,11 @@ export class TaskService {
     return task;
   }
 
+  async remove(id: string): Promise<void> {
+    await this.taskRepository.delete(id);
+    return;
+  }
+
   /**
    * Execute a task immediately by id with supplied arguments
    */

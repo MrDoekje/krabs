@@ -1,4 +1,5 @@
 - better inclusion of krabs-sdk in other projects (instead of npm link)
+- Rename task-run to task-configuration
 
 CLI
 
@@ -16,6 +17,10 @@ backend
 
 Frontend
 
+- Create k-command-or-mange
+  - Visual update to task header/task edit header
+    - including run tasks
+  - Visual update to edit argument
 - loading skeletons
 - reactive elements after actions;
   - loading skeletons
@@ -23,3 +28,8 @@ Frontend
   - toasts/sonner
     - success
     - error
+
+Tasks
+
+- Allow tasks to be scheduled
+- Allow tasks to run at an interval

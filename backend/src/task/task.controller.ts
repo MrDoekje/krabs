@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from 'src/task/task.service';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
@@ -18,10 +18,28 @@ export class TaskController {
     return this.taskService.create(createTaskDto);
   }
 
+  // TODO: pagination
+  @Get()
+  async findAll(): Promise<Task[]> {
+    return this.taskService.findAll();
+  }
+
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    return this.taskService.findById(id);
+  }
+
   @Put(':id')
   async update(@Body() updateTaskDto: UpdateTaskDto, @Param('id') id: string) {
     return this.taskService.update(id, updateTaskDto);
   }
+
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    return this.taskService.remove(id);
+  }
+
+  // Running a task
 
   @Post(':id/execute')
   async execute(
@@ -38,15 +56,5 @@ export class TaskController {
     const { commandArguments, priority } = body;
     await this.taskService.queueById(id, commandArguments, priority, true);
     return { message: `Task "${id}" queued successfully` };
-  }
-
-  @Get()
-  async findAll(): Promise<Task[]> {
-    return this.taskService.findAll();
-  }
-
-  @Get(':id')
-  async findByName(@Param('id') id: string) {
-    return this.taskService.findById(id);
   }
 }

@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { TaskService } from 'src/task/task.service';
 
-@Processor('task')
+@Processor('task', { concurrency: 2 })
 export class TaskConsumer extends WorkerHost {
   private readonly logger = new Logger(TaskConsumer.name);
 

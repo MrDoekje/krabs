@@ -71,6 +71,7 @@ export class CommandService {
       `Executing command: ${command} ${args.join(' ')} in ${cwd}`,
     );
     return new Promise((resolve) => {
+      // TODO: figure out how to include task id/ task result id and use emitToTaskResult from the activity service
       const child = spawn(command, args, {
         cwd,
         env: process.env,

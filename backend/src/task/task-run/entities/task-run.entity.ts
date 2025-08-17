@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import type { Relation } from 'typeorm';
 import { Task } from 'src/task/entities/task.entity';
+import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 
 @Entity()
 export class TaskRun {
@@ -24,6 +25,9 @@ export class TaskRun {
     onDelete: 'CASCADE',
   })
   task: Relation<Task>;
+
+  @ManyToOne(() => TaskResult)
+  results: Relation<TaskResult>;
 
   @Column({ type: 'json' })
   commandArguments: Record<string, Record<string, string>>;

@@ -31,16 +31,15 @@ export class TaskExecutorService {
     const commandResults: CommandResultDto[] = [];
     let shouldContinue = true;
     let overallSuccess = true;
-    let errorMessage: string | null = null;
 
     if (saveAsRun) {
-      // TODO: maybe remove if not succesful, or add result
       await this.taskRunService.create({
         name: `${task.name} - ${new Date().toISOString()}`,
         description: `Run for task ${task.name}`,
         task,
         commandArguments,
       });
+      // TODO: create a task result
     }
 
     for (const taskCommand of task.taskCommands) {
@@ -50,7 +49,7 @@ export class TaskExecutorService {
         this.logger.warn(
           `Skipping command ${command.command} due to previous failure`,
         );
-        continue;
+        break;
       }
 
       try {
@@ -63,10 +62,15 @@ export class TaskExecutorService {
         if (!result.success && !command.optional) {
           shouldContinue = false;
           overallSuccess = false;
-          errorMessage = result.error || `Command ${command.command} failed`;
           this.logger.warn(
             `Command ${command.command} failed, stopping execution`,
           );
+
+          commandResults.push({
+            success: false,
+            output: '',
+            error: result.error || `Command ${command.command} failed`,
+          });
         }
       } catch (error) {
         this.logger.error(`Error executing command ${command.command}:`, error);
@@ -78,7 +82,6 @@ export class TaskExecutorService {
         });
 
         overallSuccess = false;
-        errorMessage = error instanceof Error ? error.message : String(error);
 
         if (!command.optional) {
           shouldContinue = false;
@@ -89,7 +92,6 @@ export class TaskExecutorService {
     const savedTaskResult = await this.taskResultService.saveTaskResult(
       task,
       overallSuccess,
-      errorMessage,
       commandResults,
     );
 
