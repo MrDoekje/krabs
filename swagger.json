@@ -396,12 +396,12 @@
         ]
       }
     },
-    "/task-result/{taskName}": {
+    "/task-result/{taskResultId}": {
       "get": {
-        "operationId": "TaskResultController_getResultsByTaskName",
+        "operationId": "TaskResultController_getResultsByTaskResultId",
         "parameters": [
           {
-            "name": "taskName",
+            "name": "taskResultId",
             "required": true,
             "in": "path",
             "schema": {
@@ -415,16 +415,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TaskResult"
-                  }
+                  "$ref": "#/components/schemas/TaskResult"
                 }
               }
             }
           }
         },
-        "summary": "Get task results by task name",
+        "summary": "Get task results by task result ID",
         "tags": [
           "TaskResult"
         ]
@@ -587,6 +584,105 @@
           "Cli"
         ]
       }
+    },
+    "/activity/task-result": {
+      "get": {
+        "operationId": "ActivityController_getAllActiveTaskResults",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskResult"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      }
+    },
+    "/activity/queue": {
+      "get": {
+        "operationId": "ActivityController_getAllQueued",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      }
+    },
+    "/activity/task-result/{taskResultId}": {
+      "get": {
+        "operationId": "ActivityController_getCurrentTaskResults",
+        "parameters": [
+          {
+            "name": "taskResultId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      },
+      "delete": {
+        "operationId": "ActivityController_stopTask",
+        "parameters": [
+          {
+            "name": "taskResultId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      }
     }
   },
   "info": {
@@ -608,6 +704,54 @@
   ],
   "components": {
     "schemas": {
+      "TaskRun": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "task": {
+            "$ref": "#/components/schemas/Task"
+          },
+          "results": {
+            "$ref": "#/components/schemas/TaskResult"
+          },
+          "commandArguments": {
+            "type": "object"
+          },
+          "favorited": {
+            "type": "boolean"
+          },
+          "usageCount": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "task",
+          "results",
+          "commandArguments",
+          "favorited",
+          "usageCount",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
       "TaskResult": {
         "type": "object",
         "properties": {
@@ -617,16 +761,21 @@
           "task": {
             "$ref": "#/components/schemas/Task"
           },
+          "taskRun": {
+            "$ref": "#/components/schemas/TaskRun"
+          },
           "output": {
             "type": "string",
             "nullable": true
           },
-          "error": {
-            "type": "string",
-            "nullable": true
-          },
-          "success": {
-            "type": "boolean"
+          "status": {
+            "enum": [
+              "IN_PROGRESS",
+              "SUCCESS",
+              "FAILED",
+              "STOPPED"
+            ],
+            "type": "string"
           },
           "createdAt": {
             "format": "date-time",
@@ -641,8 +790,7 @@
           "id",
           "task",
           "output",
-          "error",
-          "success",
+          "status",
           "createdAt",
           "updatedAt"
         ]

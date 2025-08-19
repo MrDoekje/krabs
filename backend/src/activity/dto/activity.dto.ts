@@ -9,14 +9,13 @@ class BaseActivityDto {
   id: string;
 
   /**
-   * The unique identifier of the related Task entity.
-   */
-  taskId: string;
-
-  /**
    * The event type: 'output' or 'status'.
    */
   type: ActivityEventType;
+  /**
+   * The timestamp of the activity event.
+   */
+  timestamp: number;
 }
 
 export class OutputActivityDto extends BaseActivityDto {

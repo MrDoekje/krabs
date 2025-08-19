@@ -7,12 +7,12 @@ export class TaskResultController {
   constructor(private readonly taskResultService: TaskResultService) {}
 
   /**
-   * Get task results by task name
+   * Get task results by task result ID
    */
-  @Get(':taskName')
-  async getResultsByTaskName(
-    @Param('taskName') taskName: string,
-  ): Promise<TaskResult[]> {
-    return this.taskResultService.getResultsByTaskName(taskName);
+  @Get(':taskResultId')
+  async getResultsByTaskResultId(
+    @Param('taskResultId') taskResultId: string,
+  ): Promise<TaskResult> {
+    return this.taskResultService.getResultsByTaskResultId(taskResultId);
   }
 }

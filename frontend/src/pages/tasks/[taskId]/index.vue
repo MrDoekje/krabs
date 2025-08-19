@@ -1,24 +1,11 @@
 <script lang="ts" setup>
 import { onMounted, ref, toRefs } from 'vue'
-import {
-  ChevronsUpDown,
-  Play,
-  Plus,
-  CheckCircle,
-  XCircle,
-  Loader2,
-  Edit,
-  Slash,
-  Eye,
-  Pencil,
-} from 'lucide-vue-next'
+import { Play, Plus, CheckCircle, XCircle, Loader2, Eye, Pencil } from 'lucide-vue-next'
 import { useTasksStore } from '@/stores/tasks'
 import { useRoute } from 'vue-router'
 
 const { taskId: id } = useRoute('/tasks/[taskId]/').params
-
 const { getTask, loadTask, queueTask, executeTask } = useTasksStore()
-
 const task = getTask(id)
 
 onMounted(async () => {

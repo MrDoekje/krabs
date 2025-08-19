@@ -9,6 +9,7 @@ import { TaskCommand } from 'src/task/task-command/entities/task-command.entity'
 import { Command } from 'src/command/entities/command.entity';
 import { Argument } from 'src/argument/entities/argument.entity';
 import { TaskExecutorModule } from 'src/task/task-executor/task-executor.module';
+import { ActivityModule } from 'src/activity/activity.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TaskExecutorModule } from 'src/task/task-executor/task-executor.module'
       name: 'task',
     }),
     TaskExecutorModule,
+    ActivityModule,
   ],
   controllers: [TaskController],
   providers: [TaskService, TaskConsumer],

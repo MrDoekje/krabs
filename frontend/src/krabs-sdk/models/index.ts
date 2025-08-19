@@ -234,6 +234,24 @@ export function createTaskResultFromDiscriminatorValue(parseNode: ParseNode | un
 /**
  * Creates a new instance of the appropriate class based on discriminator value
  * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {TaskRun_commandArguments}
+ */
+// @ts-ignore
+export function createTaskRun_commandArgumentsFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoTaskRun_commandArguments;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {TaskRun}
+ */
+// @ts-ignore
+export function createTaskRunFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoTaskRun;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
  * @returns {UpdateArgumentDto}
  */
 // @ts-ignore
@@ -430,12 +448,42 @@ export function deserializeIntoTaskCommand(taskCommand: Partial<TaskCommand> | u
 export function deserializeIntoTaskResult(taskResult: Partial<TaskResult> | undefined = {}) : Record<string, (node: ParseNode) => void> {
     return {
         "createdAt": n => { taskResult.createdAt = n.getDateValue(); },
-        "error": n => { taskResult.errorEscaped = n.getStringValue(); },
         "id": n => { taskResult.id = n.getStringValue(); },
         "output": n => { taskResult.output = n.getStringValue(); },
-        "success": n => { taskResult.success = n.getBooleanValue(); },
+        "status": n => { taskResult.status = n.getEnumValue<TaskResult_status>(TaskResult_statusObject); },
         "task": n => { taskResult.task = n.getObjectValue<Task>(createTaskFromDiscriminatorValue); },
+        "taskRun": n => { taskResult.taskRun = n.getObjectValue<TaskRun>(createTaskRunFromDiscriminatorValue); },
         "updatedAt": n => { taskResult.updatedAt = n.getDateValue(); },
+    }
+}
+/**
+ * The deserialization information for the current model
+ * @param TaskRun The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoTaskRun(taskRun: Partial<TaskRun> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
+        "commandArguments": n => { taskRun.commandArguments = n.getObjectValue<TaskRun_commandArguments>(createTaskRun_commandArgumentsFromDiscriminatorValue); },
+        "createdAt": n => { taskRun.createdAt = n.getDateValue(); },
+        "description": n => { taskRun.description = n.getStringValue(); },
+        "favorited": n => { taskRun.favorited = n.getBooleanValue(); },
+        "id": n => { taskRun.id = n.getStringValue(); },
+        "name": n => { taskRun.name = n.getStringValue(); },
+        "results": n => { taskRun.results = n.getObjectValue<TaskResult>(createTaskResultFromDiscriminatorValue); },
+        "task": n => { taskRun.task = n.getObjectValue<Task>(createTaskFromDiscriminatorValue); },
+        "updatedAt": n => { taskRun.updatedAt = n.getDateValue(); },
+        "usageCount": n => { taskRun.usageCount = n.getNumberValue(); },
+    }
+}
+/**
+ * The deserialization information for the current model
+ * @param TaskRun_commandArguments The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoTaskRun_commandArguments(taskRun_commandArguments: Partial<TaskRun_commandArguments> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
     }
 }
 /**
@@ -696,13 +744,45 @@ export function serializeTaskCommand(writer: SerializationWriter, taskCommand: P
 export function serializeTaskResult(writer: SerializationWriter, taskResult: Partial<TaskResult> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
     if (!taskResult || isSerializingDerivedType) { return; }
     writer.writeDateValue("createdAt", taskResult.createdAt);
-    writer.writeStringValue("error", taskResult.errorEscaped);
     writer.writeStringValue("id", taskResult.id);
     writer.writeStringValue("output", taskResult.output);
-    writer.writeBooleanValue("success", taskResult.success);
+    writer.writeEnumValue<TaskResult_status>("status", taskResult.status);
     writer.writeObjectValue<Task>("task", taskResult.task, serializeTask);
+    writer.writeObjectValue<TaskRun>("taskRun", taskResult.taskRun, serializeTaskRun);
     writer.writeDateValue("updatedAt", taskResult.updatedAt);
     writer.writeAdditionalData(taskResult.additionalData);
+}
+/**
+ * Serializes information the current object
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param TaskRun The instance to serialize from.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeTaskRun(writer: SerializationWriter, taskRun: Partial<TaskRun> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!taskRun || isSerializingDerivedType) { return; }
+    writer.writeObjectValue<TaskRun_commandArguments>("commandArguments", taskRun.commandArguments, serializeTaskRun_commandArguments);
+    writer.writeDateValue("createdAt", taskRun.createdAt);
+    writer.writeStringValue("description", taskRun.description);
+    writer.writeBooleanValue("favorited", taskRun.favorited);
+    writer.writeStringValue("id", taskRun.id);
+    writer.writeStringValue("name", taskRun.name);
+    writer.writeObjectValue<TaskResult>("results", taskRun.results, serializeTaskResult);
+    writer.writeObjectValue<Task>("task", taskRun.task, serializeTask);
+    writer.writeDateValue("updatedAt", taskRun.updatedAt);
+    writer.writeNumberValue("usageCount", taskRun.usageCount);
+    writer.writeAdditionalData(taskRun.additionalData);
+}
+/**
+ * Serializes information the current object
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param TaskRun_commandArguments The instance to serialize from.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeTaskRun_commandArguments(writer: SerializationWriter, taskRun_commandArguments: Partial<TaskRun_commandArguments> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!taskRun_commandArguments || isSerializingDerivedType) { return; }
+    writer.writeAdditionalData(taskRun_commandArguments.additionalData);
 }
 /**
  * Serializes information the current object
@@ -814,10 +894,6 @@ export interface TaskResult extends AdditionalDataHolder, Parsable {
      */
     createdAt?: Date | null;
     /**
-     * The error property
-     */
-    errorEscaped?: string | null;
-    /**
      * The id property
      */
     id?: string | null;
@@ -826,9 +902,52 @@ export interface TaskResult extends AdditionalDataHolder, Parsable {
      */
     output?: string | null;
     /**
-     * The success property
+     * The status property
      */
-    success?: boolean | null;
+    status?: TaskResult_status | null;
+    /**
+     * The task property
+     */
+    task?: Task | null;
+    /**
+     * The taskRun property
+     */
+    taskRun?: TaskRun | null;
+    /**
+     * The updatedAt property
+     */
+    updatedAt?: Date | null;
+}
+export type TaskResult_status = (typeof TaskResult_statusObject)[keyof typeof TaskResult_statusObject];
+export interface TaskRun extends AdditionalDataHolder, Parsable {
+    /**
+     * The commandArguments property
+     */
+    commandArguments?: TaskRun_commandArguments | null;
+    /**
+     * The createdAt property
+     */
+    createdAt?: Date | null;
+    /**
+     * The description property
+     */
+    description?: string | null;
+    /**
+     * The favorited property
+     */
+    favorited?: boolean | null;
+    /**
+     * The id property
+     */
+    id?: string | null;
+    /**
+     * The name property
+     */
+    name?: string | null;
+    /**
+     * The results property
+     */
+    results?: TaskResult | null;
     /**
      * The task property
      */
@@ -837,6 +956,12 @@ export interface TaskResult extends AdditionalDataHolder, Parsable {
      * The updatedAt property
      */
     updatedAt?: Date | null;
+    /**
+     * The usageCount property
+     */
+    usageCount?: number | null;
+}
+export interface TaskRun_commandArguments extends AdditionalDataHolder, Parsable {
 }
 export interface UpdateArgumentDto extends AdditionalDataHolder, Parsable {
     /**
@@ -888,5 +1013,11 @@ export interface UpdateTaskDto extends AdditionalDataHolder, Parsable {
      */
     name?: string | null;
 }
+export const TaskResult_statusObject = {
+    IN_PROGRESS: "IN_PROGRESS",
+    SUCCESS: "SUCCESS",
+    FAILED: "FAILED",
+    STOPPED: "STOPPED",
+} as const;
 /* tslint:enable */
 /* eslint-enable */

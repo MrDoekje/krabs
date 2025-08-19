@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
@@ -13,33 +13,51 @@ export class TaskResultService {
     private readonly taskResultRepository: Repository<TaskResult>,
   ) {}
 
-  /**
-   * Save a new task result
-   */
-  async saveTaskResult(
-    task: Task,
-    overallSuccess: boolean,
-    commandResults: CommandResultDto[],
-  ): Promise<TaskResult> {
+  async createTaskResult(task: Task): Promise<TaskResult> {
     const taskResult = new TaskResult();
     taskResult.task = task;
-    taskResult.status = overallSuccess
-      ? TaskResultStatus.SUCCESS
-      : TaskResultStatus.FAILED;
-    taskResult.output = JSON.stringify(commandResults);
 
     return await this.taskResultRepository.save(taskResult);
   }
 
   /**
-  //  TODO: make it by id instead, and add pagination
-   * Get task results by task name
+   * Save a new task result
    */
-  async getResultsByTaskName(taskName: string): Promise<TaskResult[]> {
-    const tasks = await this.taskResultRepository.find({
-      where: { task: { name: taskName } },
+  async saveTaskResult(
+    taskResultId: string,
+    overallSuccess: boolean,
+    commandResults: CommandResultDto[],
+  ): Promise<TaskResult> {
+    const task = await this.taskResultRepository.findOne({
+      where: { id: taskResultId },
+    });
+
+    if (!task) {
+      throw new NotFoundException(
+        `TaskResult with ID ${taskResultId} not found`,
+      );
+    }
+
+    task.status = overallSuccess
+      ? TaskResultStatus.SUCCESS
+      : TaskResultStatus.FAILED;
+    task.output = JSON.stringify(commandResults);
+
+    return await this.taskResultRepository.save(task);
+  }
+
+  async getResultsByTaskResultId(taskResultId: string): Promise<TaskResult> {
+    const taskResult = await this.taskResultRepository.findOne({
+      where: { id: taskResultId },
       relations: ['task'],
     });
-    return tasks || [];
+
+    if (!taskResult) {
+      throw new NotFoundException(
+        `TaskResult with ID ${taskResultId} not found`,
+      );
+    }
+
+    return taskResult;
   }
 }

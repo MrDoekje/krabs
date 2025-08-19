@@ -9,6 +9,10 @@ import { Repository } from 'typeorm';
 import { Task } from 'src/task/entities/task.entity';
 import { TaskCommand } from 'src/task/task-command/entities/task-command.entity';
 import { Argument } from 'src/argument/entities/argument.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CommandOutputEvent } from 'src/command/event/command-output.event';
+import { CommandStatusEvent } from 'src/command/event/command-status.event';
+import { TaskResultStatus } from 'src/task/task-result/types';
 
 @Injectable()
 export class CommandService {
@@ -23,12 +27,14 @@ export class CommandService {
     private readonly taskCommandRepository: Repository<TaskCommand>,
     @InjectRepository(Argument)
     private readonly argumentRepository: Repository<Argument>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   /**
    * Execute a single command
    */
   async executeCommand(
+    taskResultId: string,
     command: Command,
     commandArguments: Record<string, Record<string, string>>,
   ): Promise<CommandResultDto> {
@@ -59,10 +65,16 @@ export class CommandService {
     }
 
     // Execute the command using executor service
-    return await this.runCommand(command.command, args, command.wd);
+    return await this.runCommand(
+      taskResultId,
+      command.command,
+      args,
+      command.wd,
+    );
   }
 
   private async runCommand(
+    taskResultId: string,
     command: string,
     args: string[],
     cwd: string,
@@ -71,7 +83,6 @@ export class CommandService {
       `Executing command: ${command} ${args.join(' ')} in ${cwd}`,
     );
     return new Promise((resolve) => {
-      // TODO: figure out how to include task id/ task result id and use emitToTaskResult from the activity service
       const child = spawn(command, args, {
         cwd,
         env: process.env,
@@ -85,12 +96,20 @@ export class CommandService {
         const text = data.toString();
         output += text;
         this.logger.debug(`stdout: ${text}`);
+        this.eventEmitter.emit(
+          'command.output',
+          new CommandOutputEvent(text, taskResultId),
+        );
       });
 
       child.stderr?.on('data', (data: Buffer) => {
         const text = data.toString();
         errorOutput += text;
         this.logger.warn(`stderr: ${text}`);
+        this.eventEmitter.emit(
+          'command.output',
+          new CommandOutputEvent(text, taskResultId),
+        );
       });
 
       child.on('close', (code: number) => {
@@ -101,6 +120,13 @@ export class CommandService {
           output,
           error: !success ? errorOutput : undefined,
         });
+        this.eventEmitter.emit(
+          'command.status',
+          new CommandStatusEvent(
+            success ? TaskResultStatus.SUCCESS : TaskResultStatus.FAILED,
+            taskResultId,
+          ),
+        );
       });
 
       child.on('error', (err: Error) => {
@@ -110,6 +136,14 @@ export class CommandService {
           output,
           error: err.message,
         });
+        this.eventEmitter.emit(
+          'command.output',
+          new CommandOutputEvent(err.message, taskResultId),
+        );
+        this.eventEmitter.emit(
+          'command.status',
+          new CommandStatusEvent(TaskResultStatus.FAILED, taskResultId),
+        );
       });
     });
   }

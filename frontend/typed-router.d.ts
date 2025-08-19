@@ -20,6 +20,7 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/activity/': RouteRecordInfo<'/activity/', '/activity', Record<never, never>, Record<never, never>>,
+    '/activity/[taskResultId]': RouteRecordInfo<'/activity/[taskResultId]', '/activity/:taskResultId', { taskResultId: ParamValue<true> }, { taskResultId: ParamValue<false> }>,
     '/tasks/': RouteRecordInfo<'/tasks/', '/tasks', Record<never, never>, Record<never, never>>,
     '/tasks/[taskId]/': RouteRecordInfo<'/tasks/[taskId]/', '/tasks/:taskId', { taskId: ParamValue<true> }, { taskId: ParamValue<false> }>,
     '/tasks/[taskId]/commands/[commandId]': RouteRecordInfo<'/tasks/[taskId]/commands/[commandId]', '/tasks/:taskId/commands/:commandId', { taskId: ParamValue<true>, commandId: ParamValue<true> }, { taskId: ParamValue<false>, commandId: ParamValue<false> }>,
@@ -44,6 +45,10 @@ declare module 'vue-router/auto-routes' {
     }
     'src/pages/activity/index.vue': {
       routes: '/activity/'
+      views: never
+    }
+    'src/pages/activity/[taskResultId].vue': {
+      routes: '/activity/[taskResultId]'
       views: never
     }
     'src/pages/tasks/index.vue': {

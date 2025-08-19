@@ -2,27 +2,71 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Observable, Subject } from 'rxjs';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ActivityDto } from 'src/activity/dto/activity.dto';
 import { TaskResultStatus } from 'src/task/task-result/types';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { Task } from 'src/task/entities/task.entity';
+import { QueueDto } from 'src/activity/dto/queue.dto';
 
 @Injectable()
 export class ActivityService {
   private taskResultStreams = new Map<string, Subject<ActivityDto>>();
+  private queueSubject = new Subject<QueueDto>();
 
   constructor(
     @InjectRepository(TaskResult)
     private readonly taskResultRepository: Repository<TaskResult>,
+    @InjectRepository(Task)
+    private readonly taskRepository: Repository<Task>,
+    @InjectQueue('task') private readonly taskQueue: Queue,
   ) {}
 
-  async getAllQueuedTasks(): Promise<TaskResult[]> {
+  async getAllActiveTaskResults(): Promise<TaskResult[]> {
     return this.taskResultRepository.find({
       where: { status: TaskResultStatus.IN_PROGRESS },
+      order: {
+        createdAt: 'DESC',
+      },
     });
   }
 
+  async getAllQueued(): Promise<Task[]> {
+    // Assuming you have injected the Bull queue somewhere, e.g.:
+
+    // Get all jobs in the 'waiting' state
+    const jobs = await this.taskQueue.getWaiting();
+
+    // Extract job ids (assuming job.data contains taskResultId)
+    const taskIds = jobs.map(
+      (job: { data: { taskId: string } }) => job?.data?.taskId,
+    );
+
+    // Fetch TaskResult entities from the database
+    if (taskIds.length === 0) return [];
+
+    return this.taskRepository.findBy({ id: In(taskIds) });
+  }
   getCurrentTaskResults(taskResultId: string): Observable<ActivityDto> {
     return this.getTaskResultSubject(taskResultId).asObservable();
+  }
+
+  /**
+   * Returns an observable to track queue events.
+   */
+  trackQueue(): Observable<QueueDto> {
+    return this.queueSubject.asObservable();
+  }
+
+  /**
+   * Emits a queue event to all subscribers.
+   */
+  emitQueueEvent(event: QueueDto) {
+    // TODO: fix json.stringify
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.queueSubject.next(JSON.stringify(event));
   }
 
   //   TODO: create method to 'prune' list of task results with 'pending' that are not actually in the queue
@@ -48,7 +92,10 @@ export class ActivityService {
   emitToTaskResult(taskResultId: string, data: ActivityDto) {
     const stream = this.getTaskResultSubject(taskResultId);
     if (stream) {
-      stream.next(data);
+      // TODO: fix json.stringify
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      stream.next(JSON.stringify(data));
     }
     // todo: if task result is done, clean up the stream
   }

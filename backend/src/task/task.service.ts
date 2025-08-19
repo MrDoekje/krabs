@@ -11,6 +11,7 @@ import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { TaskExecutorService } from 'src/task/task-executor/task-executor.service';
 import { UpdateTaskDto } from 'src/task/dto/update-task.dto';
+import { ActivityService } from 'src/activity/activity.service';
 
 @Injectable()
 export class TaskService {
@@ -28,6 +29,7 @@ export class TaskService {
     @InjectQueue('task')
     private readonly taskQueue: Queue,
     private readonly taskExecutorService: TaskExecutorService,
+    private readonly activityService: ActivityService,
   ) {}
 
   /**
@@ -246,8 +248,14 @@ export class TaskService {
     priority = 0,
     saveAsRun = false,
   ) {
+    this.activityService.emitQueueEvent({
+      taskId: task.id,
+      event: 'queued',
+      timestamp: Date.now(),
+    });
     await this.taskQueue.add(
       'execute-task',
+      // TODO: type this (maybe as a dto? or event dto? or bull interface)
       {
         taskId: task.id,
         commandArguments,

@@ -5,7 +5,9 @@ import { BullModule } from '@nestjs/bullmq';
 import { CommandModule } from 'src/command/command.module';
 import { TaskRunModule } from 'src/task/task-run/task-run.module';
 import { ArgumentModule } from 'src/argument/argument.module';
-import { CliModule } from './cli/cli-module';
+import { CliModule } from 'src/cli/cli-module';
+import { ActivityModule } from 'src/activity/activity.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -21,11 +23,13 @@ import { CliModule } from './cli/cli-module';
         port: 6379,
       },
     }),
+    EventEmitterModule.forRoot(),
     CommandModule,
     TaskRunModule,
     ArgumentModule,
     TaskModule,
     CliModule,
+    ActivityModule,
   ],
 })
 export class AppModule {}

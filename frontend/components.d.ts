@@ -135,6 +135,7 @@ declare module 'vue' {
     SidebarSeparator: typeof import('./src/components/ui/sidebar/SidebarSeparator.vue')['default']
     SidebarTrigger: typeof import('./src/components/ui/sidebar/SidebarTrigger.vue')['default']
     Skeleton: typeof import('./src/components/ui/skeleton/Skeleton.vue')['default']
+    Sonner: typeof import('./src/components/ui/sonner/Sonner.vue')['default']
     StatusBadge: typeof import('./src/components/activity-dashboard/status-badge.vue')['default']
     Switch: typeof import('./src/components/ui/switch/Switch.vue')['default']
     Table: typeof import('./src/components/ui/table/Table.vue')['default']

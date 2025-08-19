@@ -5,6 +5,7 @@ import { CommandResultDto } from 'src/command/dto/command-result.dto';
 import { TaskRunService } from '../task-run/task-run.service';
 import { TaskResultService } from '../task-result/task-result.service';
 import { CommandService } from 'src/command/command.service';
+import { ActivityService } from 'src/activity/activity.service';
 
 @Injectable()
 export class TaskExecutorService {
@@ -14,6 +15,7 @@ export class TaskExecutorService {
     private readonly taskRunService: TaskRunService,
     private readonly taskResultService: TaskResultService,
     private readonly commandService: CommandService,
+    private readonly activityService: ActivityService,
   ) {}
 
   /**
@@ -32,6 +34,8 @@ export class TaskExecutorService {
     let shouldContinue = true;
     let overallSuccess = true;
 
+    const taskResult = await this.taskResultService.createTaskResult(task);
+
     if (saveAsRun) {
       await this.taskRunService.create({
         name: `${task.name} - ${new Date().toISOString()}`,
@@ -39,8 +43,14 @@ export class TaskExecutorService {
         task,
         commandArguments,
       });
-      // TODO: create a task result
     }
+
+    this.activityService.emitQueueEvent({
+      taskResultId: taskResult.id,
+      event: 'started',
+      timestamp: Date.now(),
+      taskId: task.id,
+    });
 
     for (const taskCommand of task.taskCommands) {
       const command = taskCommand.command;
@@ -54,6 +64,7 @@ export class TaskExecutorService {
 
       try {
         const result = await this.commandService.executeCommand(
+          taskResult.id,
           command,
           commandArguments,
         );
@@ -90,10 +101,17 @@ export class TaskExecutorService {
     }
 
     const savedTaskResult = await this.taskResultService.saveTaskResult(
-      task,
+      taskResult.id,
       overallSuccess,
       commandResults,
     );
+
+    this.activityService.emitQueueEvent({
+      taskResultId: taskResult.id,
+      event: 'ended',
+      timestamp: Date.now(),
+      taskId: task.id,
+    });
 
     this.logger.log(
       `Task ${task.name} execution completed with ${commandResults.length} command results`,
