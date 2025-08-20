@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Task, TaskResult } from '@/krabs-sdk/models'
+import type { QueuedTaskDto, TaskResult } from '@/krabs-sdk/models'
 import { useKrabsSdk } from '@/lib/krabs-sdk'
 import type { ActivityDto, QueueDto } from './types'
 import { toast } from 'vue-sonner'
@@ -11,7 +11,8 @@ export const useActivityStore = defineStore('activity', () => {
   // state
   const taskResults = ref<Record<string, TaskResult>>({})
   const taskResultActivity = ref<Record<string, ActivityDto[]>>({})
-  const queuedTasks = ref<Task[]>([])
+  const queuedTasks = ref<QueuedTaskDto[]>([])
+  const registeredEvents = ref<Record<string, string[]>>({})
 
   // Listen to SSE for queue events and update the store in real-time
   const listenToQueueEvents = () => {
@@ -20,20 +21,33 @@ export const useActivityStore = defineStore('activity', () => {
     eventSource.onmessage = async ({ data }: { data: string }) => {
       try {
         const parsedData: QueueDto = JSON.parse(data)
-        console.log(JSON.stringify(parsedData))
+        if (!registeredEvents.value[parsedData.taskResultId]?.length) {
+          registeredEvents.value[parsedData.taskResultId] = [parsedData.event]
+        } else {
+          registeredEvents.value[parsedData.taskResultId].push(parsedData.event)
+        }
+
         switch (parsedData.event) {
           case 'queued': {
             // Add the task to the queue if not already present
             const relatedTask = await krabsSdk.tasks.byId(parsedData.taskId).get()
-            if (relatedTask) {
-              queuedTasks.value.push(relatedTask)
+            if (
+              relatedTask &&
+              !registeredEvents.value?.[parsedData.taskResultId]?.includes('started')
+            ) {
+              queuedTasks.value.push({
+                ...relatedTask,
+                taskResultId: parsedData.taskResultId,
+              })
             }
             toast.success('Task queued')
             break
           }
           case 'started': {
             // Remove the task from the queue
-            const idx = queuedTasks.value.findIndex((t) => t.id === parsedData.taskId)
+            const idx = queuedTasks.value.findIndex(
+              (t) => t.taskResultId === parsedData.taskResultId,
+            )
             if (idx !== -1) {
               queuedTasks.value.splice(idx, 1)
             }
@@ -47,11 +61,8 @@ export const useActivityStore = defineStore('activity', () => {
             break
           }
           case 'ended': {
-            // Remove the taskResult from taskResults
-            if ('taskResultId' in parsedData) {
-              delete taskResults.value[parsedData.taskResultId]
-              toast.success('Task ended')
-            }
+            delete taskResults.value[parsedData.taskResultId]
+            toast.success('Task ended')
             break
           }
         }

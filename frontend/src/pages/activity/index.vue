@@ -6,15 +6,8 @@ import { CheckCircle2, Clock, List, Loader, XCircle } from 'lucide-vue-next'
 import type { TaskResult } from '@/krabs-sdk/models'
 import { TaskResultStatus } from '@/stores/activity/types'
 
-const {
-  queuedTasks: queuedTasksState,
-  taskResults,
-  getTaskResultList,
-  getQueuedTasks,
-  loadTaskResults,
-  loadQueuedTasks,
-  listenToQueueEvents,
-} = useActivityStore()
+const { getTaskResultList, getQueuedTasks, loadTaskResults, loadQueuedTasks, listenToQueueEvents } =
+  useActivityStore()
 
 const router = useRouter()
 

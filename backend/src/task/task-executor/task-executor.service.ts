@@ -25,6 +25,7 @@ export class TaskExecutorService {
     task: Task,
     commandArguments: Record<string, Record<string, string>> = {},
     saveAsRun: boolean = false,
+    taskResultId?: string,
   ): Promise<TaskResult> {
     this.logger.log(
       `Executing task ${task.name} with ${task.taskCommands.length} commands`,
@@ -34,7 +35,10 @@ export class TaskExecutorService {
     let shouldContinue = true;
     let overallSuccess = true;
 
-    const taskResult = await this.taskResultService.createTaskResult(task);
+    const taskResult = await this.taskResultService.createTaskResult(
+      task,
+      taskResultId,
+    );
 
     if (saveAsRun) {
       await this.taskRunService.create({

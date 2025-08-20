@@ -1,13 +1,17 @@
 <template>
-  <div v-if="argumentList.length > 0" class="flex flex-col gap-y-3">
-    <k-argument-or-manage
-      v-for="(arg, index) in argumentList"
-      :key="index"
-      :arg="arg"
-      :allow-edit="allowEdit"
-      @update:argument="(updatedArg) => updateArgs(updatedArg, index)"
-      @remove="() => removeArg(index)"
-    />
+  <div class="flex flex-col gap-y-3">
+    <template v-if="argumentList.length > 0">
+      <k-argument-or-manage
+        v-for="(arg, index) in argumentList"
+        :key="index"
+        :arg="arg"
+        :allow-edit="allowEdit"
+        @update:argument="(updatedArg) => updateArgs(updatedArg, index)"
+        @remove="() => removeArg(index)"
+      />
+    </template>
+    <p v-else class="text-muted-foreground text-sm text-center py-4">No arguments defined</p>
+
     <Dialog v-if="allowEdit">
       <DialogTrigger as-child>
         <Button variant="outline" size="sm">Add Argument</Button>
@@ -25,7 +29,6 @@
       </DialogContent>
     </Dialog>
   </div>
-  <p v-else class="text-muted-foreground text-sm text-center py-4">No arguments defined</p>
 </template>
 
 <script setup lang="ts">

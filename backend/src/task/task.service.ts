@@ -12,6 +12,7 @@ import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { TaskExecutorService } from 'src/task/task-executor/task-executor.service';
 import { UpdateTaskDto } from 'src/task/dto/update-task.dto';
 import { ActivityService } from 'src/activity/activity.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TaskService {
@@ -176,7 +177,6 @@ export class TaskService {
         'taskCommands',
         'taskCommands.command',
         'taskCommands.command.arguments',
-        'results',
       ],
       order: { taskCommands: { executionOrder: 'ASC' } },
     });
@@ -198,7 +198,6 @@ export class TaskService {
         'taskCommands',
         'taskCommands.command',
         'taskCommands.command.arguments',
-        'results',
       ],
       order: { taskCommands: { executionOrder: 'ASC' } },
     });
@@ -248,8 +247,12 @@ export class TaskService {
     priority = 0,
     saveAsRun = false,
   ) {
+    const taskResultId = uuidv4();
+
+    // TODO: add idempotency here so that we can follow a queued task to a specific task-result
     this.activityService.emitQueueEvent({
       taskId: task.id,
+      taskResultId: taskResultId,
       event: 'queued',
       timestamp: Date.now(),
     });
@@ -258,6 +261,7 @@ export class TaskService {
       // TODO: type this (maybe as a dto? or event dto? or bull interface)
       {
         taskId: task.id,
+        taskResultId: taskResultId,
         commandArguments,
         saveAsRun,
       },
@@ -320,11 +324,13 @@ export class TaskService {
     task: Task,
     commandArguments: Record<string, Record<string, string>> = {},
     saveAsRun: boolean = false,
+    taskResultId?: string,
   ): Promise<TaskResult> {
     return this.taskExecutorService.executeTask(
       task,
       commandArguments,
       saveAsRun,
+      taskResultId,
     );
   }
 

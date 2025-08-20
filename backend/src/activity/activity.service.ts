@@ -9,6 +9,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { Task } from 'src/task/entities/task.entity';
 import { QueueDto } from 'src/activity/dto/queue.dto';
+import { QueuedTaskDto } from './dto/queuedTask.dto';
 
 @Injectable()
 export class ActivityService {
@@ -32,13 +33,9 @@ export class ActivityService {
     });
   }
 
-  async getAllQueued(): Promise<Task[]> {
-    // Assuming you have injected the Bull queue somewhere, e.g.:
-
-    // Get all jobs in the 'waiting' state
+  async getAllQueued(): Promise<QueuedTaskDto[]> {
     const jobs = await this.taskQueue.getWaiting();
 
-    // Extract job ids (assuming job.data contains taskResultId)
     const taskIds = jobs.map(
       (job: { data: { taskId: string } }) => job?.data?.taskId,
     );
@@ -46,7 +43,17 @@ export class ActivityService {
     // Fetch TaskResult entities from the database
     if (taskIds.length === 0) return [];
 
-    return this.taskRepository.findBy({ id: In(taskIds) });
+    const taskData = await this.taskRepository.findBy({ id: In(taskIds) });
+
+    return jobs.map(
+      (job: { data: { taskResultId: string; taskId: string } }) => {
+        const task = taskData.find((t) => t.id === job.data.taskId);
+        return {
+          taskResultId: job.data.taskResultId,
+          ...task,
+        };
+      },
+    );
   }
   getCurrentTaskResults(taskResultId: string): Observable<ActivityDto> {
     return this.getTaskResultSubject(taskResultId).asObservable();

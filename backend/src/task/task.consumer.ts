@@ -25,12 +25,14 @@ export class TaskConsumer extends WorkerHost {
 
   private async handleExecuteTask(
     job: Job<{
+      // Move to DTO
       taskId: string;
       commandArguments: Record<string, Record<string, string>>;
       saveAsRun?: boolean;
+      taskResultId?: string;
     }>,
   ) {
-    const { taskId, commandArguments, saveAsRun } = job.data;
+    const { taskId, commandArguments, saveAsRun, taskResultId } = job.data;
 
     this.logger.log(`Executing task ${taskId} from queue`);
 
@@ -40,6 +42,7 @@ export class TaskConsumer extends WorkerHost {
         task,
         commandArguments,
         saveAsRun,
+        taskResultId,
       );
 
       this.logger.log(`Task ${taskId} completed with`);

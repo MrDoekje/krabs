@@ -13,11 +13,20 @@ export class TaskResultService {
     private readonly taskResultRepository: Repository<TaskResult>,
   ) {}
 
-  async createTaskResult(task: Task): Promise<TaskResult> {
+  async createTaskResult(
+    task: Task,
+    taskResultId?: string,
+  ): Promise<TaskResult> {
     const taskResult = new TaskResult();
     taskResult.task = task;
 
-    return await this.taskResultRepository.save(taskResult);
+    if (taskResultId) {
+      taskResult.id = taskResultId;
+    }
+
+    const result = await this.taskResultRepository.save(taskResult);
+
+    return result;
   }
 
   /**

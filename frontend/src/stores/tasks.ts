@@ -28,14 +28,12 @@ export const useTasksStore = defineStore('tasks', () => {
   }
   const loadTask = async (taskId: string) => {
     try {
-      console.log('loadTask')
       const loadedTask = await krabsSdk.tasks.byId(taskId).get()
       if (!loadedTask?.id) {
         console.error(`loaded task does not have id`)
         return
       }
       tasks.value[loadedTask.id] = loadedTask
-      console.log('task loaded')
     } catch {
       console.error('failed to load tasks')
     }

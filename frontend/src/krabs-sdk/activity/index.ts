@@ -4,6 +4,8 @@
 // @ts-ignore
 import { QueueRequestBuilderRequestsMetadata, type QueueRequestBuilder } from './queue/index.js';
 // @ts-ignore
+import { QueueEventsRequestBuilderRequestsMetadata, type QueueEventsRequestBuilder } from './queueEvents/index.js';
+// @ts-ignore
 import { TaskResultRequestBuilderNavigationMetadata, TaskResultRequestBuilderRequestsMetadata, type TaskResultRequestBuilder } from './taskResult/index.js';
 // @ts-ignore
 import { type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type NavigationMetadata } from '@microsoft/kiota-abstractions';
@@ -16,6 +18,10 @@ export interface ActivityRequestBuilder extends BaseRequestBuilder<ActivityReque
      * The queue property
      */
     get queue(): QueueRequestBuilder;
+    /**
+     * The queueEvents property
+     */
+    get queueEvents(): QueueEventsRequestBuilder;
     /**
      * The taskResult property
      */
@@ -31,6 +37,9 @@ export const ActivityRequestBuilderUriTemplate = "{+baseurl}/activity";
 export const ActivityRequestBuilderNavigationMetadata: Record<Exclude<keyof ActivityRequestBuilder, KeysToExcludeForNavigationMetadata>, NavigationMetadata> = {
     queue: {
         requestsMetadata: QueueRequestBuilderRequestsMetadata,
+    },
+    queueEvents: {
+        requestsMetadata: QueueEventsRequestBuilderRequestsMetadata,
     },
     taskResult: {
         requestsMetadata: TaskResultRequestBuilderRequestsMetadata,

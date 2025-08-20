@@ -427,6 +427,126 @@
         ]
       }
     },
+    "/activity/task-result": {
+      "get": {
+        "operationId": "ActivityController_getAllActiveTaskResults",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskResult"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      }
+    },
+    "/activity/queue": {
+      "get": {
+        "operationId": "ActivityController_getAllQueued",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QueuedTaskDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      }
+    },
+    "/activity/task-result/{taskResultId}": {
+      "get": {
+        "operationId": "ActivityController_getCurrentTaskResults",
+        "parameters": [
+          {
+            "name": "taskResultId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      },
+      "delete": {
+        "operationId": "ActivityController_stopTask",
+        "parameters": [
+          {
+            "name": "taskResultId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      }
+    },
+    "/activity/queue-events": {
+      "get": {
+        "operationId": "ActivityController_trackQueue",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      }
+    },
     "/arguments": {
       "post": {
         "operationId": "ArgumentController_create",
@@ -582,105 +702,6 @@
         },
         "tags": [
           "Cli"
-        ]
-      }
-    },
-    "/activity/task-result": {
-      "get": {
-        "operationId": "ActivityController_getAllActiveTaskResults",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TaskResult"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Activity"
-        ]
-      }
-    },
-    "/activity/queue": {
-      "get": {
-        "operationId": "ActivityController_getAllQueued",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Task"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Activity"
-        ]
-      }
-    },
-    "/activity/task-result/{taskResultId}": {
-      "get": {
-        "operationId": "ActivityController_getCurrentTaskResults",
-        "parameters": [
-          {
-            "name": "taskResultId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "Activity"
-        ]
-      },
-      "delete": {
-        "operationId": "ActivityController_stopTask",
-        "parameters": [
-          {
-            "name": "taskResultId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Activity"
         ]
       }
     }
@@ -1116,6 +1137,50 @@
             "description": "Arguments per named command (per named argument)"
           }
         }
+      },
+      "QueuedTaskDto": {
+        "type": "object",
+        "properties": {
+          "taskResultId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "queued": {
+            "type": "boolean"
+          },
+          "taskCommands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskCommand"
+            }
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaskResult"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "taskResultId"
+        ]
       },
       "UpdateArgumentDto": {
         "type": "object",
