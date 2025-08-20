@@ -9,7 +9,9 @@ import 'vue-sonner/style.css'
     <app-sidebar />
     <SidebarInset>
       <app-header />
-      <RouterView />
+      <div class="rounded-xl">
+        <RouterView />
+      </div>
     </SidebarInset>
   </SidebarProvider>
 </template>

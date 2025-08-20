@@ -2,7 +2,7 @@
   <div class="w-full p-6 mx-auto">
     <Card>
       <CardContent class="space-y-6 flex flex-col">
-        <Card class="bg-muted/30 border-0">
+        <Card class="bg-muted/60">
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <BookCheck class="h-5 w-5" />

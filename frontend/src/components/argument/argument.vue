@@ -1,5 +1,5 @@
 <template>
-  <Card class="grow bg-muted/40 border-0 py-2">
+  <Card class="grow bg-muted/40 py-2">
     <CardContent class="px-4 flex items-center justify-between gap-6">
       <div>
         <p class="font-medium font-mono text-sm">{{ arg.name }}</p>

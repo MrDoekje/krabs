@@ -68,7 +68,7 @@ const handleSave = async () => {
           </div>
 
           <div class="flex flex-col gap-y-6">
-            <Card class="bg-muted/30">
+            <Card class="bg-muted/60">
               <CardHeader>
                 <CardTitle class="text-lg">Arguments</CardTitle>
               </CardHeader>

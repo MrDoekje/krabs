@@ -82,7 +82,7 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
             </TabsList>
 
             <TabsContent value="run" class="flex flex-col gap-y-4">
-              <Card class="bg-muted/30 border-0">
+              <Card class="bg-muted/60">
                 <CardContent>
                   <form
                     class="flex flex-col gap-4"
@@ -92,7 +92,7 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
                     <Card
                       v-for="command in task?.taskCommands || []"
                       :key="command.id"
-                      class="bg-muted/30 border-0"
+                      class="bg-muted/60"
                     >
                       <CardHeader>
                         <CardTitle>
@@ -150,7 +150,7 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
             </TabsContent>
 
             <TabsContent value="configuration" class="flex flex-col gap-y-4" v-if="task">
-              <Card class="bg-muted/30 border-0">
+              <Card class="bg-muted/60">
                 <CardHeader class="flex flex-col gap-y-2">
                   <CardTitle>Task Commands</CardTitle>
                   <CardDescription>
@@ -184,7 +184,7 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
             </TabsContent>
 
             <TabsContent value="activity" class="flex flex-col gap-y-4">
-              <Card class="bg-muted/30 border-0">
+              <Card class="bg-muted/60">
                 <CardHeader class="flex flex-col gap-y-2">
                   <CardTitle>Recent Executions</CardTitle>
                   <CardDescription>

@@ -1,5 +1,5 @@
 <template>
-  <Card class="border-0 bg-muted/30">
+  <Card class="bg-muted/60">
     <CardHeader>
       <div class="flex items-center">
         <div class="flex items-center gap-2">
@@ -24,7 +24,7 @@
             <Terminal class="h-3 w-3" />
             Command
           </div>
-          <code class="block p-2 bg-muted/30 rounded text-sm font-mono">{{ command.command }}</code>
+          <code class="block p-2 bg-muted/60 rounded text-sm font-mono">{{ command.command }}</code>
         </div>
 
         <div class="space-y-1" v-if="command.format">
@@ -40,7 +40,9 @@
             <Folder class="h-3 w-3" />
             Working Directory
           </div>
-          <code class="block p-2 bg-muted/30 rounded text-sm font-mono">{{ command.wd }}</code>
+          <code class="block p-2 bg-muted/60 break-all rounded text-sm font-mono">{{
+            command.wd
+          }}</code>
         </div>
       </div>
 

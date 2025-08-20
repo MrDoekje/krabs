@@ -57,11 +57,7 @@ const statusMap = {
         >
           No active tasks.
         </div>
-        <Card
-          class="bg-muted/30 border-0"
-          v-for="taskResult in taskResultList"
-          :key="taskResult.id"
-        >
+        <Card class="bg-muted/60" v-for="taskResult in taskResultList" :key="taskResult.id">
           <CardHeader>
             <CardTitle>
               {{ taskResult.task?.name || taskResult.id }}
@@ -103,19 +99,21 @@ const statusMap = {
         <div v-if="queuedTasks.length === 0" class="text-sm text-center text-muted-foreground py-4">
           No completed tasks found.
         </div>
-        <Card v-for="task in queuedTasks" :key="task.id" class="bg-muted/30 border-0">
-          <CardHeader>
-            <CardTitle>
-              {{ task.name || task.id }}
-            </CardTitle>
-            <CardDescription v-if="task.createdAt">
-              Queued: {{ new Date(task.createdAt).toLocaleString() }}
-            </CardDescription>
-          </CardHeader>
-          <CardFooter class="flex gap-4 ml-auto">
-            <Button @click="openTaskDetails(task)" variant="outline" size="sm">View Log</Button>
-          </CardFooter>
-        </Card>
+        <div class="flex flex-col gap-3">
+          <Card v-for="task in queuedTasks" :key="task.id" class="bg-muted/60">
+            <CardHeader>
+              <CardTitle>
+                {{ task.name || task.id }}
+              </CardTitle>
+              <CardDescription v-if="task.createdAt">
+                Queued: {{ new Date(task.createdAt).toLocaleString() }}
+              </CardDescription>
+            </CardHeader>
+            <CardFooter class="flex gap-4 ml-auto">
+              <Button @click="openTaskDetails(task)" variant="outline" size="sm">View Log</Button>
+            </CardFooter>
+          </Card>
+        </div>
       </CardContent>
     </Card>
   </div>

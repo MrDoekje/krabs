@@ -3,11 +3,17 @@ import type { SidebarProps } from '@/components/ui/sidebar'
 
 import { CircleCheckBig, Home, LayoutDashboard } from 'lucide-vue-next'
 
-import type { RouteMap, RouterLinkProps } from 'vue-router'
+import { useRoute, type RouteMap, type RouterLinkProps } from 'vue-router'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
+
+const route = useRoute()
+
+const isRouteActive = (url: string) => {
+  return route.path === url
+}
 
 // This is sample data.
 const data: {
@@ -22,7 +28,6 @@ const data: {
       title: 'Home',
       url: '/',
       icon: Home,
-      // isActive: true,
     },
     {
       title: 'Tasks',
@@ -39,7 +44,7 @@ const data: {
 </script>
 
 <template>
-  <Sidebar v-bind="props">
+  <Sidebar v-bind="props" variant="inset">
     <!-- <SidebarHeader>
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader> -->
@@ -49,7 +54,7 @@ const data: {
         <SidebarMenu>
           <router-link v-for="item in data.navMain" :key="item.title" :to="item.url">
             <SidebarMenuItem>
-              <SidebarMenuButton :tooltip="item.title">
+              <SidebarMenuButton :tooltip="item.title" :is-active="isRouteActive(item.url)">
                 <component :is="item.icon" v-if="item.icon" />
                 <span>{{ item.title }}</span>
               </SidebarMenuButton>
@@ -62,6 +67,6 @@ const data: {
     <!-- <SidebarFooter>
       <NavUser :user="data.user" />
     </SidebarFooter> -->
-    <SidebarRail />
+    <!-- <SidebarRail /> -->
   </Sidebar>
 </template>

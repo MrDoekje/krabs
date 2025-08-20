@@ -12,7 +12,7 @@ const argument = defineModel<CreateArgumentDto>('argument', {
 </script>
 
 <template>
-  <Card class="bg-muted/30 border-0">
+  <Card class="bg-muted/60">
     <CardContent class="flex flex-col gap-4">
       <div class="flex flex-col gap-2">
         <Label class="flex items-center gap-2">

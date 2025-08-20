@@ -1,10 +1,10 @@
 <template>
   <header
-    class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
+    class="flex rounded-t-xl h-14 border-border border-b sticky top-0 bg-background/10 backdrop-blur-sm shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
   >
-    <div class="flex items-center gap-2 px-4">
-      <SidebarTrigger class="-ml-1" />
-      <Separator orientation="vertical" class="mr-2 h-4" />
+    <div class="flex h-6 items-center gap-4 px-4">
+      <SidebarTrigger />
+      <Separator orientation="vertical" class="mr-2" />
       <Breadcrumb>
         <BreadcrumbList>
           <template v-for="(crumb, idx) in breadcrumbs" :key="idx">

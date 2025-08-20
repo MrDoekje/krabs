@@ -43,10 +43,10 @@ const addNewCommand = () => {
 </script>
 
 <template>
-  <Card class="bg-muted/30 border-0">
+  <Card class="bg-muted/60">
     <CardContent class="flex flex-col gap-4">
       <k-manage-command-info v-model:command="newCommand" />
-      <Card class="bg-muted/30 border-0">
+      <Card class="bg-muted/60">
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
             <Variable class="h-4 w-4" />

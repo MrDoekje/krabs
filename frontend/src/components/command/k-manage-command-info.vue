@@ -1,5 +1,5 @@
 <template>
-  <Card class="bg-muted/30 border-0">
+  <Card class="bg-muted/60">
     <CardHeader>
       <CardTitle class="flex items-center gap-2">
         <Terminal class="h-5 w-5" />
