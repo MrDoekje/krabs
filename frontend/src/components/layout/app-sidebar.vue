@@ -80,19 +80,36 @@ const data: {
         <ScrollArea class="max-h-64">
           <div class="flex flex-col gap-2">
             <template v-for="taskResult in taskResults">
-              <router-link
-                v-if="taskResult.id"
-                :key="taskResult.id"
-                :to="{ name: '/activity/[taskResultId]', params: { taskResultId: taskResult.id } }"
-              >
-                <Card class="bg-muted/60 hover:bg-muted/10" :key="taskResult.id">
-                  <CardContent>
-                    <p class="line-clamp-4 text-xs">
-                      {{ taskResult.task?.name || taskResult.id }}
-                    </p>
-                  </CardContent>
-                </Card>
-              </router-link>
+              <HoverCard side="right" v-if="taskResult.id">
+                <HoverCardTrigger as-child>
+                  <router-link
+                    :key="taskResult.id"
+                    :to="{
+                      name: '/activity/[taskResultId]',
+                      params: { taskResultId: taskResult.id },
+                    }"
+                  >
+                    <Card class="bg-muted/60 hover:bg-muted/10" :key="taskResult.id">
+                      <CardContent>
+                        <p class="line-clamp-4 text-xs">
+                          {{ taskResult.task?.name || taskResult.id }}
+                        </p>
+                        <span class="line-clamp-1 text-xs text-muted-foreground font-mono">{{
+                          taskResult.id
+                        }}</span>
+                      </CardContent>
+                    </Card>
+                  </router-link>
+                </HoverCardTrigger>
+                <HoverCardContent
+                  class="w-min"
+                  align="end"
+                  side="right"
+                  updatePositionStrategy="always"
+                >
+                  <k-task-result :task-result="taskResult" />
+                </HoverCardContent>
+              </HoverCard>
             </template>
           </div>
         </ScrollArea>

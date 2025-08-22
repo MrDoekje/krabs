@@ -49,78 +49,17 @@ onMounted(async () => {
         >
           No active tasks.
         </div>
-        <Card class="bg-muted/60" v-for="taskResult in taskResultList" :key="taskResult.id">
-          <CardHeader>
-            <CardTitle>
-              {{ taskResult.task?.name || taskResult.id }}
-            </CardTitle>
-            <CardDescription v-if="taskResult.createdAt">
-              Started: {{ new Date(taskResult?.createdAt).toLocaleString() }}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div
-              class="flex flex-row gap-2"
-              v-if="taskResult.taskRun?.commandArguments?.additionalData"
-            >
-              <Card
-                v-for="(commandArguments, commandName) in taskResult.taskRun.commandArguments
-                  .additionalData"
-                :key="commandName"
-                class="bg-muted/60"
-              >
-                <CardHeader>
-                  <CardTitle class="flex items-center flex-row gap-2">
-                    <TerminalIcon class="size-4" />
-                    {{ commandName }}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent class="flex flex-col gap-2">
-                  <div class="bg-muted/60 rounded-xl p-2 border border-border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead class="w-[160px]">Argument</TableHead>
-                          <TableHead>Value</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow
-                          v-for="(argumentValue, argumentName) in commandArguments"
-                          :key="argumentName"
-                        >
-                          <TableCell class="font-medium">
-                            {{ argumentName }}
-                          </TableCell>
-                          <TableCell>
-                            {{ argumentValue }}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </CardContent>
-          <CardFooter class="flex gap-4 ml-auto">
-            <Badge
-              :variant="statusMap[taskResult.status].variant"
-              class="gap-1"
-              v-if="taskResult.status"
-            >
-              <component
-                :is="statusMap[taskResult.status].icon"
-                class="w-3 h-3"
-                :class="{ 'animate-spin': taskResult.status === 'IN_PROGRESS' }"
-              />
-              {{ statusMap[taskResult.status].text }}
-            </Badge>
+        <k-task-result
+          :task-result="taskResult"
+          v-for="(taskResult, index) in taskResultList"
+          :key="taskResult.id || index"
+        >
+          <template #actions>
             <Button @click="openTaskDetails(taskResult)" variant="outline" size="sm"
               >View Activity</Button
             >
-          </CardFooter>
-        </Card>
+          </template>
+        </k-task-result>
       </CardContent>
     </Card>
 
@@ -137,61 +76,11 @@ onMounted(async () => {
           No completed tasks found.
         </div>
         <div class="flex flex-col gap-3">
-          <Card v-for="taskResult in queuedTasks" :key="taskResult.id" class="bg-muted/60">
-            <CardHeader>
-              <CardTitle>
-                {{ taskResult?.task?.name || taskResult.id }}
-              </CardTitle>
-              <CardDescription v-if="taskResult.createdAt">
-                Queued: {{ new Date(taskResult.createdAt).toLocaleString() }}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div
-                class="flex flex-row gap-2"
-                v-if="taskResult.taskRun?.commandArguments?.additionalData"
-              >
-                <Card
-                  v-for="(commandArguments, commandName) in taskResult.taskRun.commandArguments
-                    .additionalData"
-                  :key="commandName"
-                  class="bg-muted/60"
-                >
-                  <CardHeader>
-                    <CardTitle class="flex items-center flex-row gap-2">
-                      <TerminalIcon class="size-4" />
-                      {{ commandName }}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent class="flex flex-col gap-2">
-                    <div class="bg-muted/60 rounded-xl p-2 border border-border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead class="w-[160px]">Argument</TableHead>
-                            <TableHead>Value</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow
-                            v-for="(argumentValue, argumentName) in commandArguments"
-                            :key="argumentName"
-                          >
-                            <TableCell class="font-medium">
-                              {{ argumentName }}
-                            </TableCell>
-                            <TableCell>
-                              {{ argumentValue }}
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
+          <k-task-result
+            :task-result="taskResult"
+            v-for="(taskResult, index) in queuedTasks"
+            :key="taskResult.id || index"
+          />
         </div>
       </CardContent>
     </Card>
