@@ -9,7 +9,6 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { Task } from 'src/task/entities/task.entity';
 import { QueueDto } from 'src/activity/dto/queue.dto';
-import { QueuedTaskDto } from './dto/queuedTask.dto';
 
 @Injectable()
 export class ActivityService {
@@ -25,36 +24,37 @@ export class ActivityService {
   ) {}
 
   async getAllActiveTaskResults(): Promise<TaskResult[]> {
+    // await this.taskResultRepository.updateAll({
+    //   status: TaskResultStatus.SUCCESS,
+    // });
+
     return this.taskResultRepository.find({
       where: { status: TaskResultStatus.IN_PROGRESS },
       order: {
         createdAt: 'DESC',
       },
-      relations: ['task'],
+      relations: ['task', 'taskRun'],
     });
   }
 
-  async getAllQueued(): Promise<QueuedTaskDto[]> {
+  async getAllQueued(): Promise<TaskResult[]> {
     const jobs = await this.taskQueue.getWaiting();
-
-    const taskIds = jobs.map(
-      (job: { data: { taskId: string } }) => job?.data?.taskId,
+    console.log(jobs);
+    const taskResultIds = jobs.map(
+      (job: { data: { taskResultId: string } }) => job?.data?.taskResultId,
     );
+    console.log(taskResultIds);
 
     // Fetch TaskResult entities from the database
-    if (taskIds.length === 0) return [];
+    if (taskResultIds.length === 0) return [];
 
-    const taskData = await this.taskRepository.findBy({ id: In(taskIds) });
+    const foundResults = await this.taskResultRepository.findBy({
+      id: In(taskResultIds),
+    });
 
-    return jobs.map(
-      (job: { data: { taskResultId: string; taskId: string } }) => {
-        const task = taskData.find((t) => t.id === job.data.taskId);
-        return {
-          taskResultId: job.data.taskResultId,
-          ...task,
-        };
-      },
-    );
+    console.log(foundResults);
+
+    return foundResults;
   }
   getCurrentTaskResults(taskResultId: string): Observable<ActivityDto> {
     return this.getTaskResultSubject(taskResultId).asObservable();

@@ -1,10 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Task } from 'src/task/entities/task.entity';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 import { TaskRunService } from 'src/task/task-run/task-run.service';
 import { TaskResultService } from 'src/task/task-result/task-result.service';
 import { CommandService } from 'src/command/command.service';
 import { ActivityService } from 'src/activity/activity.service';
+import { TaskResultStatus } from '../task-result/types';
 
 @Injectable()
 export class TaskExecutorService {
@@ -22,8 +23,7 @@ export class TaskExecutorService {
    */
   async executeTask(
     task: Task,
-    commandArguments: Record<string, Record<string, string>> = {},
-    saveAsRun: boolean = false,
+    taskRunId: string,
     taskResultId?: string,
   ): Promise<TaskResult> {
     this.logger.log(
@@ -33,19 +33,29 @@ export class TaskExecutorService {
     let shouldContinue = true;
     let overallSuccess = true;
 
-    const taskResult = await this.taskResultService.createTaskResult(
-      task,
-      taskResultId,
-    );
+    const taskRun = await this.taskRunService.findById(taskRunId);
 
-    if (saveAsRun) {
-      await this.taskRunService.create({
-        name: `${task.name} - ${new Date().toISOString()}`,
-        description: `Run for task ${task.name}`,
-        task,
-        commandArguments,
-      });
+    if (taskRun === null) {
+      throw new NotFoundException(`TaskRun with ID ${taskRunId} not found`);
     }
+
+    let taskResult: TaskResult;
+
+    if (!taskResultId) {
+      taskResult = await this.taskResultService.createTaskResult(
+        task,
+        taskRun,
+        taskResultId,
+      );
+    } else {
+      taskResult =
+        await this.taskResultService.getResultsByTaskResultId(taskResultId);
+    }
+
+    await this.taskResultService.updateTaskResultStatus(
+      taskResult.id,
+      TaskResultStatus.IN_PROGRESS,
+    );
 
     this.activityService.emitQueueEvent({
       taskResultId: taskResult.id,
@@ -68,7 +78,7 @@ export class TaskExecutorService {
         const result = await this.commandService.executeCommand(
           taskResult.id,
           command,
-          commandArguments,
+          taskRun.commandArguments,
         );
 
         if (result.success) {
@@ -97,9 +107,9 @@ export class TaskExecutorService {
       }
     }
 
-    const savedTaskResult = await this.taskResultService.saveTaskResult(
+    const savedTaskResult = await this.taskResultService.updateTaskResultStatus(
       taskResult.id,
-      overallSuccess,
+      overallSuccess ? TaskResultStatus.SUCCESS : TaskResultStatus.FAILED,
     );
 
     this.activityService.emitQueueEvent({

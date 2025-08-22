@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { QueuedTaskDto, TaskResult } from '@/krabs-sdk/models'
+import type { TaskResult } from '@/krabs-sdk/models'
 import { useKrabsSdk } from '@/lib/krabs-sdk'
 import type { ActivityDto, QueueDto } from './types'
 import { toast } from 'vue-sonner'
@@ -11,7 +11,7 @@ export const useActivityStore = defineStore('activity', () => {
   // state
   const taskResults = ref<Record<string, TaskResult>>({})
   const taskResultActivity = ref<Record<string, ActivityDto[]>>({})
-  const queuedTasks = ref<QueuedTaskDto[]>([])
+  const queuedTasks = ref<TaskResult[]>([])
   const registeredEvents = ref<Record<string, string[]>>({})
 
   // Listen to SSE for queue events and update the store in real-time
@@ -38,23 +38,23 @@ export const useActivityStore = defineStore('activity', () => {
         // React to messages to the sourceEvent
         switch (parsedData.event) {
           case 'queued': {
-            const relatedTask = await krabsSdk.tasks.byId(parsedData.taskId).get()
+            const relatedTask = await krabsSdk.taskResult
+              .byTaskResultId(parsedData.taskResultId)
+              .get()
             if (
               relatedTask &&
               !registeredEvents.value?.[parsedData.taskResultId]?.includes('started')
             ) {
               queuedTasks.value.push({
                 ...relatedTask,
-                taskResultId: parsedData.taskResultId,
+                id: parsedData.taskResultId,
               })
             }
             toast.success('Task queued')
             break
           }
           case 'started': {
-            const idx = queuedTasks.value.findIndex(
-              (t) => t.taskResultId === parsedData.taskResultId,
-            )
+            const idx = queuedTasks.value.findIndex((t) => t.id === parsedData.taskResultId)
             if (idx !== -1) {
               queuedTasks.value.splice(idx, 1)
             }

@@ -2,10 +2,10 @@ import { Controller, Get, Param, Delete, Sse } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ActivityService } from 'src/activity/activity.service';
 import { ActivityDto } from 'src/activity/dto/activity.dto';
-import { Task } from 'src/task/entities/task.entity';
+// import { Task } from 'src/task/entities/task.entity';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 import { QueueDto } from 'src/activity/dto/queue.dto';
-import { QueuedTaskDto } from './dto/queuedTask.dto';
+// import { QueuedTaskDto } from './dto/queuedTask.dto';
 
 @Controller('activity')
 export class ActivityController {
@@ -18,7 +18,7 @@ export class ActivityController {
   }
 
   @Get('queue')
-  async getAllQueued(): Promise<QueuedTaskDto[]> {
+  async getAllQueued(): Promise<TaskResult[]> {
     return this.activityService.getAllQueued();
   }
 

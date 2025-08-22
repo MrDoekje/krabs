@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Toaster } from '@/components/ui/sonner'
+import { useRoute } from 'vue-router'
 import 'vue-sonner/style.css'
+const route = useRoute()
 </script>
 
 <template>
@@ -10,7 +12,7 @@ import 'vue-sonner/style.css'
     <SidebarInset>
       <app-header />
       <div class="rounded-xl">
-        <RouterView />
+        <RouterView :key="route.path" />
       </div>
     </SidebarInset>
   </SidebarProvider>

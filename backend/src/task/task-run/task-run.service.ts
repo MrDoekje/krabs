@@ -88,15 +88,14 @@ export class TaskRunService {
       await this.taskService.queueByName(
         taskRun.task.name,
         taskRun.commandArguments,
+        0,
+        taskRunId,
       );
       this.logger.log(
         `Task ${taskRun.task.name} queued with task run configuration ${taskRun.name} (${taskRun.id})`,
       );
     } else {
-      const result = await this.executeByName(
-        taskRun.task.name,
-        taskRun.commandArguments,
-      );
+      const result = await this.executeByName(taskRun.task.name, taskRunId);
       this.logger.log(
         `Task ${taskRun.task.name} executed with task run configuration ${taskRun.name} (${taskRun.id})`,
       );
@@ -109,12 +108,12 @@ export class TaskRunService {
    */
   async executeByName(
     taskName: string,
-    commandArguments: Record<string, Record<string, string>> = {},
+    taskRunId: string,
   ): Promise<TaskResult> {
     this.logger.log(`Executing task: ${taskName}`);
 
     const task = await this.taskService.findByName(taskName);
-    return this.taskService.executeTask(task, commandArguments);
+    return this.taskService.executeTask(task, taskRunId);
   }
 
   /**

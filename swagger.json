@@ -26,7 +26,9 @@
             }
           }
         },
-        "tags": ["Command"]
+        "tags": [
+          "Command"
+        ]
       },
       "put": {
         "operationId": "CommandController_update",
@@ -62,7 +64,9 @@
             }
           }
         },
-        "tags": ["Command"]
+        "tags": [
+          "Command"
+        ]
       }
     },
     "/commands": {
@@ -91,7 +95,9 @@
             }
           }
         },
-        "tags": ["Command"]
+        "tags": [
+          "Command"
+        ]
       }
     },
     "/task-run": {
@@ -104,7 +110,9 @@
           }
         },
         "summary": "Get all task run configurations",
-        "tags": ["TaskRun"]
+        "tags": [
+          "TaskRun"
+        ]
       }
     },
     "/task-run/favorites": {
@@ -117,7 +125,9 @@
           }
         },
         "summary": "Get all favorited task run configurations",
-        "tags": ["TaskRun"]
+        "tags": [
+          "TaskRun"
+        ]
       }
     },
     "/task-run/{id}/execute": {
@@ -149,7 +159,9 @@
           }
         },
         "summary": "Execute a task using a task run configuration",
-        "tags": ["TaskRun"]
+        "tags": [
+          "TaskRun"
+        ]
       }
     },
     "/task-run/{id}/favorite": {
@@ -171,7 +183,9 @@
           }
         },
         "summary": "Toggle favorite status of a task run configuration",
-        "tags": ["TaskRun"]
+        "tags": [
+          "TaskRun"
+        ]
       }
     },
     "/tasks": {
@@ -200,7 +214,9 @@
             }
           }
         },
-        "tags": ["tasks"]
+        "tags": [
+          "tasks"
+        ]
       },
       "get": {
         "operationId": "TaskController_findAll",
@@ -220,7 +236,9 @@
             }
           }
         },
-        "tags": ["tasks"]
+        "tags": [
+          "tasks"
+        ]
       }
     },
     "/tasks/{id}": {
@@ -248,7 +266,9 @@
             }
           }
         },
-        "tags": ["tasks"]
+        "tags": [
+          "tasks"
+        ]
       },
       "put": {
         "operationId": "TaskController_update",
@@ -284,7 +304,9 @@
             }
           }
         },
-        "tags": ["tasks"]
+        "tags": [
+          "tasks"
+        ]
       },
       "delete": {
         "operationId": "TaskController_remove",
@@ -303,7 +325,9 @@
             "description": ""
           }
         },
-        "tags": ["tasks"]
+        "tags": [
+          "tasks"
+        ]
       }
     },
     "/tasks/{id}/execute": {
@@ -334,7 +358,9 @@
             "description": ""
           }
         },
-        "tags": ["tasks"]
+        "tags": [
+          "tasks"
+        ]
       }
     },
     "/tasks/{id}/queue": {
@@ -365,7 +391,9 @@
             "description": ""
           }
         },
-        "tags": ["tasks"]
+        "tags": [
+          "tasks"
+        ]
       }
     },
     "/task-result/{taskResultId}": {
@@ -394,7 +422,9 @@
           }
         },
         "summary": "Get task results by task result ID",
-        "tags": ["TaskResult"]
+        "tags": [
+          "TaskResult"
+        ]
       }
     },
     "/activity/task-result": {
@@ -416,7 +446,9 @@
             }
           }
         },
-        "tags": ["Activity"]
+        "tags": [
+          "Activity"
+        ]
       }
     },
     "/activity/queue": {
@@ -431,14 +463,16 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/QueuedTaskDto"
+                    "$ref": "#/components/schemas/TaskResult"
                   }
                 }
               }
             }
           }
         },
-        "tags": ["Activity"]
+        "tags": [
+          "Activity"
+        ]
       }
     },
     "/activity/task-result/{taskResultId}": {
@@ -466,7 +500,9 @@
             }
           }
         },
-        "tags": ["Activity"]
+        "tags": [
+          "Activity"
+        ]
       },
       "delete": {
         "operationId": "ActivityController_stopTask",
@@ -485,7 +521,9 @@
             "description": ""
           }
         },
-        "tags": ["Activity"]
+        "tags": [
+          "Activity"
+        ]
       }
     },
     "/activity/queue-events": {
@@ -504,7 +542,9 @@
             }
           }
         },
-        "tags": ["Activity"]
+        "tags": [
+          "Activity"
+        ]
       }
     },
     "/arguments": {
@@ -533,7 +573,9 @@
             }
           }
         },
-        "tags": ["Argument"]
+        "tags": [
+          "Argument"
+        ]
       }
     },
     "/arguments/{id}": {
@@ -571,7 +613,9 @@
             }
           }
         },
-        "tags": ["Argument"]
+        "tags": [
+          "Argument"
+        ]
       },
       "delete": {
         "operationId": "ArgumentController_remove",
@@ -590,7 +634,9 @@
             "description": ""
           }
         },
-        "tags": ["Argument"]
+        "tags": [
+          "Argument"
+        ]
       }
     },
     "/task/{name}/queue": {
@@ -621,7 +667,9 @@
             "description": ""
           }
         },
-        "tags": ["Cli"]
+        "tags": [
+          "Cli"
+        ]
       }
     },
     "/task/{name}/execute": {
@@ -652,7 +700,9 @@
             "description": ""
           }
         },
-        "tags": ["Cli"]
+        "tags": [
+          "Cli"
+        ]
       }
     },
     "/task-result/output/{taskResultId}": {
@@ -683,7 +733,9 @@
             }
           }
         },
-        "tags": ["TaskResultOutput"]
+        "tags": [
+          "TaskResultOutput"
+        ]
       }
     }
   },
@@ -771,7 +823,12 @@
             "type": "string"
           }
         },
-        "required": ["id", "taskResult", "line", "createdAt"]
+        "required": [
+          "id",
+          "taskResult",
+          "line",
+          "createdAt"
+        ]
       },
       "TaskResult": {
         "type": "object",
@@ -792,7 +849,12 @@
             }
           },
           "status": {
-            "enum": ["IN_PROGRESS", "SUCCESS", "FAILED", "STOPPED"],
+            "enum": [
+              "IN_PROGRESS",
+              "SUCCESS",
+              "FAILED",
+              "STOPPED"
+            ],
             "type": "string"
           },
           "createdAt": {
@@ -804,7 +866,13 @@
             "type": "string"
           }
         },
-        "required": ["id", "task", "status", "createdAt", "updatedAt"]
+        "required": [
+          "id",
+          "task",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "Task": {
         "type": "object",
@@ -949,7 +1017,12 @@
             }
           }
         },
-        "required": ["id", "name", "required", "commands"]
+        "required": [
+          "id",
+          "name",
+          "required",
+          "commands"
+        ]
       },
       "CreateArgumentDto": {
         "type": "object",
@@ -967,7 +1040,10 @@
             "description": "The ID of the command this argument belongs to (optional)."
           }
         },
-        "required": ["name", "required"]
+        "required": [
+          "name",
+          "required"
+        ]
       },
       "CreateCommandDto": {
         "type": "object",
@@ -1005,7 +1081,12 @@
             "description": "Optional task ID to associate the command with a specific task.\n@type {string}"
           }
         },
-        "required": ["wd", "name", "command", "format"]
+        "required": [
+          "wd",
+          "name",
+          "command",
+          "format"
+        ]
       },
       "UpdateCommandDto": {
         "type": "object",
@@ -1069,7 +1150,9 @@
             }
           }
         },
-        "required": ["name"]
+        "required": [
+          "name"
+        ]
       },
       "UpdateTaskDto": {
         "type": "object",
@@ -1112,48 +1195,6 @@
             "description": "Arguments per named command (per named argument)"
           }
         }
-      },
-      "QueuedTaskDto": {
-        "type": "object",
-        "properties": {
-          "taskResultId": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "queued": {
-            "type": "boolean"
-          },
-          "taskCommands": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TaskCommand"
-            }
-          },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TaskResult"
-            }
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": ["taskResultId"]
       },
       "UpdateArgumentDto": {
         "type": "object",

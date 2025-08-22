@@ -25,14 +25,13 @@ export class TaskConsumer extends WorkerHost {
 
   private async handleExecuteTask(
     job: Job<{
-      // Move to DTO
+      // TODO: move to DTO
       taskId: string;
-      commandArguments: Record<string, Record<string, string>>;
-      saveAsRun?: boolean;
+      taskRunId: string;
       taskResultId?: string;
     }>,
   ) {
-    const { taskId, commandArguments, saveAsRun, taskResultId } = job.data;
+    const { taskId, taskRunId, taskResultId } = job.data;
 
     this.logger.log(`Executing task ${taskId} from queue`);
 
@@ -40,8 +39,7 @@ export class TaskConsumer extends WorkerHost {
       const task = await this.taskService.findById(taskId);
       const results = await this.taskService.executeTask(
         task,
-        commandArguments,
-        saveAsRun,
+        taskRunId,
         taskResultId,
       );
 

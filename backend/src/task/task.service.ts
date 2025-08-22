@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Logger,
+  forwardRef,
+  Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -13,6 +19,9 @@ import { TaskExecutorService } from 'src/task/task-executor/task-executor.servic
 import { UpdateTaskDto } from 'src/task/dto/update-task.dto';
 import { ActivityService } from 'src/activity/activity.service';
 import { v4 as uuidv4 } from 'uuid';
+import type { WrapperType } from 'src/utils/wrapper';
+import { TaskRunService } from './task-run/task-run.service';
+import { TaskResultService } from './task-result/task-result.service';
 
 @Injectable()
 export class TaskService {
@@ -27,10 +36,14 @@ export class TaskService {
     private readonly commandRepository: Repository<Command>,
     @InjectRepository(Argument)
     private readonly argumentRepository: Repository<Argument>,
+
     @InjectQueue('task')
     private readonly taskQueue: Queue,
     private readonly taskExecutorService: TaskExecutorService,
     private readonly activityService: ActivityService,
+    @Inject(forwardRef(() => TaskRunService))
+    private readonly taskRunService: WrapperType<TaskRunService>,
+    private readonly taskResultService: TaskResultService,
   ) {}
 
   /**
@@ -218,13 +231,13 @@ export class TaskService {
    * Execute a task immediately by id with supplied arguments
    */
   async executeById(
-    tadkId: string,
+    taskId: string,
     commandArguments: Record<string, Record<string, string>> = {},
   ): Promise<void> {
-    this.logger.log(`Executing task: ${tadkId}`);
+    this.logger.log(`Executing task: ${taskId}`);
 
-    const task = await this.findById(tadkId);
-    void this.executeTask(task, commandArguments, true);
+    const task = await this.findById(taskId);
+    void this.executeTaskWithArguments(task, commandArguments);
   }
 
   /**
@@ -238,32 +251,52 @@ export class TaskService {
     this.logger.log(`Executing task: ${taskName}`);
 
     const task = await this.findByName(taskName);
-    void this.executeTask(task, commandArguments, true);
+    void this.executeTaskWithArguments(task, commandArguments);
   }
 
   private async queueTask(
     task: Task,
     commandArguments: Record<string, Record<string, string>> = {},
     priority = 0,
-    saveAsRun = false,
+    taskRunId?: string,
   ) {
     const taskResultId = uuidv4();
 
-    // TODO: add idempotency here so that we can follow a queued task to a specific task-result
+    let taskRunIdForJob = taskRunId;
+
+    if (!taskRunIdForJob) {
+      taskRunIdForJob = (
+        await this.taskRunService.create({
+          name: `${task.name} - ${new Date().toISOString()}`,
+          description: `Run for task ${task.name}`,
+          task,
+          commandArguments,
+        })
+      ).id;
+    }
+
+    const taskResult = await this.taskResultService.createTaskResult(
+      task,
+      await this.taskRunService.findById(taskRunIdForJob),
+      taskResultId,
+    );
+
+    console.log(`Task result created: `, taskResult);
+
     this.activityService.emitQueueEvent({
       taskId: task.id,
       taskResultId: taskResultId,
       event: 'queued',
       timestamp: Date.now(),
     });
+
     await this.taskQueue.add(
       'execute-task',
       // TODO: type this (maybe as a dto? or event dto? or bull interface)
       {
         taskId: task.id,
         taskResultId: taskResultId,
-        commandArguments,
-        saveAsRun,
+        taskRunId: taskRunIdForJob,
       },
       {
         priority,
@@ -274,10 +307,6 @@ export class TaskService {
         },
       },
     );
-
-    // Update task status to queued
-    task.queued = true;
-    await this.taskRepository.save(task);
   }
 
   /**
@@ -287,13 +316,12 @@ export class TaskService {
     taskId: string,
     commandArguments: Record<string, Record<string, string>> = {},
     priority = 0,
-    saveAsRun = false,
   ): Promise<void> {
     this.logger.log(`Queueing task: ${taskId}`);
 
     const task = await this.findById(taskId);
 
-    await this.queueTask(task, commandArguments, priority, saveAsRun);
+    await this.queueTask(task, commandArguments, priority);
 
     this.logger.log(`Task ${taskId} queued successfully`);
   }
@@ -306,32 +334,44 @@ export class TaskService {
     taskName: string,
     commandArguments: Record<string, Record<string, string>> = {},
     priority = 0,
-    saveAsRun = false,
+    taskRunId?: string,
   ): Promise<void> {
     this.logger.log(`Queueing task: ${taskName}`);
 
     const task = await this.findByName(taskName);
 
-    await this.queueTask(task, commandArguments, priority, saveAsRun);
+    await this.queueTask(task, commandArguments, priority, taskRunId);
 
     this.logger.log(`Task ${taskName} queued successfully`);
   }
 
+  async executeTaskWithArguments(
+    task: Task,
+    commandArguments: Record<string, Record<string, string>>,
+  ): Promise<TaskResult> {
+    this.logger.log(`Executing task ${task.name} with arguments`);
+
+    const taskRunId = (
+      await this.taskRunService.create({
+        name: `${task.name} - ${new Date().toISOString()}`,
+        description: `Run for task ${task.name}`,
+        task,
+        commandArguments: commandArguments || {},
+      })
+    ).id;
+
+    return this.taskExecutorService.executeTask(task, taskRunId);
+  }
+
   /**
-   * Execute a task with provided arguments
+   * Execute a task
    */
   async executeTask(
     task: Task,
-    commandArguments: Record<string, Record<string, string>> = {},
-    saveAsRun: boolean = false,
+    taskRunId: string,
     taskResultId?: string,
   ): Promise<TaskResult> {
-    return this.taskExecutorService.executeTask(
-      task,
-      commandArguments,
-      saveAsRun,
-      taskResultId,
-    );
+    return this.taskExecutorService.executeTask(task, taskRunId, taskResultId);
   }
 
   /**

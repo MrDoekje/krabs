@@ -20,11 +20,13 @@ export class TaskResult {
 
   @ManyToOne(() => Task, (task) => task.results, {
     nullable: false,
+    eager: true,
   })
   task: Relation<Task>;
 
   @ManyToOne(() => TaskRun, (taskRun) => taskRun.results, {
     nullable: true,
+    eager: true,
   })
   taskRun?: Relation<TaskRun>;
 
@@ -35,7 +37,7 @@ export class TaskResult {
 
   @Column({
     type: 'text',
-    default: TaskResultStatus.IN_PROGRESS,
+    default: TaskResultStatus.QUEUED,
   })
   status: TaskResultStatus;
 

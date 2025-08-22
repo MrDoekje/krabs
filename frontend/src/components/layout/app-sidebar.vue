@@ -4,7 +4,7 @@ import { useActivityStore } from '@/stores/activity'
 import { CircleCheckBig, Home, LayoutDashboard } from 'lucide-vue-next'
 import { computed, onMounted } from 'vue'
 
-import { useRoute, type RouteMap, type RouterLinkProps } from 'vue-router'
+import { useRoute, type RouteMap } from 'vue-router'
 import CardContent from '../ui/card/CardContent.vue'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
