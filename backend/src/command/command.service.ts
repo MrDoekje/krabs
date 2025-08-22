@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-// import { ExecutorService } from '../executor/executor.service';
 import { Command } from 'src/command/entities/command.entity';
 import { CommandResultDto } from 'src/command/dto/command-result.dto';
 import { spawn } from 'child_process';
@@ -83,68 +82,88 @@ export class CommandService {
       `Executing command: ${command} ${args.join(' ')} in ${cwd}`,
     );
     return new Promise((resolve) => {
-      const child = spawn(command, args, {
-        cwd,
-        env: process.env,
-        shell: true,
-      });
-
-      let output = '';
-      let errorOutput = '';
-
-      child.stdout?.on('data', (data: Buffer) => {
-        const text = data.toString();
-        output += text;
-        this.logger.debug(`stdout: ${text}`);
-        this.eventEmitter.emit(
-          'command.output',
-          new CommandOutputEvent(text, taskResultId),
-        );
-      });
-
-      child.stderr?.on('data', (data: Buffer) => {
-        const text = data.toString();
-        errorOutput += text;
-        this.logger.warn(`stderr: ${text}`);
-        this.eventEmitter.emit(
-          'command.output',
-          new CommandOutputEvent(text, taskResultId),
-        );
-      });
-
-      child.on('close', (code: number) => {
-        const success = code === 0;
-        this.logger.log(`Command exited with code ${code}`);
-        resolve({
-          success,
-          output,
-          error: !success ? errorOutput : undefined,
+      try {
+        const child = spawn(command, args, {
+          cwd,
+          env: process.env,
+          shell: true,
         });
-        this.eventEmitter.emit(
-          'command.status',
-          new CommandStatusEvent(
-            success ? TaskResultStatus.SUCCESS : TaskResultStatus.FAILED,
-            taskResultId,
-          ),
-        );
-      });
 
-      child.on('error', (err: Error) => {
-        this.logger.error(`Failed to start command: ${err.message}`);
+        this.eventEmitter.emit(
+          'command.output',
+          new CommandOutputEvent(`Command ${command} started`, taskResultId),
+        );
+
+        child.stdout?.on('data', (data: Buffer) => {
+          const text = data.toString();
+          this.logger.debug(`stdout: ${text}`);
+          this.eventEmitter.emit(
+            'command.output',
+            new CommandOutputEvent(text, taskResultId),
+          );
+        });
+
+        child.stderr?.on('data', (data: Buffer) => {
+          const text = data.toString();
+          this.logger.warn(`stderr for command ${command}: ${text}`);
+          this.eventEmitter.emit(
+            'command.output',
+            new CommandOutputEvent(text, taskResultId),
+          );
+        });
+
+        child.on('close', (code: number) => {
+          const success = code === 0;
+          this.logger.log(`Command exited with code ${code}`);
+          resolve({
+            success,
+          });
+          this.eventEmitter.emit(
+            'command.output',
+            new CommandOutputEvent(
+              `Command ${command} exited with code ${code}`,
+              taskResultId,
+            ),
+          );
+          this.eventEmitter.emit(
+            'command.status',
+            new CommandStatusEvent(
+              success ? TaskResultStatus.SUCCESS : TaskResultStatus.FAILED,
+              taskResultId,
+            ),
+          );
+        });
+
+        child.on('error', (err: Error) => {
+          this.logger.error(`Failed to start command: ${err.message}`);
+          resolve({
+            success: false,
+          });
+          this.eventEmitter.emit(
+            'command.output',
+            new CommandOutputEvent(err.message, taskResultId),
+          );
+          this.eventEmitter.emit(
+            'command.status',
+            new CommandStatusEvent(TaskResultStatus.FAILED, taskResultId),
+          );
+        });
+      } catch (error) {
         resolve({
           success: false,
-          output,
-          error: err.message,
         });
         this.eventEmitter.emit(
           'command.output',
-          new CommandOutputEvent(err.message, taskResultId),
+          new CommandOutputEvent(
+            error instanceof Error ? error.message : String(error),
+            taskResultId,
+          ),
         );
         this.eventEmitter.emit(
           'command.status',
           new CommandStatusEvent(TaskResultStatus.FAILED, taskResultId),
         );
-      });
+      }
     });
   }
 

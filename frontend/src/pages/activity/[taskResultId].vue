@@ -37,14 +37,32 @@
       <CardContent>
         <ScrollArea class="h-96">
           <div class="font-mono text-sm">
-            <div v-if="fullLog.length === 0" class="text-muted-foreground">
+            <div
+              v-if="!activityEvents.length && !taskResultOutputs.length"
+              class="text-muted-foreground"
+            >
               No activity events to display.
             </div>
             <div
-              v-for="(event, index) in fullLog"
+              v-for="(event, index) in taskResultOutputs"
               :key="index"
               class="flex items-start gap-4 p-2 border-b border-border/50"
             >
+              <span
+                class="text-xs text-muted-foreground whitespace-nowrap pt-1"
+                v-if="event.createdAt"
+              >
+                [{{ event.createdAt.toLocaleTimeString() }}]
+              </span>
+              <Terminal class="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0" />
+              <code class="flex-grow whitespace-pre-wrap">{{ event.line }}</code>
+            </div>
+            <div
+              v-for="(event, index) in activityEvents"
+              :key="index"
+              class="flex items-start gap-4 p-2 border-b border-border/50"
+            >
+              <!-- TODO: better v-if logic -->
               <span
                 class="text-xs text-muted-foreground whitespace-nowrap pt-1"
                 v-if="typeof event === 'object' && event !== null && 'timestamp' in event"
@@ -73,32 +91,6 @@
                 <Info class="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
                 <span class="flex-grow font-semibold">Status changed to {{ event.data }}</span>
               </template>
-              <template
-                v-else-if="typeof event === 'object' && event !== null && Array.isArray(event.data)"
-              >
-                <span class="flex-grow">
-                  <pre class="whitespace-pre-wrap">{{ JSON.stringify(event.data, null, 2) }}</pre>
-                </span>
-              </template>
-              <template
-                v-else-if="
-                  typeof event === 'object' && event !== null && 'output' in event && event.output
-                "
-              >
-                <CheckCircle2
-                  v-if="event.success"
-                  class="w-4 h-4 text-green-500 mt-1 flex-shrink-0"
-                />
-                <XCircle v-else class="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
-                <span class="flex-grow">
-                  <pre class="whitespace-pre-wrap">{{ event.output }}</pre>
-                </span>
-              </template>
-              <!-- <template v-else>
-                <span class="flex-grow text-muted-foreground">
-                  {{ typeof event === 'object' ? JSON.stringify(event) : String(event) }}
-                </span>
-              </template> -->
             </div>
           </div>
         </ScrollArea>
@@ -115,12 +107,16 @@ import { CheckCircle2, Clock, Loader, XCircle, Terminal, Info } from 'lucide-vue
 import type { TaskResult } from '@/krabs-sdk/models'
 import { useTaskResultStore } from '@/stores/taskResult'
 import { TaskResultStatus } from '@/stores/activity/types'
+import { timestamp } from '@vueuse/core'
+import { useTaskResultOutputStore } from '@/stores/taskResultOutput'
 
 const route = useRoute('/activity/[taskResultId]')
+// TODO: fix making this reactive
 const taskResultId = route.params.taskResultId as string
 
 // TODO: fix naming
 const { getTaskResultActivity, loadTaskResult } = useActivityStore()
+const { getTaskResultOutputsByTaskResultId, loadOutputsByTaskResultId } = useTaskResultOutputStore()
 const { getTaskResultById, loadResultById } = useTaskResultStore()
 
 const eventSource = ref<EventSource | null>(null)
@@ -131,21 +127,16 @@ const activityEvents = computed(() => {
   return getTaskResultActivity(taskResult.value.id).value || []
 })
 
-const fullLog = computed(() => {
-  const output = JSON.parse(taskResult.value?.output || '[]')
-  return [...output, ...activityEvents.value]
-})
-
-onBeforeUnmount(() => {
-  if (eventSource.value) {
-    eventSource.value.close()
-  }
+const taskResultOutputs = computed(() => {
+  if (!taskResult.value?.id) return []
+  return getTaskResultOutputsByTaskResultId(taskResult.value.id).value || []
 })
 
 const fetchTaskResult = async () => {
   eventSource.value = await loadTaskResult(taskResultId)
   await loadResultById(taskResultId)
   taskResult.value = getTaskResultById(taskResultId).value
+  await loadOutputsByTaskResultId(taskResultId)
 }
 
 onMounted(async () => {

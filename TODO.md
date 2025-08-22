@@ -3,24 +3,19 @@
 
 CLI
 
-- Only show controller methods meant for the CLI
+- Generate moore sensible docs
 
 backend
 
 - queue management
   - when queueing a task you have to be able to give a list of tasks that need to be resolved first
-- activity module
-  - read only to get list of active tasks
-  - get list of queued tasks in a specific queue
-  - read only to get activity within one task (future)
+- task result output should be separate entity
+- fix krabs on startup picking up many tasks
 - Better config handling
+- purging active task-result/queue
 
 Frontend
 
-- Create k-command-or-mange
-  - Visual update to task header/task edit header
-    - including run tasks
-  - Visual update to edit argument
 - loading skeletons
 - reactive elements after actions;
   - loading skeletons

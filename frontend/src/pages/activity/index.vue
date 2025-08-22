@@ -2,9 +2,9 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useActivityStore } from '@/stores/activity'
-import { CheckCircle2, Clock, List, Loader, XCircle } from 'lucide-vue-next'
+import { statusMap } from '@/stores/activity/types'
+import { Clock, List } from 'lucide-vue-next'
 import type { TaskResult } from '@/krabs-sdk/models'
-import { TaskResultStatus } from '@/stores/activity/types'
 
 const { getTaskResultList, getQueuedTasks, loadTaskResults, loadQueuedTasks, listenToQueueEvents } =
   useActivityStore()
@@ -23,14 +23,6 @@ onMounted(async () => {
   await loadQueuedTasks()
   await listenToQueueEvents()
 })
-
-// --- Mappers for UI ---
-const statusMap = {
-  [TaskResultStatus.SUCCESS]: { variant: 'outline', icon: CheckCircle2, text: 'Success' },
-  [TaskResultStatus.IN_PROGRESS]: { variant: 'default', icon: Loader, text: 'In Progress' },
-  [TaskResultStatus.FAILED]: { variant: 'destructive', icon: XCircle, text: 'Failed' },
-  [TaskResultStatus.STOPPED]: { variant: 'secondary', icon: XCircle, text: 'Stopped' },
-} as const
 </script>
 
 <template>

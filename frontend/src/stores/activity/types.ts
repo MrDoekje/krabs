@@ -1,3 +1,5 @@
+import { CheckCircle2, Loader, XCircle } from 'lucide-vue-next'
+
 export type QueueEventType = 'queued' | 'started' | 'ended'
 
 export interface QueueDto {
@@ -62,3 +64,10 @@ export class StatusActivityDto extends BaseActivityDto {
 }
 
 export type ActivityDto = OutputActivityDto | StatusActivityDto
+
+export const statusMap = {
+  [TaskResultStatus.SUCCESS]: { variant: 'outline', icon: CheckCircle2, text: 'Success' },
+  [TaskResultStatus.IN_PROGRESS]: { variant: 'default', icon: Loader, text: 'In Progress' },
+  [TaskResultStatus.FAILED]: { variant: 'destructive', icon: XCircle, text: 'Failed' },
+  [TaskResultStatus.STOPPED]: { variant: 'secondary', icon: XCircle, text: 'Stopped' },
+} as const

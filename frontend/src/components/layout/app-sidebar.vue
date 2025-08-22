@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar'
-
+import { useActivityStore } from '@/stores/activity'
 import { CircleCheckBig, Home, LayoutDashboard } from 'lucide-vue-next'
+import { computed, onMounted } from 'vue'
 
 import { useRoute, type RouteMap, type RouterLinkProps } from 'vue-router'
+import CardContent from '../ui/card/CardContent.vue'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
 
 const route = useRoute()
+
+const { loadTaskResults, listenToQueueEvents, getTaskResultList } = useActivityStore()
+
+const taskResults = computed(() => getTaskResultList().value)
+
+onMounted(async () => {
+  await loadTaskResults()
+  await listenToQueueEvents()
+})
 
 const isRouteActive = (url: string) => {
   return route.path === url
@@ -44,7 +55,7 @@ const data: {
 </script>
 
 <template>
-  <Sidebar v-bind="props" variant="inset">
+  <Sidebar v-bind="props" variant="inset" collapsible="offcanvas">
     <!-- <SidebarHeader>
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader> -->
@@ -62,11 +73,30 @@ const data: {
           </router-link>
         </SidebarMenu>
       </SidebarGroup>
-      <!-- <NavProjects :projects="data.projects" /> -->
     </SidebarContent>
-    <!-- <SidebarFooter>
-      <NavUser :user="data.user" />
-    </SidebarFooter> -->
-    <!-- <SidebarRail /> -->
+    <SidebarFooter>
+      <SidebarGroup v-if="taskResults?.length">
+        <SidebarGroupLabel>Active tasks</SidebarGroupLabel>
+        <ScrollArea class="max-h-64">
+          <div class="flex flex-col gap-2">
+            <template v-for="taskResult in taskResults">
+              <router-link
+                v-if="taskResult.id"
+                :key="taskResult.id"
+                :to="{ name: '/activity/[taskResultId]', params: { taskResultId: taskResult.id } }"
+              >
+                <Card class="bg-muted/60 hover:bg-muted/10" :key="taskResult.id">
+                  <CardContent>
+                    <p class="line-clamp-4 text-xs">
+                      {{ taskResult.task?.name || taskResult.id }}
+                    </p>
+                  </CardContent>
+                </Card>
+              </router-link>
+            </template>
+          </div>
+        </ScrollArea>
+      </SidebarGroup>
+    </SidebarFooter>
   </Sidebar>
 </template>

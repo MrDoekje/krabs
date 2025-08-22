@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 import { Task } from 'src/task/entities/task.entity';
 import { TaskResultStatus } from 'src/task/task-result/types';
-import { CommandResultDto } from 'src/command/dto/command-result.dto';
 
 @Injectable()
 export class TaskResultService {
@@ -35,7 +34,7 @@ export class TaskResultService {
   async saveTaskResult(
     taskResultId: string,
     overallSuccess: boolean,
-    commandResults: CommandResultDto[],
+    // commandResults: CommandResultDto[],
   ): Promise<TaskResult> {
     const task = await this.taskResultRepository.findOne({
       where: { id: taskResultId },
@@ -50,7 +49,6 @@ export class TaskResultService {
     task.status = overallSuccess
       ? TaskResultStatus.SUCCESS
       : TaskResultStatus.FAILED;
-    task.output = JSON.stringify(commandResults);
 
     return await this.taskResultRepository.save(task);
   }

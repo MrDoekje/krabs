@@ -30,6 +30,7 @@ export class ActivityService {
       order: {
         createdAt: 'DESC',
       },
+      relations: ['task'],
     });
   }
 

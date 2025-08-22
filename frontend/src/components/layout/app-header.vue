@@ -29,8 +29,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute, type RouteRecordNormalized, type RouteRecordRaw } from 'vue-router'
+import type { RouteNamedMap } from 'vue-router/auto-routes'
 
 const route = useRoute()
+
+const routeBreadcrumbMap: Record<
+  keyof RouteNamedMap,
+  (route: RouteRecordNormalized | RouteRecordRaw) => string
+> = {
+  '/': () => 'Home',
+  '/activity/': () => 'Activity',
+  '/activity/[taskResultId]': () => 'Task Result',
+  '/tasks/': () => 'Tasks',
+  '/tasks/[taskId]/': () => 'Task Details',
+  '/tasks/[taskId]/commands/[commandId]': () => 'Command Details',
+  '/tasks/[taskId]/edit': () => 'Edit Task',
+  '/tasks/new': () => 'Create Task',
+}
 
 const breadcrumbs = computed(() => {
   return route.matched
@@ -44,9 +59,12 @@ const breadcrumbs = computed(() => {
         recordOrChildren = childWithEmptyRoute
       }
       // Use meta.breadcrumb if available, otherwise fallback to name or path
-      let label = recordOrChildren.meta?.breadcrumb
-      if (typeof label === 'function') {
-        label = label(route)
+      let label
+      if (recordOrChildren.name && recordOrChildren.name in routeBreadcrumbMap) {
+        label =
+          routeBreadcrumbMap[recordOrChildren.name as keyof typeof routeBreadcrumbMap](
+            recordOrChildren,
+          )
       }
       if (!label) {
         label = recordOrChildren.name || recordOrChildren.path

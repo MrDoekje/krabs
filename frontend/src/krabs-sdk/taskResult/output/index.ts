@@ -4,20 +4,14 @@
 // @ts-ignore
 import { type WithTaskResultItemRequestBuilder, WithTaskResultItemRequestBuilderRequestsMetadata } from './item/index.js';
 // @ts-ignore
-import { OutputRequestBuilderNavigationMetadata, type OutputRequestBuilder } from './output/index.js';
-// @ts-ignore
 import { type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type NavigationMetadata } from '@microsoft/kiota-abstractions';
 
 /**
- * Builds and executes requests for operations under /task-result
+ * Builds and executes requests for operations under /task-result/output
  */
-export interface TaskResultRequestBuilder extends BaseRequestBuilder<TaskResultRequestBuilder> {
+export interface OutputRequestBuilder extends BaseRequestBuilder<OutputRequestBuilder> {
     /**
-     * The output property
-     */
-    get output(): OutputRequestBuilder;
-    /**
-     * Gets an item from the ApiSdk.taskResult.item collection
+     * Gets an item from the ApiSdk.taskResult.output.item collection
      * @param taskResultId Unique identifier of the item
      * @returns {WithTaskResultItemRequestBuilder}
      */
@@ -26,17 +20,14 @@ export interface TaskResultRequestBuilder extends BaseRequestBuilder<TaskResultR
 /**
  * Uri template for the request builder.
  */
-export const TaskResultRequestBuilderUriTemplate = "{+baseurl}/task-result";
+export const OutputRequestBuilderUriTemplate = "{+baseurl}/task-result/output";
 /**
  * Metadata for all the navigation properties in the request builder.
  */
-export const TaskResultRequestBuilderNavigationMetadata: Record<Exclude<keyof TaskResultRequestBuilder, KeysToExcludeForNavigationMetadata>, NavigationMetadata> = {
+export const OutputRequestBuilderNavigationMetadata: Record<Exclude<keyof OutputRequestBuilder, KeysToExcludeForNavigationMetadata>, NavigationMetadata> = {
     byTaskResultId: {
         requestsMetadata: WithTaskResultItemRequestBuilderRequestsMetadata,
         pathParametersMappings: ["taskResultId"],
-    },
-    output: {
-        navigationMetadata: OutputRequestBuilderNavigationMetadata,
     },
 };
 /* tslint:enable */

@@ -243,6 +243,15 @@ export function createTaskResultFromDiscriminatorValue(parseNode: ParseNode | un
 /**
  * Creates a new instance of the appropriate class based on discriminator value
  * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {TaskResultOutput}
+ */
+// @ts-ignore
+export function createTaskResultOutputFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoTaskResultOutput;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
  * @returns {TaskRun_commandArguments}
  */
 // @ts-ignore
@@ -477,11 +486,25 @@ export function deserializeIntoTaskResult(taskResult: Partial<TaskResult> | unde
     return {
         "createdAt": n => { taskResult.createdAt = n.getDateValue(); },
         "id": n => { taskResult.id = n.getStringValue(); },
-        "output": n => { taskResult.output = n.getStringValue(); },
+        "output": n => { taskResult.output = n.getCollectionOfObjectValues<TaskResultOutput>(createTaskResultOutputFromDiscriminatorValue); },
         "status": n => { taskResult.status = n.getEnumValue<TaskResult_status>(TaskResult_statusObject); },
         "task": n => { taskResult.task = n.getObjectValue<Task>(createTaskFromDiscriminatorValue); },
         "taskRun": n => { taskResult.taskRun = n.getObjectValue<TaskRun>(createTaskRunFromDiscriminatorValue); },
         "updatedAt": n => { taskResult.updatedAt = n.getDateValue(); },
+    }
+}
+/**
+ * The deserialization information for the current model
+ * @param TaskResultOutput The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoTaskResultOutput(taskResultOutput: Partial<TaskResultOutput> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
+        "createdAt": n => { taskResultOutput.createdAt = n.getDateValue(); },
+        "id": n => { taskResultOutput.id = n.getStringValue(); },
+        "line": n => { taskResultOutput.line = n.getStringValue(); },
+        "taskResult": n => { taskResultOutput.taskResult = n.getObjectValue<TaskResult>(createTaskResultFromDiscriminatorValue); },
     }
 }
 /**
@@ -831,12 +854,27 @@ export function serializeTaskResult(writer: SerializationWriter, taskResult: Par
     if (!taskResult || isSerializingDerivedType) { return; }
     writer.writeDateValue("createdAt", taskResult.createdAt);
     writer.writeStringValue("id", taskResult.id);
-    writer.writeStringValue("output", taskResult.output);
+    writer.writeCollectionOfObjectValues<TaskResultOutput>("output", taskResult.output, serializeTaskResultOutput);
     writer.writeEnumValue<TaskResult_status>("status", taskResult.status);
     writer.writeObjectValue<Task>("task", taskResult.task, serializeTask);
     writer.writeObjectValue<TaskRun>("taskRun", taskResult.taskRun, serializeTaskRun);
     writer.writeDateValue("updatedAt", taskResult.updatedAt);
     writer.writeAdditionalData(taskResult.additionalData);
+}
+/**
+ * Serializes information the current object
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param TaskResultOutput The instance to serialize from.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeTaskResultOutput(writer: SerializationWriter, taskResultOutput: Partial<TaskResultOutput> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!taskResultOutput || isSerializingDerivedType) { return; }
+    writer.writeDateValue("createdAt", taskResultOutput.createdAt);
+    writer.writeStringValue("id", taskResultOutput.id);
+    writer.writeStringValue("line", taskResultOutput.line);
+    writer.writeObjectValue<TaskResult>("taskResult", taskResultOutput.taskResult, serializeTaskResult);
+    writer.writeAdditionalData(taskResultOutput.additionalData);
 }
 /**
  * Serializes information the current object
@@ -986,7 +1024,7 @@ export interface TaskResult extends AdditionalDataHolder, Parsable {
     /**
      * The output property
      */
-    output?: string | null;
+    output?: TaskResultOutput[] | null;
     /**
      * The status property
      */
@@ -1005,6 +1043,24 @@ export interface TaskResult extends AdditionalDataHolder, Parsable {
     updatedAt?: Date | null;
 }
 export type TaskResult_status = (typeof TaskResult_statusObject)[keyof typeof TaskResult_statusObject];
+export interface TaskResultOutput extends AdditionalDataHolder, Parsable {
+    /**
+     * The createdAt property
+     */
+    createdAt?: Date | null;
+    /**
+     * The id property
+     */
+    id?: string | null;
+    /**
+     * The line property
+     */
+    line?: string | null;
+    /**
+     * The taskResult property
+     */
+    taskResult?: TaskResult | null;
+}
 export interface TaskRun extends AdditionalDataHolder, Parsable {
     /**
      * The commandArguments property

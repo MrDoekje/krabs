@@ -15,9 +15,17 @@ export const useActivityStore = defineStore('activity', () => {
   const registeredEvents = ref<Record<string, string[]>>({})
 
   // Listen to SSE for queue events and update the store in real-time
+  // State to hold the EventSource instance for queue events
+  const queueEventSource = ref<EventSource | null>(null)
+
+  // Listen to SSE for queue events and update the store in real-time
   const listenToQueueEvents = () => {
-    // TODO: put event source in state, and add method to close
+    // If already listening, do nothing
+    if (queueEventSource.value) return queueEventSource.value
+
     const eventSource = new EventSource('/api/activity/queue-events')
+    queueEventSource.value = eventSource
+
     eventSource.onmessage = async ({ data }: { data: string }) => {
       try {
         const parsedData: QueueDto = JSON.parse(data)
@@ -27,9 +35,9 @@ export const useActivityStore = defineStore('activity', () => {
           registeredEvents.value[parsedData.taskResultId].push(parsedData.event)
         }
 
+        // React to messages to the sourceEvent
         switch (parsedData.event) {
           case 'queued': {
-            // Add the task to the queue if not already present
             const relatedTask = await krabsSdk.tasks.byId(parsedData.taskId).get()
             if (
               relatedTask &&
@@ -44,7 +52,6 @@ export const useActivityStore = defineStore('activity', () => {
             break
           }
           case 'started': {
-            // Remove the task from the queue
             const idx = queuedTasks.value.findIndex(
               (t) => t.taskResultId === parsedData.taskResultId,
             )
@@ -73,8 +80,17 @@ export const useActivityStore = defineStore('activity', () => {
     eventSource.onerror = (err) => {
       console.error('SSE queue connection error', err)
       eventSource.close()
+      queueEventSource.value = null
     }
     return eventSource
+  }
+
+  // Method to stop listening to the queue EventSource
+  const stopListeningToQueueEvents = () => {
+    if (queueEventSource.value) {
+      queueEventSource.value.close()
+      queueEventSource.value = null
+    }
   }
 
   // getters
@@ -168,6 +184,7 @@ export const useActivityStore = defineStore('activity', () => {
     loadTaskResult,
     loadQueuedTasks,
     listenToQueueEvents,
+    stopListeningToQueueEvents,
     // stopTask,
   }
 })

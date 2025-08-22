@@ -8,6 +8,7 @@ import { ArgumentModule } from 'src/argument/argument.module';
 import { CliModule } from 'src/cli/cli-module';
 import { ActivityModule } from 'src/activity/activity.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TaskResultOutputModule } from 'src/task/task-result/task-result-output/task-result-output.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     TaskModule,
     CliModule,
     ActivityModule,
+    TaskResultOutputModule,
   ],
 })
 export class AppModule {}

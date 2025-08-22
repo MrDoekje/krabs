@@ -1,9 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Task } from 'src/task/entities/task.entity';
 import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
-import { CommandResultDto } from 'src/command/dto/command-result.dto';
-import { TaskRunService } from '../task-run/task-run.service';
-import { TaskResultService } from '../task-result/task-result.service';
+import { TaskRunService } from 'src/task/task-run/task-run.service';
+import { TaskResultService } from 'src/task/task-result/task-result.service';
 import { CommandService } from 'src/command/command.service';
 import { ActivityService } from 'src/activity/activity.service';
 
@@ -31,7 +30,6 @@ export class TaskExecutorService {
       `Executing task ${task.name} with ${task.taskCommands.length} commands`,
     );
 
-    const commandResults: CommandResultDto[] = [];
     let shouldContinue = true;
     let overallSuccess = true;
 
@@ -72,29 +70,24 @@ export class TaskExecutorService {
           command,
           commandArguments,
         );
-        commandResults.push(result);
 
-        if (!result.success && !command.optional) {
+        if (result.success) {
+          this.logger.log(
+            `Command ${command.command} was executed successfully`,
+          );
+          continue;
+        }
+
+        this.logger.warn(
+          `Command ${command.command} was not executed successfully`,
+        );
+
+        if (!command.optional) {
           shouldContinue = false;
           overallSuccess = false;
-          this.logger.warn(
-            `Command ${command.command} failed, stopping execution`,
-          );
-
-          commandResults.push({
-            success: false,
-            output: '',
-            error: result.error || `Command ${command.command} failed`,
-          });
         }
       } catch (error) {
         this.logger.error(`Error executing command ${command.command}:`, error);
-
-        commandResults.push({
-          success: false,
-          output: '',
-          error: error instanceof Error ? error.message : String(error),
-        });
 
         overallSuccess = false;
 
@@ -107,7 +100,6 @@ export class TaskExecutorService {
     const savedTaskResult = await this.taskResultService.saveTaskResult(
       taskResult.id,
       overallSuccess,
-      commandResults,
     );
 
     this.activityService.emitQueueEvent({
@@ -117,9 +109,7 @@ export class TaskExecutorService {
       taskId: task.id,
     });
 
-    this.logger.log(
-      `Task ${task.name} execution completed with ${commandResults.length} command results`,
-    );
+    this.logger.log(`Task ${task.name} execution completed`);
     return savedTaskResult;
   }
 }
