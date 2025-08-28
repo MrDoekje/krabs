@@ -55,6 +55,9 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
   })
   // newCommand = structuredClone(baseNewCommand)
 }
+const onCommandAdded = (command: Command) => {
+  selectedCommands.value.push(command)
+}
 </script>
 
 <template>
@@ -88,11 +91,12 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
     </Card>
 
     <Card>
-      <CardHeader>
+      <CardHeader class="flex flex-row justify-between">
         <CardTitle class="flex items-center gap-2">
           <Terminal class="h-5 w-5" />
           Commands
         </CardTitle>
+        <k-add-existing-command @add="onCommandAdded" />
       </CardHeader>
       <CardContent class="flex flex-col gap-y-4">
         <k-create-command @create="addNewCommand" />

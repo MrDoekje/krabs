@@ -36,25 +36,30 @@
     <div class="px-6 flex flex-col gap-y-4">
       <div class="flex items-center justify-between">
         <h2 class="h3">Commands</h2>
-        <Dialog>
-          <DialogTrigger as-child>
-            <Button @click="showAddCommand = true" variant="outline" size="sm">New Command</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <k-create-command @create="onCommandCreated">
-              <template #actions="{ disabledAdd, addNew }">
-                <DialogFooter>
-                  <DialogClose as-child>
-                    <Button variant="secondary"> Cancel </Button>
-                  </DialogClose>
-                  <DialogClose as-child>
-                    <Button :disabled="disabledAdd" @click="addNew"> Add Command </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </template>
-            </k-create-command>
-          </DialogContent>
-        </Dialog>
+        <div class="flex flex-row gap-2">
+          <k-add-existing-command @add="onCommandAdded" />
+          <Dialog>
+            <DialogTrigger as-child>
+              <Button @click="showAddCommand = true" variant="outline" size="sm"
+                >New Command</Button
+              >
+            </DialogTrigger>
+            <DialogContent>
+              <k-create-command @create="onCommandCreated">
+                <template #actions="{ disabledAdd, addNew }">
+                  <DialogFooter>
+                    <DialogClose as-child>
+                      <Button variant="secondary"> Cancel </Button>
+                    </DialogClose>
+                    <DialogClose as-child>
+                      <Button :disabled="disabledAdd" @click="addNew"> Add Command </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </template>
+              </k-create-command>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <div class="flex flex-col gap-y-3" v-if="form?.commands?.length">
         <k-command-or-manage
@@ -186,6 +191,12 @@ const doRemoveTask = async () => {
   router.push({
     name: '/tasks/',
   })
+}
+
+const onCommandAdded = async (cmd: Command) => {
+  if (!cmd.id) return
+  if (!form.commands) form.commands = []
+  form.commands.push(cmd)
 }
 
 const isFormDirty = computed(() => {

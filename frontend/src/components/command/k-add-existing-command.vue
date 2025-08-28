@@ -1,34 +1,24 @@
 <template>
   <Popover v-model:open="open">
-    <PopoverTrigger as="template">
-      <Button
-        variant="outline"
-        role="combobox"
-        :aria-expanded="open"
-        class="w-[200px] justify-between"
-        @click="open = !open"
-      >
-        {{ selectedLabel || 'Select framework...' }}
+    <PopoverTrigger>
+      <Button variant="outline" role="combobox" :aria-expanded="open" class="justify-between">
+        {{ 'Add existing command...' }}
         <ChevronsUpDown class="opacity-50" />
       </Button>
     </PopoverTrigger>
-    <PopoverContent class="w-[200px] p-0">
+    <PopoverContent class="p-0">
       <Command>
-        <CommandInput placeholder="Search framework..." class="h-9" v-model="search" />
+        <CommandInput placeholder="Search command..." class="h-9" v-model="search" />
         <CommandList>
-          <CommandEmpty v-if="filteredFrameworks.length === 0"> No framework found. </CommandEmpty>
+          <CommandEmpty v-if="filteredCommands.length === 0"> No command found. </CommandEmpty>
           <CommandGroup>
             <CommandItem
-              v-for="framework in filteredFrameworks"
-              :key="framework.value"
-              :value="framework.value"
-              @click="selectFramework(framework.value)"
+              v-for="command in filteredCommands"
+              :key="command.id"
+              :value="command.value"
+              @select="selectCommand(command.value)"
             >
-              {{ framework.label }}
-              <Check
-                class="ml-auto"
-                :class="value === framework.value ? 'opacity-100' : 'opacity-0'"
-              />
+              {{ command.label }}
             </CommandItem>
           </CommandGroup>
         </CommandList>
@@ -37,37 +27,39 @@
   </Popover>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { ChevronsUpDown, Check } from 'lucide-vue-next'
 import { useCommandStore } from '@/stores/command'
+import type { Command } from '@/krabs-sdk/models'
 
-const { loadAllCommands, commandsList } = useCommandStore()
+const { loadAllCommands, getCommandList } = useCommandStore()
 
 onMounted(async () => {
   await loadAllCommands()
 })
 
-const frameworks = [
-  { value: 'next.js', label: 'Next.js' },
-  { value: 'sveltekit', label: 'SvelteKit' },
-  { value: 'nuxt.js', label: 'Nuxt.js' },
-  { value: 'remix', label: 'Remix' },
-  { value: 'astro', label: 'Astro' },
-]
-
-const open = ref(false)
-const value = ref('')
-const search = ref('')
-
-const filteredFrameworks = computed(() =>
-  frameworks.filter((f) => f.label.toLowerCase().includes(search.value.toLowerCase())),
+const commands = computed(() =>
+  getCommandList().value.map((c) => ({
+    id: c.id,
+    value: c,
+    label: c.name,
+  })),
 )
 
-const selectedLabel = computed(() => frameworks.find((f) => f.value === value.value)?.label)
+const open = ref(false)
+const search = ref('')
 
-function selectFramework(val) {
-  value.value = value.value === val ? '' : val
+const emit = defineEmits<{
+  (e: 'add', val: Command): void
+}>()
+
+const filteredCommands = computed(() =>
+  commands.value.filter((f) => f.label?.toLowerCase().includes(search.value.toLowerCase())),
+)
+
+function selectCommand(val: Command) {
+  emit('add', val)
   open.value = false
 }
 </script>

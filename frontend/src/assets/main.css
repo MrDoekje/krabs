@@ -62,8 +62,8 @@
   --foreground: hsl(230.7692 20% 73.9216%);
   --card: hsl(240 10% 15%);
   --card-foreground: hsl(240 80% 98.0392%);
-  --popover: hsl(240 4% 18.0392%);
-  --popover-foreground: hsl(240 7% 89.0196%);
+  --popover: hsl(240 10% 18.0392%);
+  --popover-foreground: hsl(240 14% 89.0196%);
   --primary: hsl(255.9375 62.7451% 60%);
   --primary-foreground: hsl(0 0% 100%);
   --secondary: hsl(48 33.3333% 97.0588%);
