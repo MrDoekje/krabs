@@ -175,6 +175,15 @@ export function createExecuteTaskRunDtoFromDiscriminatorValue(parseNode: ParseNo
 /**
  * Creates a new instance of the appropriate class based on discriminator value
  * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {ExistingOrNewCommand}
+ */
+// @ts-ignore
+export function createExistingOrNewCommandFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoExistingOrNewCommand;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
  * @returns {QueueTaskDto_commandArguments}
  */
 // @ts-ignore
@@ -203,7 +212,7 @@ export interface CreateTaskDto extends AdditionalDataHolder, Parsable {
     /**
      * The list of commands associated with the task@type {CommandDto[]}
      */
-    commands?: CreateCommandDto[] | null;
+    commands?: ExistingOrNewCommand[] | null;
     /**
      * An optional description of the task.@type {string}
      */
@@ -355,7 +364,7 @@ export function deserializeIntoCreateCommandDto(createCommandDto: Partial<Create
 // @ts-ignore
 export function deserializeIntoCreateTaskDto(createTaskDto: Partial<CreateTaskDto> | undefined = {}) : Record<string, (node: ParseNode) => void> {
     return {
-        "commands": n => { createTaskDto.commands = n.getCollectionOfObjectValues<CreateCommandDto>(createCreateCommandDtoFromDiscriminatorValue); },
+        "commands": n => { createTaskDto.commands = n.getCollectionOfObjectValues<ExistingOrNewCommand>(createExistingOrNewCommandFromDiscriminatorValue); },
         "description": n => { createTaskDto.description = n.getStringValue(); },
         "name": n => { createTaskDto.name = n.getStringValue(); },
     }
@@ -394,6 +403,24 @@ export function deserializeIntoExecuteTaskRunDto(executeTaskRunDto: Partial<Exec
 }
 /**
  * The deserialization information for the current model
+ * @param ExistingOrNewCommand The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoExistingOrNewCommand(existingOrNewCommand: Partial<ExistingOrNewCommand> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
+        "arguments": n => { existingOrNewCommand.arguments = n.getCollectionOfObjectValues<CreateArgumentDto>(createCreateArgumentDtoFromDiscriminatorValue); },
+        "command": n => { existingOrNewCommand.command = n.getStringValue(); },
+        "format": n => { existingOrNewCommand.format = n.getStringValue() ?? "--{{name}}={{value}}"; },
+        "id": n => { existingOrNewCommand.id = n.getStringValue(); },
+        "name": n => { existingOrNewCommand.name = n.getStringValue(); },
+        "optional": n => { existingOrNewCommand.optional = n.getBooleanValue(); },
+        "taskId": n => { existingOrNewCommand.taskId = n.getStringValue(); },
+        "wd": n => { existingOrNewCommand.wd = n.getStringValue(); },
+    }
+}
+/**
+ * The deserialization information for the current model
  * @param QueueTaskDto The instance to deserialize into.
  * @returns {Record<string, (node: ParseNode) => void>}
  */
@@ -426,7 +453,6 @@ export function deserializeIntoTask(task: Partial<Task> | undefined = {}) : Reco
         "description": n => { task.description = n.getStringValue(); },
         "id": n => { task.id = n.getStringValue(); },
         "name": n => { task.name = n.getStringValue(); },
-        "queued": n => { task.queued = n.getBooleanValue(); },
         "results": n => { task.results = n.getCollectionOfObjectValues<TaskResult>(createTaskResultFromDiscriminatorValue); },
         "taskCommands": n => { task.taskCommands = n.getCollectionOfObjectValues<TaskCommand>(createTaskCommandFromDiscriminatorValue); },
         "updatedAt": n => { task.updatedAt = n.getDateValue(); },
@@ -567,6 +593,40 @@ export interface ExecuteTaskRunDto extends AdditionalDataHolder, Parsable {
      */
     queued?: boolean | null;
 }
+export interface ExistingOrNewCommand extends AdditionalDataHolder, Parsable {
+    /**
+     * The list of arguments for the command.@type {CreateArgumentDto[]}
+     */
+    arguments?: CreateArgumentDto[] | null;
+    /**
+     * The command to be executed, for now including arguments@type {string}
+     */
+    command?: string | null;
+    /**
+     * The format for the command arguments.This is used to format the arguments when they are passed to the command.@type {string}@default '--{{name}}={{value}}'
+     */
+    format?: string | null;
+    /**
+     * If provided, will not create a new command
+     */
+    id?: string | null;
+    /**
+     * The command to be executed, for now including arguments@type {string}
+     */
+    name?: string | null;
+    /**
+     * Optional flag to indicate if the command is optional, if so it will not block the task on fail.@type {boolean}@default false
+     */
+    optional?: boolean | null;
+    /**
+     * Optional task ID to associate the command with a specific task.@type {string}
+     */
+    taskId?: string | null;
+    /**
+     * The working directory for the command.@type {string}
+     */
+    wd?: string | null;
+}
 export interface QueueTaskDto extends AdditionalDataHolder, Parsable {
     /**
      * Arguments per named command (per named argument)
@@ -657,7 +717,7 @@ export function serializeCreateCommandDto(writer: SerializationWriter, createCom
 // @ts-ignore
 export function serializeCreateTaskDto(writer: SerializationWriter, createTaskDto: Partial<CreateTaskDto> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
     if (!createTaskDto || isSerializingDerivedType) { return; }
-    writer.writeCollectionOfObjectValues<CreateCommandDto>("commands", createTaskDto.commands, serializeCreateCommandDto);
+    writer.writeCollectionOfObjectValues<ExistingOrNewCommand>("commands", createTaskDto.commands, serializeExistingOrNewCommand);
     writer.writeStringValue("description", createTaskDto.description);
     writer.writeStringValue("name", createTaskDto.name);
     writer.writeAdditionalData(createTaskDto.additionalData);
@@ -699,6 +759,25 @@ export function serializeExecuteTaskRunDto(writer: SerializationWriter, executeT
 }
 /**
  * Serializes information the current object
+ * @param ExistingOrNewCommand The instance to serialize from.
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeExistingOrNewCommand(writer: SerializationWriter, existingOrNewCommand: Partial<ExistingOrNewCommand> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!existingOrNewCommand || isSerializingDerivedType) { return; }
+    writer.writeCollectionOfObjectValues<CreateArgumentDto>("arguments", existingOrNewCommand.arguments, serializeCreateArgumentDto);
+    writer.writeStringValue("command", existingOrNewCommand.command);
+    writer.writeStringValue("format", existingOrNewCommand.format ?? "--{{name}}={{value}}");
+    writer.writeStringValue("id", existingOrNewCommand.id);
+    writer.writeStringValue("name", existingOrNewCommand.name);
+    writer.writeBooleanValue("optional", existingOrNewCommand.optional);
+    writer.writeStringValue("taskId", existingOrNewCommand.taskId);
+    writer.writeStringValue("wd", existingOrNewCommand.wd);
+    writer.writeAdditionalData(existingOrNewCommand.additionalData);
+}
+/**
+ * Serializes information the current object
  * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
  * @param QueueTaskDto The instance to serialize from.
  * @param writer Serialization writer to use to serialize this model
@@ -734,7 +813,6 @@ export function serializeTask(writer: SerializationWriter, task: Partial<Task> |
     writer.writeStringValue("description", task.description);
     writer.writeStringValue("id", task.id);
     writer.writeStringValue("name", task.name);
-    writer.writeBooleanValue("queued", task.queued);
     writer.writeCollectionOfObjectValues<TaskResult>("results", task.results, serializeTaskResult);
     writer.writeCollectionOfObjectValues<TaskCommand>("taskCommands", task.taskCommands, serializeTaskCommand);
     writer.writeDateValue("updatedAt", task.updatedAt);
@@ -883,10 +961,6 @@ export interface Task extends AdditionalDataHolder, Parsable {
      * The name property
      */
     name?: string | null;
-    /**
-     * The queued property
-     */
-    queued?: boolean | null;
     /**
      * The results property
      */
@@ -1071,6 +1145,7 @@ export interface UpdateTaskDto extends AdditionalDataHolder, Parsable {
 }
 export const TaskResult_statusObject = {
     IN_PROGRESS: "IN_PROGRESS",
+    QUEUED: "QUEUED",
     SUCCESS: "SUCCESS",
     FAILED: "FAILED",
     STOPPED: "STOPPED",

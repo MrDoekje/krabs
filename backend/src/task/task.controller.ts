@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Post, Put } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { TaskService } from 'src/task/task.service';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { Get, Param } from '@nestjs/common';
@@ -40,7 +40,6 @@ export class TaskController {
   }
 
   // Running a task
-
   @Post(':id/execute')
   async execute(
     @Param('id') id: string,
@@ -48,13 +47,21 @@ export class TaskController {
     body: ExecuteTaskDto,
   ) {
     const { commandArguments } = body;
-    return this.taskService.executeById(id, commandArguments);
+    return this.taskService.executeById(id, {
+      commandArguments,
+    });
   }
 
   @Post(':id/queue')
   async queue(@Param('id') id: string, @Body() body: QueueTaskDto) {
     const { commandArguments, priority } = body;
-    await this.taskService.queueById(id, commandArguments, priority);
+    await this.taskService.queueById(
+      id,
+      {
+        commandArguments,
+      },
+      priority,
+    );
     return { message: `Task "${id}" queued successfully` };
   }
 }

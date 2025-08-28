@@ -1,6 +1,59 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/commands": {
+      "get": {
+        "operationId": "CommandController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Command"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      },
+      "post": {
+        "operationId": "CommandController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommandDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Command"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      }
+    },
     "/commands/{id}": {
       "get": {
         "operationId": "CommandController_findOne",
@@ -69,68 +122,88 @@
         ]
       }
     },
-    "/commands": {
-      "post": {
-        "operationId": "CommandController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCommandDto"
-              }
+    "/task/{id}/run": {
+      "get": {
+        "operationId": "TaskRunController_getAllRunsForTask",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
-          "201": {
+          "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Command"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskRun"
+                  }
                 }
               }
             }
           }
         },
         "tags": [
-          "Command"
+          "TaskRun"
         ]
       }
     },
-    "/task-run": {
+    "/task/run": {
       "get": {
         "operationId": "TaskRunController_getAll",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Task run configurations retrieved successfully."
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskRun"
+                  }
+                }
+              }
+            }
           }
         },
-        "summary": "Get all task run configurations",
         "tags": [
           "TaskRun"
         ]
       }
     },
-    "/task-run/favorites": {
+    "/task/run/favorites": {
       "get": {
         "operationId": "TaskRunController_findFavorited",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Favorited task run configurations retrieved successfully."
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaskRun"
+                  }
+                }
+              }
+            }
           }
         },
-        "summary": "Get all favorited task run configurations",
         "tags": [
           "TaskRun"
         ]
       }
     },
-    "/task-run/{id}/execute": {
+    "/task/run/{id}/execute": {
       "post": {
         "operationId": "TaskRunController_execute",
         "parameters": [
@@ -154,17 +227,23 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Task run configuration executed successfully."
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         },
-        "summary": "Execute a task using a task run configuration",
         "tags": [
           "TaskRun"
         ]
       }
     },
-    "/task-run/{id}/favorite": {
+    "/task/run/{id}/favorite": {
       "patch": {
         "operationId": "TaskRunController_toggleFavorite",
         "parameters": [
@@ -179,10 +258,16 @@
         ],
         "responses": {
           "200": {
-            "description": "Task run configuration favorite status toggled successfully."
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskRun"
+                }
+              }
+            }
           }
         },
-        "summary": "Toggle favorite status of a task run configuration",
         "tags": [
           "TaskRun"
         ]
@@ -851,6 +936,7 @@
           "status": {
             "enum": [
               "IN_PROGRESS",
+              "QUEUED",
               "SUCCESS",
               "FAILED",
               "STOPPED"
@@ -886,9 +972,6 @@
           "description": {
             "type": "string"
           },
-          "queued": {
-            "type": "boolean"
-          },
           "taskCommands": {
             "type": "array",
             "items": {
@@ -913,7 +996,6 @@
         "required": [
           "id",
           "name",
-          "queued",
           "taskCommands",
           "results",
           "createdAt",
@@ -1131,6 +1213,53 @@
           }
         }
       },
+      "ExistingOrNewCommand": {
+        "type": "object",
+        "properties": {
+          "wd": {
+            "type": "string",
+            "description": "The working directory for the command.\n@type {string}"
+          },
+          "name": {
+            "type": "string",
+            "description": "The command to be executed, for now including arguments\n@type {string}"
+          },
+          "command": {
+            "type": "string",
+            "description": "The command to be executed, for now including arguments\n@type {string}"
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "Optional flag to indicate if the command is optional, if so it will not block the task on fail.\n@type {boolean}\n@default false"
+          },
+          "format": {
+            "type": "string",
+            "description": "The format for the command arguments.\nThis is used to format the arguments when they are passed to the command.\n@type {string}\n@default '--{{name}}={{value}}'",
+            "default": "--{{name}}={{value}}"
+          },
+          "arguments": {
+            "description": "The list of arguments for the command.\n@type {CreateArgumentDto[]}",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateArgumentDto"
+            }
+          },
+          "taskId": {
+            "type": "string",
+            "description": "Optional task ID to associate the command with a specific task.\n@type {string}"
+          },
+          "id": {
+            "type": "string",
+            "description": "If provided, will not create a new command"
+          }
+        },
+        "required": [
+          "wd",
+          "name",
+          "command",
+          "format"
+        ]
+      },
       "CreateTaskDto": {
         "type": "object",
         "properties": {
@@ -1146,7 +1275,7 @@
             "description": "The list of commands associated with the task\n@type {CommandDto[]}",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CreateCommandDto"
+              "$ref": "#/components/schemas/ExistingOrNewCommand"
             }
           }
         },
@@ -1181,7 +1310,10 @@
             "type": "object",
             "description": "Arguments per named command (per named argument)"
           }
-        }
+        },
+        "required": [
+          "commandArguments"
+        ]
       },
       "QueueTaskDto": {
         "type": "object",
@@ -1194,7 +1326,10 @@
             "type": "number",
             "description": "Arguments per named command (per named argument)"
           }
-        }
+        },
+        "required": [
+          "commandArguments"
+        ]
       },
       "UpdateArgumentDto": {
         "type": "object",

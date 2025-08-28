@@ -27,8 +27,8 @@ const handleTaskClick = (task: Task) => {
   <div class="mx-auto w-full p-6 flex flex-col gap-y-6">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="text-3xl font-bold tracking-tight">Tasks</h1>
-        <p class="text-muted-foreground">Manage and monitor all your tasks</p>
+        <h1>Tasks</h1>
+        <p>Manage and monitor all your tasks</p>
       </div>
       <router-link
         :to="{
@@ -52,7 +52,6 @@ const handleTaskClick = (task: Task) => {
             <TableRow>
               <TableHead>Task Name</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -64,11 +63,6 @@ const handleTaskClick = (task: Task) => {
             >
               <TableCell class="font-medium">{{ task.name }}</TableCell>
               <TableCell class="text-muted-foreground">{{ task.description }}</TableCell>
-              <TableCell>
-                <Badge :variant="task.queued ? 'default' : 'secondary'">{{
-                  task.queued ? 'Queued' : 'Idle'
-                }}</Badge>
-              </TableCell>
             </TableRow>
           </TableBody>
         </Table>

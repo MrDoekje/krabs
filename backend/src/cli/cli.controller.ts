@@ -11,7 +11,9 @@ export class CliController {
     @Param('name') name: string,
     @Body() body: ExecuteTaskDto,
   ): Promise<{ message: string }> {
-    await this.taskService.queueByName(name, body.commandArguments);
+    await this.taskService.queueByName(name, {
+      commandArguments: body.commandArguments,
+    });
     return { message: `Queue "${name}" has been run.` };
   }
 
@@ -21,7 +23,9 @@ export class CliController {
     @Body()
     body: ExecuteTaskDto,
   ): Promise<{ message: string }> {
-    await this.taskService.executeByName(name, body.commandArguments);
+    await this.taskService.executeByName(name, {
+      commandArguments: body.commandArguments,
+    });
     return { message: `Task "${name}" has been executed.` };
   }
 }

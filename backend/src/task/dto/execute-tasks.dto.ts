@@ -1,10 +1,10 @@
 import { IsObject, IsOptional } from 'class-validator';
+import type { CommandArguments } from 'src/helpers/runOrArgument';
 
 export class ExecuteTaskDto {
   /**
    * Arguments per named command (per named argument)
    */
   @IsObject()
-  @IsOptional()
-  commandArguments?: Record<string, any>;
+  commandArguments: CommandArguments;
 }

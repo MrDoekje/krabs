@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import type { TaskResult } from '@/krabs-sdk/models'
 import { useKrabsSdk } from '@/lib/krabs-sdk'
 import type { ActivityDto, QueueDto } from './types'
-import { toast } from 'vue-sonner'
 
 export const useActivityStore = defineStore('activity', () => {
   const krabsSdk = useKrabsSdk()
@@ -50,7 +49,6 @@ export const useActivityStore = defineStore('activity', () => {
                 id: parsedData.taskResultId,
               })
             }
-            toast.success('Task queued')
             break
           }
           case 'started': {
@@ -64,12 +62,10 @@ export const useActivityStore = defineStore('activity', () => {
             if (taskResult && taskResult.id) {
               taskResults.value[taskResult.id] = taskResult
             }
-            toast.success('Task started')
             break
           }
           case 'ended': {
             delete taskResults.value[parsedData.taskResultId]
-            toast.success('Task ended')
             break
           }
         }

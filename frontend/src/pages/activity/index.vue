@@ -26,23 +26,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full p-6 mx-auto space-y-8">
-    <header>
-      <h1 class="text-3xl font-bold">Activity</h1>
-      <p class="text-muted-foreground">Monitor your running and completed tasks.</p>
+  <div class="w-full py-6 mx-auto space-y-6">
+    <header class="px-6">
+      <h1>Activity</h1>
+      <p>Monitor your running and completed tasks.</p>
     </header>
-
-    <Card>
-      <CardHeader>
-        <CardTitle class="flex items-center gap-2">
-          <Clock class="w-5 h-5" />
-          Running Tasks
-        </CardTitle>
-        <CardDescription>
-          Tasks that are currently in progress or waiting to be executed.
-        </CardDescription>
-      </CardHeader>
-      <CardContent class="flex flex-col gap-3">
+    <Separator />
+    <div class="px-6 flex flex-col gap-y-6">
+      <div>
+        <div class="flex items-center gap-2">
+          <Clock class="size-6" />
+          <h2>Running Tasks</h2>
+        </div>
+        <p>Tasks that are currently in progress or waiting to be executed.</p>
+      </div>
+      <div class="flex flex-col gap-3">
         <div
           v-if="taskResultList.length === 0"
           class="text-sm text-center text-muted-foreground py-4"
@@ -60,18 +58,18 @@ onMounted(async () => {
             >
           </template>
         </k-task-result>
-      </CardContent>
-    </Card>
-
-    <Card>
-      <CardHeader>
-        <CardTitle class="flex items-center gap-2">
-          <List class="w-5 h-5" />
-          Queued Tasks
-        </CardTitle>
+      </div>
+    </div>
+    <Separator />
+    <div class="px-6 flex flex-col gap-y-6">
+      <div>
+        <div class="flex items-center gap-2">
+          <List class="size-6" />
+          <h2>Queued Tasks</h2>
+        </div>
         <CardDescription>Tasks waiting to be executed.</CardDescription>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         <div v-if="queuedTasks.length === 0" class="text-sm text-center text-muted-foreground py-4">
           No completed tasks found.
         </div>
@@ -82,7 +80,7 @@ onMounted(async () => {
             :key="taskResult.id || index"
           />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   </div>
 </template>

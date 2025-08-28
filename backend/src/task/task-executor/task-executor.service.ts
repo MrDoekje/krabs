@@ -52,6 +52,8 @@ export class TaskExecutorService {
         await this.taskResultService.getResultsByTaskResultId(taskResultId);
     }
 
+    console.log('updating test test test');
+
     await this.taskResultService.updateTaskResultStatus(
       taskResult.id,
       TaskResultStatus.IN_PROGRESS,

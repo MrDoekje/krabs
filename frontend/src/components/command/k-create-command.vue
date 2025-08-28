@@ -43,10 +43,10 @@ const addNewCommand = () => {
 </script>
 
 <template>
-  <Card class="bg-muted/60">
-    <CardContent class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4 w-full max-h-[80vh] overflow-auto">
+    <div class="overflow-auto flex flex-col gap-4">
       <k-manage-command-info v-model:command="newCommand" />
-      <Card class="bg-muted/60">
+      <Card>
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
             <Variable class="h-4 w-4" />
@@ -69,9 +69,9 @@ const addNewCommand = () => {
           </Button>
         </CardContent>
       </Card>
-    </CardContent>
+    </div>
 
-    <CardFooter class="flex justify-end">
+    <div class="flex justify-end">
       <slot
         name="actions"
         :disabled-add="!newCommand.name || !newCommand.wd || !newCommand.command"
@@ -82,9 +82,9 @@ const addNewCommand = () => {
           :disabled="!newCommand.name || !newCommand.wd || !newCommand.command"
           @click="addNewCommand"
         >
-          <Plus class="h-4 w-4 mr-1" /> Add Custom Command
+          <Plus class="h-4 w-4 mr-1" /> Add Command
         </Button>
       </slot>
-    </CardFooter>
-  </Card>
+    </div>
+  </div>
 </template>

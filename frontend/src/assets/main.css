@@ -58,36 +58,36 @@
 }
 
 .dark {
-  --background: hsl(240 2.6316% 14.902%);
-  --foreground: hsl(230.7692 9.7744% 73.9216%);
-  --card: hsl(240 2.6316% 14.902%);
-  --card-foreground: hsl(240 40% 98.0392%);
-  --popover: hsl(240 2.1739% 18.0392%);
-  --popover-foreground: hsl(240 3.5714% 89.0196%);
+  --background: hsl(240 10% 14.902%);
+  --foreground: hsl(230.7692 20% 73.9216%);
+  --card: hsl(240 10% 15%);
+  --card-foreground: hsl(240 80% 98.0392%);
+  --popover: hsl(240 4% 18.0392%);
+  --popover-foreground: hsl(240 7% 89.0196%);
   --primary: hsl(255.9375 62.7451% 60%);
   --primary-foreground: hsl(0 0% 100%);
   --secondary: hsl(48 33.3333% 97.0588%);
   --secondary-foreground: hsl(60 2.1277% 18.4314%);
-  --muted: hsl(240 5.8824% 10%);
-  --muted-foreground: hsl(248.5714 8.8608% 69.0196%);
+  --muted: hsl(240 12% 10%);
+  --muted-foreground: hsl(248.5714 19% 69.0196%);
   --accent: hsl(216 11.1111% 8.8235%);
   --accent-foreground: hsl(231.4286 28% 95.098%);
-  --destructive: hsl(0 84.2365% 60.1961%);
+  --destructive: hsl(28, 84%, 60%);
   --destructive-foreground: hsl(0 0% 100%);
   --border: hsl(240 5.0847% 23.1373%);
-  --input: hsl(232.5 5.0633% 30.9804%);
+  --input: hsl(232.5 10% 30.9804%);
   --ring: hsl(240.9375 62.7451% 60%);
   --chart-1: hsl(18.2813 57.1429% 43.9216%);
   --chart-2: hsl(251.4545 84.6154% 74.5098%);
   --chart-3: hsl(48 10.6383% 9.2157%);
   --chart-4: hsl(248.2759 25.2174% 22.549%);
   --chart-5: hsl(17.7778 60% 44.1176%);
-  --sidebar: hsl(240 3.2258% 12.1569%);
-  --sidebar-foreground: hsl(230.7692 9.7744% 73.9216%);
+  --sidebar: hsl(240 10% 12.1569%);
+  --sidebar-foreground: hsl(230.7692 20% 73.9216%);
   --sidebar-primary: hsl(0 0% 20%);
   --sidebar-primary-foreground: hsl(0 0% 98.0392%);
-  --sidebar-accent: hsl(240 3.2258% 6.0784%);
-  --sidebar-accent-foreground: hsl(235.3846 9.7744% 73.9216%);
+  --sidebar-accent: hsl(240 6% 6.0784%);
+  --sidebar-accent-foreground: hsl(235.3846 20% 73.9216%);
   --sidebar-border: hsl(0 0% 92.1569%);
   --sidebar-ring: hsl(0 0% 70.9804%);
   --font-sans:
@@ -98,7 +98,7 @@
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
-  --radius: 0.75rem;
+  --radius: 0.5rem;
   --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -189,5 +189,87 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  /* --- Shared heading styles --- */
+  h1,
+  .h1,
+  h2,
+  .h2,
+  h3,
+  .h3,
+  h4,
+  .h4,
+  h5,
+  .h5,
+  h6,
+  .h6 {
+    font-family: var(--font-sans);
+    color: var(--foreground, var(--color-foreground));
+    line-height: 1.2; /* tight for dense UIs */
+  }
+
+  /* --- Compact, dashboard-friendly scale (fluid) --- */
+  /* h1: Page title */
+  h1,
+  .h1 {
+    font-size: clamp(1.5rem, 1.18rem + 0.9vw, 1.875rem); /* 24 → 30px */
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  /* h2: Section */
+  h2,
+  .h2 {
+    font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem); /* 20 → 24px */
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* h3: Sub-section */
+  h3,
+  .h3 {
+    font-size: clamp(1.125rem, 1rem + 0.3vw, 1.25rem); /* 18 → 20px */
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  /* h4: Minor heading */
+  h4,
+  .h4 {
+    font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem); /* 16 → 18px */
+    font-weight: 600;
+    line-height: 1.35; /* a touch looser for multi-line */
+  }
+
+  /* h5 & h6: Labels / utilities */
+  h5,
+  .h5,
+  h6,
+  .h6 {
+    font-size: clamp(0.875rem, 0.85rem + 0.1vw, 1rem); /* 14 → 16px */
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  /* --- Body & inline text --- */
+  p {
+    font-size: 1rem; /* 16px */
+    line-height: 1.6; /* slightly tighter than 1.7 for density */
+    color: var(--muted-foreground, var(--color-muted-foreground));
+  }
+
+  strong,
+  b {
+    font-weight: 600;
+    color: var(--foreground, var(--color-foreground));
+  }
+
+  em,
+  i {
+    font-style: italic;
+    color: var(--foreground, var(--color-foreground));
   }
 }

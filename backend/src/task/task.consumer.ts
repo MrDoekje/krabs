@@ -1,14 +1,45 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Job } from 'bullmq';
+import { ActivityService } from 'src/activity/activity.service';
 import { TaskService } from 'src/task/task.service';
+import { TaskResult } from './task-result/entities/task-result.entity';
+import { In, Not, Repository } from 'typeorm';
+import { TaskResultStatus } from './task-result/types';
 
-@Processor('task', { concurrency: 2 })
+@Processor('task', { concurrency: 3 })
 export class TaskConsumer extends WorkerHost {
   private readonly logger = new Logger(TaskConsumer.name);
 
-  constructor(private readonly taskService: TaskService) {
+  constructor(
+    private readonly taskService: TaskService,
+    private readonly activityService: ActivityService,
+    @InjectRepository(TaskResult)
+    private readonly taskResultRepository: Repository<TaskResult>,
+  ) {
     super();
+  }
+
+  async onModuleInit(): Promise<void> {
+    this.logger.log('TaskConsumer initialized, pruning stale task results');
+    const activeTaskResults = await this.activityService.getAllActiveInQueue();
+    const queuedTasksResults = await this.activityService.getAllQueued();
+    const updatedResults = await this.taskResultRepository.update(
+      {
+        id: Not(
+          In([
+            ...queuedTasksResults.map((task) => task.id),
+            ...activeTaskResults.map((task) => task.id),
+          ]),
+        ),
+        status: In([TaskResultStatus.IN_PROGRESS, TaskResultStatus.QUEUED]),
+      },
+      {
+        status: TaskResultStatus.STOPPED,
+      },
+    );
+    this.logger.log(`Pruned ${updatedResults.affected} stale task results`);
   }
 
   async process(job: Job<any, any, string>): Promise<any> {
@@ -16,7 +47,7 @@ export class TaskConsumer extends WorkerHost {
 
     switch (job.name) {
       case 'execute-task':
-        return this.handleExecuteTask(job);
+        return await this.handleExecuteTask(job);
       default:
         this.logger.warn(`Unknown job type: ${job.name}`);
         throw new Error(`Unknown job type: ${job.name}`);
@@ -39,7 +70,7 @@ export class TaskConsumer extends WorkerHost {
       const task = await this.taskService.findById(taskId);
       const results = await this.taskService.executeTask(
         task,
-        taskRunId,
+        { taskRunId },
         taskResultId,
       );
 

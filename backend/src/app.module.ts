@@ -28,10 +28,10 @@ import { TaskResultOutputModule } from 'src/task/task-result/task-result-output/
     CommandModule,
     TaskRunModule,
     ArgumentModule,
-    TaskModule,
     CliModule,
     ActivityModule,
     TaskResultOutputModule,
+    TaskModule,
   ],
 })
 export class AppModule {}

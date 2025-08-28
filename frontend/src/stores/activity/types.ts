@@ -28,6 +28,7 @@ export enum TaskResultStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
   STOPPED = 'STOPPED',
+  QUEUED = 'QUEUED',
 }
 
 export type ActivityEventType = 'output' | 'status'
@@ -68,6 +69,7 @@ export type ActivityDto = OutputActivityDto | StatusActivityDto
 export const statusMap = {
   [TaskResultStatus.SUCCESS]: { variant: 'outline', icon: CheckCircle2, text: 'Success' },
   [TaskResultStatus.IN_PROGRESS]: { variant: 'default', icon: Loader, text: 'In Progress' },
+  [TaskResultStatus.QUEUED]: { variant: 'default', icon: Loader, text: 'Queued' },
   [TaskResultStatus.FAILED]: { variant: 'destructive', icon: XCircle, text: 'Failed' },
   [TaskResultStatus.STOPPED]: { variant: 'secondary', icon: XCircle, text: 'Stopped' },
 } as const

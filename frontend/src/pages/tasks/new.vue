@@ -43,27 +43,6 @@ const handleCreateTask = async () => {
   } catch {}
 }
 
-// const baseNewCommand: Command = {
-//   name: '',
-//   wd: '',
-//   command: '',
-//   format: '',
-//   optional: true,
-//   arguments: [],
-// }
-
-// const newCommand = ref(structuredClone(baseNewCommand))
-// const addArgument = () => {
-//   newCommand.value.arguments?.push({
-//     name: '',
-//     required: false,
-//   })
-// }
-
-// const removeArgument = (idx: number) => {
-//   newCommand.value.arguments?.splice(idx, 1)
-// }
-
 const addNewCommand = (newCommand: CreateCommandDto) => {
   if (!newCommand.name || !newCommand.wd || !newCommand.command) return
   selectedCommands.value.push({
@@ -81,14 +60,16 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
 <template>
   <div class="mx-auto w-full p-6 flex flex-col gap-y-6">
     <div class="flex flex-col gap-y-1">
-      <h1 class="text-3xl font-bold">Create New Task</h1>
+      <h1>Create New Task</h1>
       <p class="text-muted-foreground">
         Define a new task with commands that will be executed in sequence.
       </p>
     </div>
 
     <Card>
-      <CardHeader><CardTitle>Task Details</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Task Details</CardTitle>
+      </CardHeader>
       <CardContent class="flex flex-col gap-y-4">
         <div class="flex flex-col gap-y-2">
           <Label for="task-name">Task Name *</Label>
@@ -115,7 +96,6 @@ const addNewCommand = (newCommand: CreateCommandDto) => {
       </CardHeader>
       <CardContent class="flex flex-col gap-y-4">
         <k-create-command @create="addNewCommand" />
-
         <div v-if="selectedCommands.length > 0" class="flex flex-col gap-y-2">
           <span>Added Commands ({{ selectedCommands.length }})</span>
           <div class="flex flex-col gap-2">

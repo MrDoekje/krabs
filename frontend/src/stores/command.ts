@@ -2,7 +2,6 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Command, CreateCommandDto } from '@/krabs-sdk/models'
 import { useKrabsSdk } from '@/lib/krabs-sdk'
-import { th } from 'date-fns/locale'
 
 export const useCommandStore = defineStore('commands', () => {
   const krabsSdk = useKrabsSdk()
@@ -23,6 +22,23 @@ export const useCommandStore = defineStore('commands', () => {
         return
       }
       commands.value[loadedCommand.id] = loadedCommand
+    } catch {
+      console.error('failed to load command')
+    }
+  }
+
+  const loadAllCommands = async () => {
+    try {
+      const loadedCommands = await krabsSdk.commands.get()
+      if (!loadedCommands?.length) {
+        console.error('loaded commands is empty')
+        return
+      }
+      loadedCommands.forEach((cmd) => {
+        if (cmd.id) {
+          commands.value[cmd.id] = cmd
+        }
+      })
     } catch {
       console.error('failed to load command')
     }
@@ -63,6 +79,7 @@ export const useCommandStore = defineStore('commands', () => {
     getCommand,
     getCommandList,
     loadCommand,
+    loadAllCommands,
     createCommand,
     updateCommand,
   }

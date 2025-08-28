@@ -56,6 +56,7 @@ export class TaskRunService {
   async findById(id: string): Promise<TaskRun> {
     const taskRun = await this.taskRunRepository.findOne({
       where: { id },
+      relations: ['task'],
     });
 
     if (!taskRun) {
@@ -85,17 +86,20 @@ export class TaskRunService {
 
     // Execute the task with the stored arguments
     if (queued) {
-      await this.taskService.queueByName(
-        taskRun.task.name,
-        taskRun.commandArguments,
+      await this.taskService.queueById(
+        taskRun.task.id,
+        {
+          taskRunId,
+        },
         0,
-        taskRunId,
       );
       this.logger.log(
         `Task ${taskRun.task.name} queued with task run configuration ${taskRun.name} (${taskRun.id})`,
       );
     } else {
-      const result = await this.executeByName(taskRun.task.name, taskRunId);
+      const result = await this.taskService.executeById(taskRun.task.id, {
+        taskRunId,
+      });
       this.logger.log(
         `Task ${taskRun.task.name} executed with task run configuration ${taskRun.name} (${taskRun.id})`,
       );
@@ -113,7 +117,9 @@ export class TaskRunService {
     this.logger.log(`Executing task: ${taskName}`);
 
     const task = await this.taskService.findByName(taskName);
-    return this.taskService.executeTask(task, taskRunId);
+    return this.taskService.executeTask(task, {
+      taskRunId,
+    });
   }
 
   /**
@@ -123,6 +129,18 @@ export class TaskRunService {
     return this.taskRunRepository.find({
       relations: ['task'],
       order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Get all task run configurations for a specific task
+   */
+  async findAllRunsForTask(taskId: string): Promise<TaskRun[]> {
+    return this.taskRunRepository.find({
+      where: { task: { id: taskId } },
+      relations: ['task'],
+      order: { usageCount: 'DESC' },
+      take: 10,
     });
   }
 

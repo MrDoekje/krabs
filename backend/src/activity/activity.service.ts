@@ -24,10 +24,6 @@ export class ActivityService {
   ) {}
 
   async getAllActiveTaskResults(): Promise<TaskResult[]> {
-    // await this.taskResultRepository.updateAll({
-    //   status: TaskResultStatus.SUCCESS,
-    // });
-
     return this.taskResultRepository.find({
       where: { status: TaskResultStatus.IN_PROGRESS },
       order: {
@@ -39,11 +35,9 @@ export class ActivityService {
 
   async getAllQueued(): Promise<TaskResult[]> {
     const jobs = await this.taskQueue.getWaiting();
-    console.log(jobs);
     const taskResultIds = jobs.map(
       (job: { data: { taskResultId: string } }) => job?.data?.taskResultId,
     );
-    console.log(taskResultIds);
 
     // Fetch TaskResult entities from the database
     if (taskResultIds.length === 0) return [];
@@ -52,10 +46,25 @@ export class ActivityService {
       id: In(taskResultIds),
     });
 
-    console.log(foundResults);
+    return foundResults;
+  }
+
+  async getAllActiveInQueue(): Promise<TaskResult[]> {
+    const jobs = await this.taskQueue.getActive();
+    const taskResultIds = jobs.map(
+      (job: { data: { taskResultId: string } }) => job?.data?.taskResultId,
+    );
+
+    // Fetch TaskResult entities from the database
+    if (taskResultIds.length === 0) return [];
+
+    const foundResults = await this.taskResultRepository.findBy({
+      id: In(taskResultIds),
+    });
 
     return foundResults;
   }
+
   getCurrentTaskResults(taskResultId: string): Observable<ActivityDto> {
     return this.getTaskResultSubject(taskResultId).asObservable();
   }

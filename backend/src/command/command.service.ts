@@ -299,4 +299,10 @@ export class CommandService {
     }
     return command;
   }
+
+  async findAll(): Promise<Command[]> {
+    return await this.commandRepository.find({
+      relations: ['arguments'],
+    });
+  }
 }

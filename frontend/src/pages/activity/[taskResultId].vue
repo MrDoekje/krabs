@@ -23,7 +23,7 @@
             <div
               v-for="(event, index) in taskResultOutputs"
               :key="index"
-              class="flex items-start gap-4 p-2 border-b border-border/50"
+              class="flex items-start gap-4 p-2 border-b border-border"
             >
               <span
                 class="text-xs text-muted-foreground whitespace-nowrap pt-1"
@@ -37,7 +37,7 @@
             <div
               v-for="(event, index) in activityEvents"
               :key="index"
-              class="flex items-start gap-4 p-2 border-b border-border/50"
+              class="flex items-start gap-4 p-2 border-b border-border"
             >
               <!-- TODO: better v-if logic -->
               <span

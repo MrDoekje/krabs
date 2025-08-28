@@ -21,9 +21,6 @@ export class Task {
   @Column({ nullable: true })
   description?: string;
 
-  @Column({ default: true })
-  queued: boolean;
-
   @OneToMany(() => TaskCommand, (taskCommand) => taskCommand.task, {
     cascade: true,
     eager: true,

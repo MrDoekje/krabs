@@ -8,10 +8,10 @@ import { UpdateCommandDto } from './dto/update-command.dto';
 export class CommandController {
   constructor(private readonly commandService: CommandService) {}
 
-  // @Get()
-  // findAll(): Command[] {
-  //   throw new NotImplementedException('This method is not implemented yet');
-  // }
+  @Get()
+  findAll(): Promise<Command[]> {
+    return this.commandService.findAll();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Command> {

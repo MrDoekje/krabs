@@ -8,6 +8,15 @@ import {
 import { Type } from 'class-transformer';
 import { CreateCommandDto } from 'src/command/dto/create-command.dto';
 
+export class ExistingOrNewCommand extends CreateCommandDto {
+  /**
+   * If provided, will not create a new command
+   */
+  @IsString()
+  @IsOptional()
+  id?: string;
+}
+
 export class CreateTaskDto {
   /**
    * The name of the task.
@@ -31,7 +40,7 @@ export class CreateTaskDto {
    */
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateCommandDto)
+  @Type(() => ExistingOrNewCommand)
   @IsOptional()
-  commands?: CreateCommandDto[];
+  commands?: ExistingOrNewCommand[];
 }

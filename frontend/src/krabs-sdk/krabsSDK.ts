@@ -12,8 +12,6 @@ import { TaskRequestBuilderNavigationMetadata, type TaskRequestBuilder } from '.
 // @ts-ignore
 import { TaskResultRequestBuilderNavigationMetadata, type TaskResultRequestBuilder } from './taskResult/index.js';
 // @ts-ignore
-import { TaskRunRequestBuilderNavigationMetadata, TaskRunRequestBuilderRequestsMetadata, type TaskRunRequestBuilder } from './taskRun/index.js';
-// @ts-ignore
 import { TasksRequestBuilderNavigationMetadata, TasksRequestBuilderRequestsMetadata, type TasksRequestBuilder } from './tasks/index.js';
 // @ts-ignore
 import { apiClientProxifier, ParseNodeFactoryRegistry, SerializationWriterFactoryRegistry, type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type NavigationMetadata, type RequestAdapter } from '@microsoft/kiota-abstractions';
@@ -85,10 +83,6 @@ export interface KrabsSDK extends BaseRequestBuilder<KrabsSDK> {
      */
     get taskResult(): TaskResultRequestBuilder;
     /**
-     * The taskRun property
-     */
-    get taskRun(): TaskRunRequestBuilder;
-    /**
      * The tasks property
      */
     get tasks(): TasksRequestBuilder;
@@ -117,10 +111,6 @@ export const KrabsSDKNavigationMetadata: Record<Exclude<keyof KrabsSDK, KeysToEx
     },
     taskResult: {
         navigationMetadata: TaskResultRequestBuilderNavigationMetadata,
-    },
-    taskRun: {
-        requestsMetadata: TaskRunRequestBuilderRequestsMetadata,
-        navigationMetadata: TaskRunRequestBuilderNavigationMetadata,
     },
     tasks: {
         requestsMetadata: TasksRequestBuilderRequestsMetadata,

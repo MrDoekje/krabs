@@ -1,117 +1,115 @@
 <template>
-  <div class="w-full p-6 mx-auto">
-    <Card>
-      <CardContent class="space-y-6 flex flex-col">
-        <Card class="bg-muted/60">
-          <CardHeader>
-            <CardTitle class="flex items-center gap-2">
-              <BookCheck class="h-5 w-5" />
-              Task information
-            </CardTitle>
-            <CardDescription>Edit the information of the task</CardDescription>
-          </CardHeader>
-          <CardContent class="flex flex-col gap-y-6">
-            <div class="flex flex-col gap-y-2">
-              <Label for="name" class="flex items-center gap-2">
-                <FileText class="h-4 w-4" />
-                Name
-              </Label>
-              <Input id="name" placeholder="Enter task name" v-model="form.name" required />
-            </div>
-            <div class="flex flex-col gap-y-2">
-              <Label for="description" class="flex items-center gap-2">
-                <Text class="h-4 w-4" />
-                Format
-              </Label>
-              <Textarea
-                id="description"
-                v-model="form.description"
-                placeholder="Additional information about this task"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <h2 class="font-semibold text-lg">Commands</h2>
-            <Dialog>
-              <DialogTrigger as-child>
-                <Button @click="showAddCommand = true" variant="outline" size="sm"
-                  >Add Command</Button
-                >
-              </DialogTrigger>
-              <DialogContent>
-                <k-create-command @create="onCommandCreated">
-                  <template #actions="{ disabledAdd, addNew }">
-                    <DialogFooter>
-                      <DialogClose as-child>
-                        <Button variant="secondary"> Cancel </Button>
-                      </DialogClose>
-                      <DialogClose as-child>
-                        <Button :disabled="disabledAdd" @click="addNew"> Add Command </Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </template>
-                </k-create-command>
-              </DialogContent>
-            </Dialog>
+  <div class="w-full py-6 mx-auto flex flex-col gap-6">
+    <div class="flex flex-col gap-6 px-6">
+      <h1>Edit Task</h1>
+      <Card>
+        <CardHeader>
+          <CardTitle class="flex items-center gap-2 h3">
+            <BookCheck class="size-6" />
+            Task information
+          </CardTitle>
+          <CardDescription>Edit the information of the task</CardDescription>
+        </CardHeader>
+        <CardContent class="flex flex-col gap-y-6">
+          <div class="flex flex-col gap-y-2">
+            <Label for="name" class="flex items-center gap-2">
+              <FileText class="h-4 w-4" />
+              Name
+            </Label>
+            <Input id="name" placeholder="Enter task name" v-model="form.name" required />
           </div>
-          <div class="space-y-2" v-if="form?.commands?.length">
-            <k-command-or-manage
-              v-for="(command, index) in form.commands"
-              :key="command.id"
-              v-model:command="form.commands[index]"
-              allow-edit
-            >
-              <template #actions>
-                <Button
-                  @click="goToCommand(command.id)"
-                  size="icon"
-                  variant="ghost"
-                  :aria-label="`Edit ${command.name}`"
-                >
-                  <Eye />
-                </Button>
-
-                <Button
-                  @click="moveCommand(index, index - 1)"
-                  size="icon"
-                  variant="ghost"
-                  :disabled="index === 0"
-                  :aria-label="`Move ${command.name} up`"
-                >
-                  <ArrowUp />
-                </Button>
-                <Button
-                  @click="moveCommand(index, index + 1)"
-                  size="icon"
-                  variant="ghost"
-                  :disabled="index === (form?.commands || []).length - 1"
-                  :aria-label="`Move ${command.name} down`"
-                >
-                  <ArrowDown />
-                </Button>
-                <Button
-                  @click="removeCommand(index)"
-                  size="icon"
-                  variant="ghost"
-                  :aria-label="`Remove ${command.name}`"
-                >
-                  <Trash />
-                </Button>
+          <div class="flex flex-col gap-y-2">
+            <Label for="description" class="flex items-center gap-2">
+              <Text class="h-4 w-4" />
+              Format
+            </Label>
+            <Textarea
+              id="description"
+              v-model="form.description"
+              placeholder="Additional information about this task"
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+    <Separator />
+    <div class="px-6 flex flex-col gap-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="h3">Commands</h2>
+        <Dialog>
+          <DialogTrigger as-child>
+            <Button @click="showAddCommand = true" variant="outline" size="sm">New Command</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <k-create-command @create="onCommandCreated">
+              <template #actions="{ disabledAdd, addNew }">
+                <DialogFooter>
+                  <DialogClose as-child>
+                    <Button variant="secondary"> Cancel </Button>
+                  </DialogClose>
+                  <DialogClose as-child>
+                    <Button :disabled="disabledAdd" @click="addNew"> Add Command </Button>
+                  </DialogClose>
+                </DialogFooter>
               </template>
-            </k-command-or-manage>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter class="justify-end">
-        <Button @click="doUpdateTask" :loading="loading" class="grow" v-if="isFormDirty"
-          >Update Task</Button
+            </k-create-command>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <div class="flex flex-col gap-y-3" v-if="form?.commands?.length">
+        <k-command-or-manage
+          v-for="(command, index) in form.commands"
+          :key="command.id"
+          v-model:command="form.commands[index]"
+          allow-edit
         >
-        <Button variant="destructive" @click="doRemoveTask"> Delete </Button>
-      </CardFooter>
-    </Card>
+          <template #actions>
+            <Button
+              @click="goToCommand(command.id)"
+              size="icon"
+              variant="ghost"
+              :aria-label="`Edit ${command.name}`"
+            >
+              <Eye />
+            </Button>
+
+            <Button
+              @click="moveCommand(index, index - 1)"
+              size="icon"
+              variant="ghost"
+              :disabled="index === 0"
+              :aria-label="`Move ${command.name} up`"
+            >
+              <ArrowUp />
+            </Button>
+            <Button
+              @click="moveCommand(index, index + 1)"
+              size="icon"
+              variant="ghost"
+              :disabled="index === (form?.commands || []).length - 1"
+              :aria-label="`Move ${command.name} down`"
+            >
+              <ArrowDown />
+            </Button>
+            <Button
+              @click="removeCommand(index)"
+              size="icon"
+              variant="ghost"
+              :aria-label="`Remove ${command.name}`"
+            >
+              <Trash />
+            </Button>
+          </template>
+        </k-command-or-manage>
+      </div>
+    </div>
+    <Separator />
+    <div class="flex flex-row justify-end px-6 w-full">
+      <Button @click="doUpdateTask" :loading="loading" class="grow" v-if="isFormDirty"
+        >Update Task</Button
+      >
+      <Button variant="destructive" @click="doRemoveTask"> Delete </Button>
+    </div>
   </div>
 </template>
 

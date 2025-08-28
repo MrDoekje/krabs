@@ -1,9 +1,9 @@
 <template>
-  <Card class="bg-muted/60">
+  <Card>
     <CardHeader>
-      <CardTitle class="flex items-center gap-2">
+      <CardTitle class="flex items-center gap-2 h2 w-full">
         <Terminal class="h-5 w-5" />
-        Command Configuration
+        Configuration
       </CardTitle>
       <CardDescription>Edit the command details and configuration</CardDescription>
     </CardHeader>

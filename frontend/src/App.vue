@@ -7,9 +7,10 @@ const route = useRoute()
 
 <template>
   <Toaster />
+
   <SidebarProvider>
     <app-sidebar />
-    <SidebarInset>
+    <SidebarInset class="overflow-auto">
       <app-header />
       <div class="rounded-xl">
         <RouterView :key="route.path" />

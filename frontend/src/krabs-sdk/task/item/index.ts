@@ -6,12 +6,14 @@ import { ExecuteRequestBuilderRequestsMetadata, type ExecuteRequestBuilder } fro
 // @ts-ignore
 import { QueueRequestBuilderRequestsMetadata, type QueueRequestBuilder } from './queue/index.js';
 // @ts-ignore
+import { RunRequestBuilderRequestsMetadata, type RunRequestBuilder } from './run/index.js';
+// @ts-ignore
 import { type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type NavigationMetadata } from '@microsoft/kiota-abstractions';
 
 /**
- * Builds and executes requests for operations under /task/{name}
+ * Builds and executes requests for operations under /task/{-id}
  */
-export interface WithNameItemRequestBuilder extends BaseRequestBuilder<WithNameItemRequestBuilder> {
+export interface ItemRequestBuilder extends BaseRequestBuilder<ItemRequestBuilder> {
     /**
      * The execute property
      */
@@ -20,20 +22,27 @@ export interface WithNameItemRequestBuilder extends BaseRequestBuilder<WithNameI
      * The queue property
      */
     get queue(): QueueRequestBuilder;
+    /**
+     * The run property
+     */
+    get run(): RunRequestBuilder;
 }
 /**
  * Uri template for the request builder.
  */
-export const WithNameItemRequestBuilderUriTemplate = "{+baseurl}/task/{name}";
+export const ItemRequestBuilderUriTemplate = "{+baseurl}/task/{%2Did}";
 /**
  * Metadata for all the navigation properties in the request builder.
  */
-export const WithNameItemRequestBuilderNavigationMetadata: Record<Exclude<keyof WithNameItemRequestBuilder, KeysToExcludeForNavigationMetadata>, NavigationMetadata> = {
+export const ItemRequestBuilderNavigationMetadata: Record<Exclude<keyof ItemRequestBuilder, KeysToExcludeForNavigationMetadata>, NavigationMetadata> = {
     execute: {
         requestsMetadata: ExecuteRequestBuilderRequestsMetadata,
     },
     queue: {
         requestsMetadata: QueueRequestBuilderRequestsMetadata,
+    },
+    run: {
+        requestsMetadata: RunRequestBuilderRequestsMetadata,
     },
 };
 /* tslint:enable */

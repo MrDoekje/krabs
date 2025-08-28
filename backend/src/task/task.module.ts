@@ -13,13 +13,22 @@ import { ActivityModule } from 'src/activity/activity.module';
 import { TaskRun } from './task-run/entities/task-run.entity';
 import { TaskRunModule } from './task-run/task-run.module';
 import { TaskResultModule } from './task-result/task-result.module';
+import { TaskResult } from './task-result/entities/task-result.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task, TaskCommand, Command, Argument, TaskRun]),
     BullModule.registerQueue({
       name: 'task',
     }),
+    TypeOrmModule.forFeature([
+      Task,
+      TaskCommand,
+      Command,
+      Argument,
+      TaskRun,
+      TaskResult,
+    ]),
+
     TaskExecutorModule,
     ActivityModule,
     TaskResultModule,

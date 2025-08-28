@@ -7,7 +7,7 @@ import { serializeExecuteTaskDto, type ExecuteTaskDto } from '../../../models/in
 import { type BaseRequestBuilder, type Parsable, type ParsableFactory, type RequestConfiguration, type RequestInformation, type RequestsMetadata } from '@microsoft/kiota-abstractions';
 
 /**
- * Builds and executes requests for operations under /task/{name}/queue
+ * Builds and executes requests for operations under /task/{-id}/queue
  */
 export interface QueueRequestBuilder extends BaseRequestBuilder<QueueRequestBuilder> {
     /**
@@ -25,7 +25,7 @@ export interface QueueRequestBuilder extends BaseRequestBuilder<QueueRequestBuil
 /**
  * Uri template for the request builder.
  */
-export const QueueRequestBuilderUriTemplate = "{+baseurl}/task/{name}/queue";
+export const QueueRequestBuilderUriTemplate = "{+baseurl}/task/{%2Did}/queue";
 /**
  * Metadata for all the requests in the request builder.
  */

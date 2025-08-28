@@ -13,7 +13,6 @@ import { Task } from 'src/task/entities/task.entity';
 import { TaskCommand } from 'src/task/task-command/entities/task-command.entity';
 import { Command } from 'src/command/entities/command.entity';
 import { Argument } from 'src/argument/entities/argument.entity';
-import { TaskResult } from 'src/task/task-result/entities/task-result.entity';
 import { CreateTaskDto } from 'src/task/dto/create-task.dto';
 import { TaskExecutorService } from 'src/task/task-executor/task-executor.service';
 import { UpdateTaskDto } from 'src/task/dto/update-task.dto';
@@ -22,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { WrapperType } from 'src/utils/wrapper';
 import { TaskRunService } from './task-run/task-run.service';
 import { TaskResultService } from './task-result/task-result.service';
+import { isArguments, RunOrArguments } from 'src/helpers/runOrArgument';
 
 @Injectable()
 export class TaskService {
@@ -51,6 +51,7 @@ export class TaskService {
    */
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
     this.logger.log(`Creating task: ${createTaskDto.name}`);
+    // TODO: use transaction to save all at once
 
     const task = new Task();
     task.name = createTaskDto.name;
@@ -58,46 +59,61 @@ export class TaskService {
 
     // Save the task first to get an ID
     const savedTask = await this.taskRepository.save(task);
+    this.logger.log(`Task created successfully with ID: ${savedTask.id}`);
 
     // Create and save commands with their arguments and task relationships
     const commands = createTaskDto.commands || [];
     for (let index = 0; index < commands.length; index++) {
       const commandDto = commands[index];
 
-      const command = new Command();
-      command.wd = commandDto.wd;
-      command.name = commandDto.name;
-      command.format = commandDto.format || '--{{name}}={{value}}';
-      command.command = commandDto.command;
-      command.optional = commandDto.optional ?? false;
-      command.arguments = [];
-
-      // Create and save arguments if provided
-      if (commandDto.arguments && commandDto.arguments.length > 0) {
-        for (const argDto of commandDto.arguments) {
-          const argument = new Argument();
-          argument.name = argDto.name;
-          argument.required = argDto.required;
-          await this.argumentRepository.save(argument);
-          command.arguments.push(argument);
+      let command: Command;
+      if (commandDto.id) {
+        const foundCommand = await this.commandRepository.findOne({
+          where: { id: commandDto.id },
+        });
+        if (!foundCommand) {
+          throw new NotFoundException(
+            `Command with ID "${commandDto.id}" not found`,
+          );
         }
-      }
+        command = foundCommand;
+      } else {
+        const newCommand = new Command();
+        newCommand.wd = commandDto.wd;
+        newCommand.name = commandDto.name;
+        newCommand.format = commandDto.format || '--{{name}}={{value}}';
+        newCommand.command = commandDto.command;
+        newCommand.optional = commandDto.optional ?? false;
+        newCommand.arguments = [];
 
-      // TODO: use transaction to save all at once
-      const savedCommand = await this.commandRepository.save(command);
+        // Create and save arguments if provided
+        if (commandDto.arguments && commandDto.arguments.length > 0) {
+          for (const argDto of commandDto.arguments) {
+            const argument = new Argument();
+            argument.name = argDto.name;
+            argument.required = argDto.required;
+            await this.argumentRepository.save(argument);
+            newCommand.arguments.push(argument);
+          }
+        }
+
+        command = await this.commandRepository.save(newCommand);
+        this.logger.log(`Command created successfully with ID: ${command.id}`);
+      }
 
       // Create the TaskCommand relationship with execution order
       const taskCommand = new TaskCommand();
       taskCommand.task = savedTask;
-      taskCommand.command = savedCommand;
+      taskCommand.command = command;
       taskCommand.executionOrder = index;
 
       await this.taskCommandRepository.save(taskCommand);
+      this.logger.log(
+        `TaskCommand created successfully for Task ID: ${savedTask.id}`,
+      );
     }
 
     this.logger.log(`Task created successfully with ID: ${savedTask.id}`);
-
-    // Return the task with all relationships loaded
     return savedTask;
   }
 
@@ -119,6 +135,7 @@ export class TaskService {
     }
 
     await this.taskRepository.save(task);
+    this.logger.log(`Task updated successfully with ID: ${task.id}`);
 
     if (updateTaskDto.commands && Array.isArray(updateTaskDto.commands)) {
       // Remove existing TaskCommand relations for this task
@@ -159,6 +176,9 @@ export class TaskService {
 
       if (updates.length > 0) {
         await this.taskCommandRepository.save(updates);
+        this.logger.log(
+          `TaskCommands updated successfully for Task ID: ${task.id}`,
+        );
       }
 
       // Add new TaskCommands for commands not already present
@@ -172,6 +192,9 @@ export class TaskService {
           newTaskCommand.command = commandDto;
           newTaskCommand.executionOrder = i;
           await this.taskCommandRepository.save(newTaskCommand);
+          this.logger.log(
+            `TaskCommand created successfully for Task ID: ${task.id}`,
+          );
         }
       }
     }
@@ -184,6 +207,7 @@ export class TaskService {
    * Find a task by name
    */
   async findByName(name: string): Promise<Task> {
+    this.logger.log(`Finding task with name: ${name}`);
     const task = await this.taskRepository.findOne({
       where: { name },
       relations: [
@@ -205,6 +229,7 @@ export class TaskService {
    * Find a task by ID
    */
   async findById(id: string): Promise<Task> {
+    this.logger.log(`Finding task with ID: ${id}`);
     const task = await this.taskRepository.findOne({
       where: { id },
       relations: [
@@ -223,6 +248,7 @@ export class TaskService {
   }
 
   async remove(id: string): Promise<void> {
+    this.logger.log(`Removing task with ID: ${id}`);
     await this.taskRepository.delete(id);
     return;
   }
@@ -230,14 +256,11 @@ export class TaskService {
   /**
    * Execute a task immediately by id with supplied arguments
    */
-  async executeById(
-    taskId: string,
-    commandArguments: Record<string, Record<string, string>> = {},
-  ): Promise<void> {
+  async executeById(taskId: string, options: RunOrArguments): Promise<void> {
     this.logger.log(`Executing task: ${taskId}`);
 
     const task = await this.findById(taskId);
-    void this.executeTaskWithArguments(task, commandArguments);
+    void this.executeTask(task, options);
   }
 
   /**
@@ -246,42 +269,37 @@ export class TaskService {
    */
   async executeByName(
     taskName: string,
-    commandArguments: Record<string, Record<string, string>> = {},
+    options: RunOrArguments,
   ): Promise<void> {
     this.logger.log(`Executing task: ${taskName}`);
 
     const task = await this.findByName(taskName);
-    void this.executeTaskWithArguments(task, commandArguments);
+    void this.executeTask(task, options);
   }
 
-  private async queueTask(
-    task: Task,
-    commandArguments: Record<string, Record<string, string>> = {},
-    priority = 0,
-    taskRunId?: string,
-  ) {
+  private async queueTask(task: Task, options: RunOrArguments, _priority = 0) {
     const taskResultId = uuidv4();
 
-    let taskRunIdForJob = taskRunId;
+    let taskRunIdForJob: string;
 
-    if (!taskRunIdForJob) {
+    if (isArguments(options)) {
       taskRunIdForJob = (
         await this.taskRunService.create({
           name: `${task.name} - ${new Date().toISOString()}`,
           description: `Run for task ${task.name}`,
           task,
-          commandArguments,
+          commandArguments: options.commandArguments,
         })
       ).id;
+    } else {
+      taskRunIdForJob = options.taskRunId;
     }
 
-    const taskResult = await this.taskResultService.createTaskResult(
+    await this.taskResultService.createTaskResult(
       task,
       await this.taskRunService.findById(taskRunIdForJob),
       taskResultId,
     );
-
-    console.log(`Task result created: `, taskResult);
 
     this.activityService.emitQueueEvent({
       taskId: task.id,
@@ -299,7 +317,9 @@ export class TaskService {
         taskRunId: taskRunIdForJob,
       },
       {
-        priority,
+        removeOnComplete: true,
+        removeOnFail: true,
+        // priority,
         attempts: 3,
         backoff: {
           type: 'exponential',
@@ -314,14 +334,14 @@ export class TaskService {
    */
   async queueById(
     taskId: string,
-    commandArguments: Record<string, Record<string, string>> = {},
+    options: RunOrArguments,
     priority = 0,
   ): Promise<void> {
     this.logger.log(`Queueing task: ${taskId}`);
 
     const task = await this.findById(taskId);
 
-    await this.queueTask(task, commandArguments, priority);
+    await this.queueTask(task, options, priority);
 
     this.logger.log(`Task ${taskId} queued successfully`);
   }
@@ -332,45 +352,37 @@ export class TaskService {
    */
   async queueByName(
     taskName: string,
-    commandArguments: Record<string, Record<string, string>> = {},
+    options: RunOrArguments,
     priority = 0,
-    taskRunId?: string,
   ): Promise<void> {
     this.logger.log(`Queueing task: ${taskName}`);
 
     const task = await this.findByName(taskName);
 
-    await this.queueTask(task, commandArguments, priority, taskRunId);
+    await this.queueTask(task, options, priority);
 
     this.logger.log(`Task ${taskName} queued successfully`);
   }
 
-  async executeTaskWithArguments(
-    task: Task,
-    commandArguments: Record<string, Record<string, string>>,
-  ): Promise<TaskResult> {
-    this.logger.log(`Executing task ${task.name} with arguments`);
-
-    const taskRunId = (
-      await this.taskRunService.create({
-        name: `${task.name} - ${new Date().toISOString()}`,
-        description: `Run for task ${task.name}`,
-        task,
-        commandArguments: commandArguments || {},
-      })
-    ).id;
-
-    return this.taskExecutorService.executeTask(task, taskRunId);
-  }
-
-  /**
-   * Execute a task
-   */
   async executeTask(
     task: Task,
-    taskRunId: string,
+    options: RunOrArguments,
     taskResultId?: string,
-  ): Promise<TaskResult> {
+  ) {
+    this.logger.log(`Executing task ${task.name} with options:`, options);
+    let taskRunId: string;
+    if (isArguments(options)) {
+      taskRunId = (
+        await this.taskRunService.create({
+          name: `${task.name} - ${new Date().toISOString()}`,
+          description: `Run for task ${task.name}`,
+          task,
+          commandArguments: options.commandArguments || {},
+        })
+      ).id;
+    } else {
+      taskRunId = options.taskRunId;
+    }
     return this.taskExecutorService.executeTask(task, taskRunId, taskResultId);
   }
 

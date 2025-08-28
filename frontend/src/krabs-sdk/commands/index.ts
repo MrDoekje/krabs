@@ -19,11 +19,21 @@ export interface CommandsRequestBuilder extends BaseRequestBuilder<CommandsReque
      */
      byId(id: string) : CommandsItemRequestBuilder;
     /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {Promise<Command[]>}
+     */
+     get(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Command[] | undefined>;
+    /**
      * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {Promise<Command>}
      */
      post(body: CreateCommandDto, requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Command | undefined>;
+    /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {RequestInformation}
+     */
+     toGetRequestInformation(requestConfiguration?: RequestConfiguration<object> | undefined) : RequestInformation;
     /**
      * @param body The request body
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
@@ -48,6 +58,12 @@ export const CommandsRequestBuilderNavigationMetadata: Record<Exclude<keyof Comm
  * Metadata for all the requests in the request builder.
  */
 export const CommandsRequestBuilderRequestsMetadata: RequestsMetadata = {
+    get: {
+        uriTemplate: CommandsRequestBuilderUriTemplate,
+        responseBodyContentType: "application/json",
+        adapterMethodName: "sendCollection",
+        responseBodyFactory:  createCommandFromDiscriminatorValue,
+    },
     post: {
         uriTemplate: CommandsRequestBuilderUriTemplate,
         responseBodyContentType: "application/json",
