@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar'
 import { useActivityStore } from '@/stores/activity'
-import { CircleCheckBig, Home, LayoutDashboard } from 'lucide-vue-next'
+import { CircleCheckBig, Command, Home, LayoutDashboard, Terminal } from 'lucide-vue-next'
 import { computed, onMounted } from 'vue'
 
 import { useRoute, type RouteMap } from 'vue-router'
@@ -36,14 +36,14 @@ const data: {
 } = {
   navMain: [
     {
-      title: 'Home',
-      url: '/',
-      icon: Home,
-    },
-    {
       title: 'Tasks',
       url: '/tasks/',
       icon: CircleCheckBig,
+    },
+    {
+      title: 'Commands',
+      url: '/commands/',
+      icon: Terminal,
     },
     {
       title: 'Activity',

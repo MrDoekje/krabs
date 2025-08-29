@@ -8,12 +8,12 @@ import VueRouter from 'unplugin-vue-router/vite'
 
 export default defineConfig({
   plugins: [
-    vueDevTools(),
     tailwindcss(),
     Components({
       dts: true,
     }),
     VueRouter(),
+    vueDevTools(),
     vue(),
   ],
   resolve: {

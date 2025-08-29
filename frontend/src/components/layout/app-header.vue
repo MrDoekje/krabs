@@ -42,7 +42,8 @@ const routeBreadcrumbMap: Record<
   '/activity/[taskResultId]': () => 'Task Result',
   '/tasks/': () => 'Tasks',
   '/tasks/[taskId]/': () => 'Task Details',
-  '/tasks/[taskId]/commands/[commandId]': () => 'Command Details',
+  '/commands/': () => 'Commands',
+  '/commands/[commandId]': () => 'Command Details',
   '/tasks/[taskId]/edit': () => 'Edit Task',
   '/tasks/new': () => 'Create Task',
 }

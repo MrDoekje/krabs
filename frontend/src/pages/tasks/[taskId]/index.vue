@@ -226,8 +226,8 @@ const commandArguments = ref<Record<string, Record<string, string>>>({})
               <template #actions>
                 <router-link
                   :to="{
-                    name: '/tasks/[taskId]/commands/[commandId]',
-                    params: { taskId: task.id, commandId: command.command?.id },
+                    name: '/commands/[commandId]',
+                    params: { commandId: command.command?.id },
                   }"
                 >
                   <Button variant="ghost" size="icon" aria-label="Edit Command">
