@@ -29,8 +29,6 @@ Frontend
 
 - [x] Show task runs in frontend
   - including crud
-- clear queue
-- stop queued task
 
 Tasks
 

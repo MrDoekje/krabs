@@ -2,12 +2,18 @@
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useActivityStore } from '@/stores/activity'
-import { statusMap } from '@/stores/activity/types'
 import { Clock, List, TerminalIcon } from 'lucide-vue-next'
 import type { TaskResult } from '@/krabs-sdk/models'
 
-const { getTaskResultList, getQueuedTasks, loadTaskResults, loadQueuedTasks, listenToQueueEvents } =
-  useActivityStore()
+const {
+  getTaskResultList,
+  getQueuedTasks,
+  loadTaskResults,
+  loadQueuedTasks,
+  listenToQueueEvents,
+  clearQueue,
+  stopQueuedTask,
+} = useActivityStore()
 
 const router = useRouter()
 
@@ -66,6 +72,15 @@ onMounted(async () => {
         <div class="flex items-center gap-2">
           <List class="size-6" />
           <h2>Queued Tasks</h2>
+          <Button
+            variant="destructive"
+            size="sm"
+            class="ml-auto"
+            @click="clearQueue"
+            :disabled="queuedTasks.length === 0"
+          >
+            Clear Queue
+          </Button>
         </div>
         <CardDescription>Tasks waiting to be executed.</CardDescription>
       </div>
@@ -78,7 +93,13 @@ onMounted(async () => {
             :task-result="taskResult"
             v-for="(taskResult, index) in queuedTasks"
             :key="taskResult.id || index"
-          />
+          >
+            <template #actions>
+              <Button @click="stopQueuedTask(taskResult.id)" variant="destructive" size="sm"
+                >Remove from queue</Button
+              >
+            </template>
+          </k-task-result>
         </div>
       </div>
     </div>
