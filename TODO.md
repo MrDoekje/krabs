@@ -12,12 +12,9 @@ backend
 - fix krabs on startup picking up many tasks
   - Actually I looked into this, it just runs 2x the amount of jobs it should, due to using npm run start:dev
 - Better config handling
-- Add remove from queue
-- Add way to stop active task
 - Can we run the tasks in a separate process?
 - Crud for task-run
 - Make API more restful (/task-result/task-result-output) => /task/result/output
-- create 'Most popular command format' endpoint
 
 Frontend
 
@@ -32,8 +29,8 @@ Frontend
 
 - [x] Show task runs in frontend
   - including crud
-- use 'Most popular command format' endpoint
-  - when creating/editing command, can now select from existing popular formats
+- clear queue
+- stop queued task
 
 Tasks
 

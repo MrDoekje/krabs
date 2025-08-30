@@ -4,6 +4,8 @@
 // @ts-ignore
 import { createTaskFromDiscriminatorValue, serializeCreateTaskDto, serializeTask, type CreateTaskDto, type Task } from '../models/index.js';
 // @ts-ignore
+import { ExecutorRequestBuilderNavigationMetadata, type ExecutorRequestBuilder } from './executor/index.js';
+// @ts-ignore
 import { TasksItemRequestBuilderNavigationMetadata, TasksItemRequestBuilderRequestsMetadata, type TasksItemRequestBuilder } from './item/index.js';
 // @ts-ignore
 import { type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type NavigationMetadata, type Parsable, type ParsableFactory, type RequestConfiguration, type RequestInformation, type RequestsMetadata } from '@microsoft/kiota-abstractions';
@@ -12,6 +14,10 @@ import { type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type 
  * Builds and executes requests for operations under /tasks
  */
 export interface TasksRequestBuilder extends BaseRequestBuilder<TasksRequestBuilder> {
+    /**
+     * The executor property
+     */
+    get executor(): ExecutorRequestBuilder;
     /**
      * Gets an item from the ApiSdk.tasks.item collection
      * @param id Unique identifier of the item
@@ -53,6 +59,9 @@ export const TasksRequestBuilderNavigationMetadata: Record<Exclude<keyof TasksRe
         requestsMetadata: TasksItemRequestBuilderRequestsMetadata,
         navigationMetadata: TasksItemRequestBuilderNavigationMetadata,
         pathParametersMappings: ["id"],
+    },
+    executor: {
+        navigationMetadata: ExecutorRequestBuilderNavigationMetadata,
     },
 };
 /**

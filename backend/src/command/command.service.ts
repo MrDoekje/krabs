@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Command } from 'src/command/entities/command.entity';
 import { CommandResultDto } from 'src/command/dto/command-result.dto';
-import { spawn } from 'child_process';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { CreateCommandDto } from 'src/command/dto/create-command.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Task } from 'src/task/entities/task.entity';
 import { TaskCommand } from 'src/task/task-command/entities/task-command.entity';
 import { Argument } from 'src/argument/entities/argument.entity';
@@ -12,10 +12,14 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CommandOutputEvent } from 'src/command/event/command-output.event';
 import { CommandStatusEvent } from 'src/command/event/command-status.event';
 import { TaskResultStatus } from 'src/task/task-result/types';
+import { MostPopularFormatDto } from './dto/most-popular-formats.dto';
 
 @Injectable()
 export class CommandService {
   private readonly logger = new Logger(CommandService.name);
+
+  // key: taskResultId
+  private commandChildren: Record<string, ChildProcessWithoutNullStreams> = {};
 
   constructor(
     @InjectRepository(Command)
@@ -49,9 +53,19 @@ export class CommandService {
       const argValue = providedArgs[argument.name];
 
       if (argument.required && !argValue) {
-        throw new Error(
-          `Required argument "${argument.name}" not provided for command "${command.command}"`,
+        const errorText = `Required argument "${argument.name}" not provided for command "${command.command}"`;
+
+        this.eventEmitter.emit(
+          'command.output',
+          new CommandOutputEvent(errorText, taskResultId),
         );
+
+        this.eventEmitter.emit(
+          'command.status',
+          new CommandStatusEvent(TaskResultStatus.FAILED, taskResultId),
+        );
+
+        throw new Error(errorText);
       }
 
       if (argValue) {
@@ -88,6 +102,7 @@ export class CommandService {
           env: process.env,
           shell: true,
         });
+        this.commandChildren[taskResultId] = child;
 
         this.eventEmitter.emit(
           'command.output',
@@ -132,6 +147,7 @@ export class CommandService {
               taskResultId,
             ),
           );
+          delete this.commandChildren[taskResultId];
         });
 
         child.on('error', (err: Error) => {
@@ -147,6 +163,7 @@ export class CommandService {
             'command.status',
             new CommandStatusEvent(TaskResultStatus.FAILED, taskResultId),
           );
+          delete this.commandChildren[taskResultId];
         });
       } catch (error) {
         resolve({
@@ -163,8 +180,17 @@ export class CommandService {
           'command.status',
           new CommandStatusEvent(TaskResultStatus.FAILED, taskResultId),
         );
+        delete this.commandChildren[taskResultId];
       }
     });
+  }
+
+  killTaskResultCommand(taskResultId: string): void {
+    const child = this.commandChildren[taskResultId];
+    if (child) {
+      child.kill(1);
+      delete this.commandChildren[taskResultId];
+    }
   }
 
   async create(createCommandDto: CreateCommandDto): Promise<Command> {
@@ -312,5 +338,27 @@ export class CommandService {
       throw new Error(`Command with id ${id} not found`);
     }
     void this.commandRepository.remove(command);
+  }
+
+  async getMostPopularFormats(): Promise<MostPopularFormatDto[]> {
+    console.log('test');
+    try {
+      const result = await this.commandRepository
+        .createQueryBuilder('command')
+        .select('command.format', 'format')
+        .addSelect('COUNT(command.id)', 'count')
+        .groupBy('command.format')
+        .orderBy('count', 'DESC')
+        .limit(10)
+        .getRawMany<{ format: string; count: string }>();
+
+      return result.map((row) => ({
+        format: row.format,
+        count: Number(row.count),
+      }));
+    } catch (error) {
+      console.error('Error fetching most popular formats:', error);
+      throw new Error('Could not retrieve most popular formats');
+    }
   }
 }

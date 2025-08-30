@@ -20,9 +20,19 @@ export interface TaskResultRequestBuilder extends BaseRequestBuilder<TaskResultR
      byTaskResultId(taskResultId: string) : WithTaskResultItemRequestBuilder;
     /**
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {Promise<ArrayBuffer>}
+     */
+     delete(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<ArrayBuffer | undefined>;
+    /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {Promise<TaskResult[]>}
      */
      get(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<TaskResult[] | undefined>;
+    /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {RequestInformation}
+     */
+     toDeleteRequestInformation(requestConfiguration?: RequestConfiguration<object> | undefined) : RequestInformation;
     /**
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {RequestInformation}
@@ -46,6 +56,11 @@ export const TaskResultRequestBuilderNavigationMetadata: Record<Exclude<keyof Ta
  * Metadata for all the requests in the request builder.
  */
 export const TaskResultRequestBuilderRequestsMetadata: RequestsMetadata = {
+    delete: {
+        uriTemplate: TaskResultRequestBuilderUriTemplate,
+        adapterMethodName: "sendPrimitive",
+        responseBodyFactory:  "ArrayBuffer",
+    },
     get: {
         uriTemplate: TaskResultRequestBuilderUriTemplate,
         responseBodyContentType: "application/json",

@@ -35,9 +35,14 @@ export class ActivityController {
   }
 
   @Delete('task-result/:taskResultId')
-  async stopTask(
+  async removeQueuedTaskResult(
     @Param('taskResultId') taskResultId: string,
-  ): Promise<{ success: boolean }> {
-    return this.activityService.stopTaskResult(taskResultId);
+  ): Promise<void> {
+    return this.activityService.removeQueuedTaskResult(taskResultId);
+  }
+
+  @Delete('task-result')
+  async clearQueue(): Promise<void> {
+    return this.activityService.clearQueue();
   }
 }

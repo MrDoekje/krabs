@@ -146,14 +146,32 @@ export const useActivityStore = defineStore('activity', () => {
     return eventSource
   }
 
-  //   const stopTask = async (taskResultId: string) => {
-  //     try {
-  //       await krabsSdk.activity.taskResult.byId(taskResultId).delete()
-  //       delete taskResults.value[taskResultId]
-  //     } catch {
-  //       console.error('failed to stop task')
-  //     }
-  //   }
+  const stopActiveTask = async (taskResultId: string) => {
+    try {
+      await krabsSdk.tasks.executor.byTaskResultId(taskResultId).delete()
+      delete taskResults.value[taskResultId]
+    } catch {
+      console.error('failed to stop task')
+    }
+  }
+
+  const stopQueuedTask = async (taskResultId: string) => {
+    try {
+      await krabsSdk.activity.taskResult.byTaskResultId(taskResultId).delete()
+      queuedTasks.value = queuedTasks.value.filter((t) => t.id !== taskResultId)
+    } catch {
+      console.error('failed to stop task')
+    }
+  }
+
+  const clearQueue = async () => {
+    try {
+      await krabsSdk.activity.taskResult.delete()
+      queuedTasks.value = []
+    } catch {
+      console.error('failed to stop task')
+    }
+  }
 
   const loadQueuedTasks = async () => {
     // isLoadingQueuedTasks.value = true
@@ -181,6 +199,8 @@ export const useActivityStore = defineStore('activity', () => {
     loadQueuedTasks,
     listenToQueueEvents,
     stopListeningToQueueEvents,
-    // stopTask,
+    clearQueue,
+    stopActiveTask,
+    stopQueuedTask,
   }
 })

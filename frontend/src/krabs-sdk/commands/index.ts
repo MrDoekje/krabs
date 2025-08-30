@@ -4,6 +4,8 @@
 // @ts-ignore
 import { createCommandFromDiscriminatorValue, serializeCommand, serializeCreateCommandDto, type Command, type CreateCommandDto } from '../models/index.js';
 // @ts-ignore
+import { FormatsRequestBuilderRequestsMetadata, type FormatsRequestBuilder } from './formats/index.js';
+// @ts-ignore
 import { CommandsItemRequestBuilderRequestsMetadata, type CommandsItemRequestBuilder } from './item/index.js';
 // @ts-ignore
 import { type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type NavigationMetadata, type Parsable, type ParsableFactory, type RequestConfiguration, type RequestInformation, type RequestsMetadata } from '@microsoft/kiota-abstractions';
@@ -12,6 +14,10 @@ import { type BaseRequestBuilder, type KeysToExcludeForNavigationMetadata, type 
  * Builds and executes requests for operations under /commands
  */
 export interface CommandsRequestBuilder extends BaseRequestBuilder<CommandsRequestBuilder> {
+    /**
+     * The formats property
+     */
+    get formats(): FormatsRequestBuilder;
     /**
      * Gets an item from the ApiSdk.commands.item collection
      * @param id Unique identifier of the item
@@ -52,6 +58,9 @@ export const CommandsRequestBuilderNavigationMetadata: Record<Exclude<keyof Comm
     byId: {
         requestsMetadata: CommandsItemRequestBuilderRequestsMetadata,
         pathParametersMappings: ["id"],
+    },
+    formats: {
+        requestsMetadata: FormatsRequestBuilderRequestsMetadata,
     },
 };
 /**

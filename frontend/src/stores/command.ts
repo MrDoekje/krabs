@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Command, CreateCommandDto } from '@/krabs-sdk/models'
+import type { Command, CreateCommandDto, MostPopularFormatDto } from '@/krabs-sdk/models'
 import { useKrabsSdk } from '@/lib/krabs-sdk'
 
 export const useCommandStore = defineStore('commands', () => {
@@ -8,10 +8,12 @@ export const useCommandStore = defineStore('commands', () => {
 
   // state
   const commands = ref<Record<string, Command>>({})
+  const mostPopularFormats = ref<MostPopularFormatDto[]>([])
 
   // getters
   const getCommandList = () => computed(() => Object.values(commands.value))
   const getCommand = (commandId: string) => computed(() => commands.value[commandId])
+  const getMostPopularFormats = () => computed(() => mostPopularFormats.value)
 
   // actions
   const loadCommand = async (commandId: string) => {
@@ -41,6 +43,24 @@ export const useCommandStore = defineStore('commands', () => {
       })
     } catch {
       console.error('failed to load command')
+    }
+  }
+
+  const loadMostPopularFormats = async (): Promise<void> => {
+    try {
+      const formats = await krabsSdk.commands.formats.get()
+      if (!Array.isArray(formats) || !formats?.length) {
+        console.error('failed to load most popular formats')
+        mostPopularFormats.value = []
+        return
+      }
+      for (const format of formats) {
+        mostPopularFormats.value.push(format)
+      }
+    } catch {
+      console.error('failed to load most popular formats')
+      mostPopularFormats.value = []
+      return
     }
   }
 
@@ -93,5 +113,7 @@ export const useCommandStore = defineStore('commands', () => {
     createCommand,
     updateCommand,
     removeCommand,
+    getMostPopularFormats,
+    loadMostPopularFormats,
   }
 })

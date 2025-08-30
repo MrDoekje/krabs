@@ -317,6 +317,7 @@ export class TaskService {
         taskRunId: taskRunIdForJob,
       },
       {
+        jobId: taskRunIdForJob,
         removeOnComplete: true,
         removeOnFail: true,
         // priority,
@@ -364,6 +365,7 @@ export class TaskService {
     this.logger.log(`Task ${taskName} queued successfully`);
   }
 
+  // TODO: maybe move to task-executor module/service instead
   async executeTask(
     task: Task,
     options: RunOrArguments,

@@ -4,11 +4,17 @@
       <h1 class="text-3xl font-bold">Task Result</h1>
       <p class="text-muted-foreground">View details and activity log for this task result.</p>
     </header>
-    <k-task-result :task-result="taskResult" v-if="taskResult" />
+    <k-task-result :task-result="taskResult" v-if="taskResult">
+      <template #actions>
+        <Button variant="outline" size="sm" @click="stopActiveTask(taskResultId)">
+          Stop Task
+        </Button>
+      </template>
+    </k-task-result>
 
     <Card>
       <CardHeader>
-        <CardTitle>Activity Log</CardTitle>
+        <CardTitle> Activity Log </CardTitle>
         <CardDescription> Last updated: {{ new Date().toLocaleTimeString() }} </CardDescription>
       </CardHeader>
       <CardContent>
@@ -101,7 +107,7 @@ const route = useRoute('/activity/[taskResultId]')
 const taskResultId = route.params.taskResultId as string
 
 // TODO: fix naming
-const { getTaskResultActivity, loadTaskResult } = useActivityStore()
+const { getTaskResultActivity, loadTaskResult, stopActiveTask } = useActivityStore()
 const { getTaskResultOutputsByTaskResultId, loadOutputsByTaskResultId } = useTaskResultOutputStore()
 const { getTaskResultById, loadResultById } = useTaskResultStore()
 

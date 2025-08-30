@@ -6,9 +6,9 @@ import { type AdditionalDataHolder, type Parsable, type ParseNode, type Serializ
 
 export interface Argument extends AdditionalDataHolder, Parsable {
     /**
-     * The commands property
+     * The command property
      */
-    commands?: Command[] | null;
+    command?: Command | null;
     /**
      * The id property
      */
@@ -184,6 +184,15 @@ export function createExistingOrNewCommandFromDiscriminatorValue(parseNode: Pars
 /**
  * Creates a new instance of the appropriate class based on discriminator value
  * @param parseNode The parse node to use to read the discriminator value and create the object
+ * @returns {MostPopularFormatDto}
+ */
+// @ts-ignore
+export function createMostPopularFormatDtoFromDiscriminatorValue(parseNode: ParseNode | undefined) : ((instance?: Parsable) => Record<string, (node: ParseNode) => void>) {
+    return deserializeIntoMostPopularFormatDto;
+}
+/**
+ * Creates a new instance of the appropriate class based on discriminator value
+ * @param parseNode The parse node to use to read the discriminator value and create the object
  * @returns {QueueTaskDto_commandArguments}
  */
 // @ts-ignore
@@ -302,7 +311,7 @@ export function createUpdateTaskDtoFromDiscriminatorValue(parseNode: ParseNode |
 // @ts-ignore
 export function deserializeIntoArgument(argument: Partial<Argument> | undefined = {}) : Record<string, (node: ParseNode) => void> {
     return {
-        "commands": n => { argument.commands = n.getCollectionOfObjectValues<Command>(createCommandFromDiscriminatorValue); },
+        "command": n => { argument.command = n.getObjectValue<Command>(createCommandFromDiscriminatorValue); },
         "id": n => { argument.id = n.getNumberValue(); },
         "name": n => { argument.name = n.getStringValue(); },
         "required": n => { argument.required = n.getBooleanValue(); },
@@ -417,6 +426,18 @@ export function deserializeIntoExistingOrNewCommand(existingOrNewCommand: Partia
         "optional": n => { existingOrNewCommand.optional = n.getBooleanValue(); },
         "taskId": n => { existingOrNewCommand.taskId = n.getStringValue(); },
         "wd": n => { existingOrNewCommand.wd = n.getStringValue(); },
+    }
+}
+/**
+ * The deserialization information for the current model
+ * @param MostPopularFormatDto The instance to deserialize into.
+ * @returns {Record<string, (node: ParseNode) => void>}
+ */
+// @ts-ignore
+export function deserializeIntoMostPopularFormatDto(mostPopularFormatDto: Partial<MostPopularFormatDto> | undefined = {}) : Record<string, (node: ParseNode) => void> {
+    return {
+        "count": n => { mostPopularFormatDto.count = n.getNumberValue(); },
+        "format": n => { mostPopularFormatDto.format = n.getStringValue(); },
     }
 }
 /**
@@ -627,6 +648,16 @@ export interface ExistingOrNewCommand extends AdditionalDataHolder, Parsable {
      */
     wd?: string | null;
 }
+export interface MostPopularFormatDto extends AdditionalDataHolder, Parsable {
+    /**
+     * The number of times this format was used.@type {number}
+     */
+    count?: number | null;
+    /**
+     * The format string.@type {string}
+     */
+    format?: string | null;
+}
 export interface QueueTaskDto extends AdditionalDataHolder, Parsable {
     /**
      * Arguments per named command (per named argument)
@@ -651,7 +682,7 @@ export interface QueueTaskDto_commandArguments extends AdditionalDataHolder, Par
 // @ts-ignore
 export function serializeArgument(writer: SerializationWriter, argument: Partial<Argument> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
     if (!argument || isSerializingDerivedType) { return; }
-    writer.writeCollectionOfObjectValues<Command>("commands", argument.commands, serializeCommand);
+    writer.writeObjectValue<Command>("command", argument.command, serializeCommand);
     writer.writeNumberValue("id", argument.id);
     writer.writeStringValue("name", argument.name);
     writer.writeBooleanValue("required", argument.required);
@@ -775,6 +806,19 @@ export function serializeExistingOrNewCommand(writer: SerializationWriter, exist
     writer.writeStringValue("taskId", existingOrNewCommand.taskId);
     writer.writeStringValue("wd", existingOrNewCommand.wd);
     writer.writeAdditionalData(existingOrNewCommand.additionalData);
+}
+/**
+ * Serializes information the current object
+ * @param isSerializingDerivedType A boolean indicating whether the serialization is for a derived type.
+ * @param MostPopularFormatDto The instance to serialize from.
+ * @param writer Serialization writer to use to serialize this model
+ */
+// @ts-ignore
+export function serializeMostPopularFormatDto(writer: SerializationWriter, mostPopularFormatDto: Partial<MostPopularFormatDto> | undefined | null = {}, isSerializingDerivedType: boolean = false) : void {
+    if (!mostPopularFormatDto || isSerializingDerivedType) { return; }
+    writer.writeNumberValue("count", mostPopularFormatDto.count);
+    writer.writeStringValue("format", mostPopularFormatDto.format);
+    writer.writeAdditionalData(mostPopularFormatDto.additionalData);
 }
 /**
  * Serializes information the current object

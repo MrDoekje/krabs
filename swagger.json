@@ -54,6 +54,30 @@
         ]
       }
     },
+    "/commands/formats": {
+      "get": {
+        "operationId": "CommandController_getMostPopularFormats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MostPopularFormatDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Command"
+        ]
+      }
+    },
     "/commands/{id}": {
       "get": {
         "operationId": "CommandController_findOne",
@@ -502,6 +526,30 @@
         ]
       }
     },
+    "/tasks/executor/{taskResultId}": {
+      "delete": {
+        "operationId": "TaskExecutorController_stopTaskResultExecution",
+        "parameters": [
+          {
+            "name": "taskResultId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get task results by task result ID",
+        "tags": [
+          "TaskExecutor"
+        ]
+      }
+    },
     "/task-result/{taskResultId}": {
       "get": {
         "operationId": "TaskResultController_getResultsByTaskResultId",
@@ -550,6 +598,18 @@
                 }
               }
             }
+          }
+        },
+        "tags": [
+          "Activity"
+        ]
+      },
+      "delete": {
+        "operationId": "ActivityController_clearQueue",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
           }
         },
         "tags": [
@@ -611,7 +671,7 @@
         ]
       },
       "delete": {
-        "operationId": "ActivityController_stopTask",
+        "operationId": "ActivityController_removeQueuedTaskResult",
         "parameters": [
           {
             "name": "taskResultId",
@@ -1113,18 +1173,32 @@
           "required": {
             "type": "boolean"
           },
-          "commands": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Command"
-            }
+          "command": {
+            "$ref": "#/components/schemas/Command"
           }
         },
         "required": [
           "id",
           "name",
           "required",
-          "commands"
+          "command"
+        ]
+      },
+      "MostPopularFormatDto": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "description": "The format string.\n@type {string}"
+          },
+          "count": {
+            "type": "number",
+            "description": "The number of times this format was used.\n@type {number}"
+          }
+        },
+        "required": [
+          "format",
+          "count"
         ]
       },
       "CreateArgumentDto": {

@@ -11,6 +11,9 @@ import { TaskResultStatus } from '../task-result/types';
 export class TaskExecutorService {
   private readonly logger = new Logger(TaskExecutorService.name);
 
+  // boolean resembling whether they should stop executing
+  private activeTaskResultsShouldStop: Record<string, boolean> = {};
+
   constructor(
     private readonly taskRunService: TaskRunService,
     private readonly taskResultService: TaskResultService,
@@ -66,8 +69,18 @@ export class TaskExecutorService {
       taskId: task.id,
     });
 
+    this.activeTaskResultsShouldStop[taskResult.id] = false;
+
     for (const taskCommand of task.taskCommands) {
       const command = taskCommand.command;
+
+      if (this.activeTaskResultsShouldStop[taskResult.id]) {
+        this.logger.warn(
+          `Stopping execution of task ${task.name} as requested`,
+        );
+
+        break;
+      }
 
       if (!shouldContinue && !command.optional) {
         this.logger.warn(
@@ -109,9 +122,15 @@ export class TaskExecutorService {
       }
     }
 
+    const status = this.activeTaskResultsShouldStop[taskResult.id]
+      ? TaskResultStatus.STOPPED
+      : overallSuccess
+        ? TaskResultStatus.SUCCESS
+        : TaskResultStatus.FAILED;
+
     const savedTaskResult = await this.taskResultService.updateTaskResultStatus(
       taskResult.id,
-      overallSuccess ? TaskResultStatus.SUCCESS : TaskResultStatus.FAILED,
+      status,
     );
 
     this.activityService.emitQueueEvent({
@@ -123,5 +142,16 @@ export class TaskExecutorService {
 
     this.logger.log(`Task ${task.name} execution completed`);
     return savedTaskResult;
+  }
+
+  stopTaskResultExecution(taskResultId: string): void {
+    if (!(taskResultId in this.activeTaskResultsShouldStop)) {
+      throw new NotFoundException(
+        `TaskResult with ID ${taskResultId} not found`,
+      );
+    }
+
+    this.activeTaskResultsShouldStop[taskResultId] = true;
+    this.commandService.killTaskResultCommand(taskResultId);
   }
 }

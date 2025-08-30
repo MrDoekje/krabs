@@ -11,6 +11,7 @@ import {
 import { Command } from 'src/command/entities/command.entity';
 import { CommandService } from 'src/command/command.service';
 import { UpdateCommandDto } from './dto/update-command.dto';
+import { MostPopularFormatDto } from './dto/most-popular-formats.dto';
 
 @Controller('commands')
 export class CommandController {
@@ -19,6 +20,11 @@ export class CommandController {
   @Get()
   findAll(): Promise<Command[]> {
     return this.commandService.findAll();
+  }
+
+  @Get('formats')
+  async getMostPopularFormats(): Promise<MostPopularFormatDto[]> {
+    return this.commandService.getMostPopularFormats();
   }
 
   @Get(':id')

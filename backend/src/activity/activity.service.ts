@@ -7,7 +7,6 @@ import { ActivityDto } from 'src/activity/dto/activity.dto';
 import { TaskResultStatus } from 'src/task/task-result/types';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { Task } from 'src/task/entities/task.entity';
 import { QueueDto } from 'src/activity/dto/queue.dto';
 
 @Injectable()
@@ -18,8 +17,6 @@ export class ActivityService {
   constructor(
     @InjectRepository(TaskResult)
     private readonly taskResultRepository: Repository<TaskResult>,
-    @InjectRepository(Task)
-    private readonly taskRepository: Repository<Task>,
     @InjectQueue('task') private readonly taskQueue: Queue,
   ) {}
 
@@ -98,12 +95,14 @@ export class ActivityService {
     return stream;
   }
 
-  stopTaskResult(taskResultId: string): Promise<{ success: boolean }> {
-    // TODO: implement a way to stop the task result from being processed
-    // TODO: stop gracefully
-    throw new NotImplementedException(
-      'stopTaskResult method is not implemented yet',
-    );
+  async removeQueuedTaskResult(taskResultId: string): Promise<void> {
+    this.taskResultStreams.delete(taskResultId);
+    await this.taskQueue.remove(taskResultId);
+  }
+
+  async clearQueue(): Promise<void> {
+    this.taskResultStreams.clear();
+    await this.taskQueue.drain();
   }
 
   emitToTaskResult(taskResultId: string, data: ActivityDto) {
