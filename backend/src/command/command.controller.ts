@@ -1,5 +1,13 @@
 import { CreateCommandDto } from 'src/command/dto/create-command.dto';
-import { Controller, Get, Post, Put, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Param,
+  Body,
+  Delete,
+} from '@nestjs/common';
 import { Command } from 'src/command/entities/command.entity';
 import { CommandService } from 'src/command/command.service';
 import { UpdateCommandDto } from './dto/update-command.dto';
@@ -31,8 +39,8 @@ export class CommandController {
     return await this.commandService.update(id, updateCommandDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string): { deleted: boolean } {
-  //   throw new NotImplementedException('This method is not implemented yet');
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string): Promise<void> {
+    return this.commandService.remove(id);
+  }
 }

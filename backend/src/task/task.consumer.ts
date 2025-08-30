@@ -8,7 +8,7 @@ import { TaskResult } from './task-result/entities/task-result.entity';
 import { In, Not, Repository } from 'typeorm';
 import { TaskResultStatus } from './task-result/types';
 
-@Processor('task', { concurrency: 3 })
+@Processor('task', { concurrency: 2 })
 export class TaskConsumer extends WorkerHost {
   private readonly logger = new Logger(TaskConsumer.name);
 

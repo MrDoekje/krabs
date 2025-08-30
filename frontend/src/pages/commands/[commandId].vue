@@ -3,18 +3,16 @@ import { reactive, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-import { Save } from 'lucide-vue-next'
+import { Save, Trash } from 'lucide-vue-next'
 import { useCommandStore } from '@/stores/command'
 import { useRoute } from 'vue-router'
 import type { Argument, CreateArgumentDto, UpdateCommandDto } from '@/krabs-sdk/models'
-import { useArgumentStore } from '@/stores/argument'
+import router from '@/router'
 
 const route = useRoute('/commands/[commandId]')
 const commandId = route.params.commandId
 
-const { loadCommand, getCommand, updateCommand } = useCommandStore()
-
-const { createArgument } = useArgumentStore()
+const { loadCommand, getCommand, updateCommand, removeCommand } = useCommandStore()
 
 loadCommand(commandId)
 
@@ -51,6 +49,15 @@ const handleSave = async () => {
 
   isLoading.value = false
 }
+
+const handleDelete = async () => {
+  isLoading.value = true
+  await removeCommand(commandId)
+
+  isLoading.value = false
+
+  router.push({ name: '/commands/' })
+}
 </script>
 
 <template>
@@ -80,15 +87,23 @@ const handleSave = async () => {
         </Card>
       </div>
     </div>
-    <Button @click="handleSave" :disabled="isLoading" class="w-full">
-      <div v-if="isLoading" class="flex items-center">
-        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-        Saving...
-      </div>
-      <div v-else class="flex items-center">
-        <Save class="h-4 w-4 mr-2" />
-        Save Changes
-      </div>
-    </Button>
+    <div class="flex flex-row gap-4">
+      <Button @click="handleSave" :disabled="isLoading" class="grow">
+        <div v-if="isLoading" class="flex items-center">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+          Saving...
+        </div>
+        <div v-else class="flex items-center">
+          <Save class="h-4 w-4 mr-2" />
+          Save Changes
+        </div>
+      </Button>
+      <Button @click="handleDelete" variant="destructive">
+        <div class="flex items-center">
+          <Trash class="h-4 w-4 mr-2" />
+          Delete Command
+        </div>
+      </Button>
+    </div>
   </div>
 </template>

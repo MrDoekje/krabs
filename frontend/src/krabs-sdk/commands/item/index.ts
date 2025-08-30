@@ -12,6 +12,11 @@ import { type BaseRequestBuilder, type Parsable, type ParsableFactory, type Requ
 export interface CommandsItemRequestBuilder extends BaseRequestBuilder<CommandsItemRequestBuilder> {
     /**
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {Promise<ArrayBuffer>}
+     */
+     delete(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<ArrayBuffer | undefined>;
+    /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {Promise<Command>}
      */
      get(requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Command | undefined>;
@@ -21,6 +26,11 @@ export interface CommandsItemRequestBuilder extends BaseRequestBuilder<CommandsI
      * @returns {Promise<Command>}
      */
      put(body: UpdateCommandDto, requestConfiguration?: RequestConfiguration<object> | undefined) : Promise<Command | undefined>;
+    /**
+     * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
+     * @returns {RequestInformation}
+     */
+     toDeleteRequestInformation(requestConfiguration?: RequestConfiguration<object> | undefined) : RequestInformation;
     /**
      * @param requestConfiguration Configuration for the request such as headers, query parameters, and middleware options.
      * @returns {RequestInformation}
@@ -41,6 +51,11 @@ export const CommandsItemRequestBuilderUriTemplate = "{+baseurl}/commands/{id}";
  * Metadata for all the requests in the request builder.
  */
 export const CommandsItemRequestBuilderRequestsMetadata: RequestsMetadata = {
+    delete: {
+        uriTemplate: CommandsItemRequestBuilderUriTemplate,
+        adapterMethodName: "sendPrimitive",
+        responseBodyFactory:  "ArrayBuffer",
+    },
     get: {
         uriTemplate: CommandsItemRequestBuilderUriTemplate,
         responseBodyContentType: "application/json",

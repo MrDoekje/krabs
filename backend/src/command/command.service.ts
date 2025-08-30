@@ -4,7 +4,7 @@ import { CommandResultDto } from 'src/command/dto/command-result.dto';
 import { spawn } from 'child_process';
 import { CreateCommandDto } from 'src/command/dto/create-command.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { Task } from 'src/task/entities/task.entity';
 import { TaskCommand } from 'src/task/task-command/entities/task-command.entity';
 import { Argument } from 'src/argument/entities/argument.entity';
@@ -304,5 +304,13 @@ export class CommandService {
     return await this.commandRepository.find({
       relations: ['arguments'],
     });
+  }
+
+  async remove(id: string): Promise<void> {
+    const command = await this.commandRepository.findOne({ where: { id } });
+    if (!command) {
+      throw new Error(`Command with id ${id} not found`);
+    }
+    void this.commandRepository.remove(command);
   }
 }

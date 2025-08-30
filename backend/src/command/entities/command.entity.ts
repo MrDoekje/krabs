@@ -1,12 +1,5 @@
 import { Argument } from 'src/argument/entities/argument.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import type { Relation } from 'typeorm';
 import { TaskCommand } from 'src/task/task-command/entities/task-command.entity';
 
@@ -24,8 +17,11 @@ export class Command {
   @Column()
   command: string;
 
-  @ManyToMany(() => Argument, { eager: true, cascade: ['insert', 'update'] })
-  @JoinTable()
+  @OneToMany(() => Argument, (argument: Argument) => argument.command, {
+    eager: true,
+    cascade: ['insert', 'update'],
+    onDelete: 'CASCADE',
+  })
   arguments: Relation<Argument>[];
 
   @Column()
@@ -34,6 +30,9 @@ export class Command {
   @Column({ default: false })
   optional: boolean;
 
-  @OneToMany(() => TaskCommand, (taskCommand) => taskCommand.command)
+  @OneToMany(() => TaskCommand, (taskCommand) => taskCommand.command, {
+    cascade: ['insert', 'update', 'remove'],
+    onDelete: 'CASCADE',
+  })
   taskCommands: Relation<TaskCommand>[];
 }

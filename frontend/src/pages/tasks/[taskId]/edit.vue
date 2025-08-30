@@ -109,7 +109,7 @@
       </div>
     </div>
     <Separator />
-    <div class="flex flex-row justify-end px-6 w-full">
+    <div class="flex flex-row gap-4 justify-end px-6 w-full">
       <Button @click="doUpdateTask" :loading="loading" class="grow" v-if="isFormDirty"
         >Update Task</Button
       >
@@ -214,8 +214,8 @@ function removeCommand(idx: number) {
 
 function goToCommand(commandId: string) {
   router.push({
-    name: '/tasks/[taskId]/commands/[commandId]',
-    params: { taskId: id, commandId },
+    name: '/commands/[commandId]',
+    params: { commandId },
   })
 }
 

@@ -74,6 +74,16 @@ export const useCommandStore = defineStore('commands', () => {
     }
   }
 
+  const removeCommand = async (commandId: string): Promise<void> => {
+    try {
+      await krabsSdk.commands.byId(commandId).delete()
+      delete commands.value[commandId]
+    } catch {
+      console.error('could not remove command')
+      throw new Error('Command removal failed')
+    }
+  }
+
   return {
     commands,
     getCommand,
@@ -82,5 +92,6 @@ export const useCommandStore = defineStore('commands', () => {
     loadAllCommands,
     createCommand,
     updateCommand,
+    removeCommand,
   }
 })
