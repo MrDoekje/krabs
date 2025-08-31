@@ -8,12 +8,12 @@ export const useCommandStore = defineStore('commands', () => {
 
   // state
   const commands = ref<Record<string, Command>>({})
-  const mostPopularFormats = ref<MostPopularFormatDto[]>([])
+  const mostPopularFormats = ref<Record<string, MostPopularFormatDto>>({})
 
   // getters
   const getCommandList = () => computed(() => Object.values(commands.value))
   const getCommand = (commandId: string) => computed(() => commands.value[commandId])
-  const getMostPopularFormats = () => computed(() => mostPopularFormats.value)
+  const getMostPopularFormats = () => computed(() => Object.values(mostPopularFormats.value))
 
   // actions
   const loadCommand = async (commandId: string) => {
@@ -51,15 +51,17 @@ export const useCommandStore = defineStore('commands', () => {
       const formats = await krabsSdk.commands.formats.get()
       if (!Array.isArray(formats) || !formats?.length) {
         console.error('failed to load most popular formats')
-        mostPopularFormats.value = []
+        mostPopularFormats.value = {}
         return
       }
       for (const format of formats) {
-        mostPopularFormats.value.push(format)
+        if (format.format) {
+          mostPopularFormats.value[format.format] = format
+        }
       }
     } catch {
       console.error('failed to load most popular formats')
-      mostPopularFormats.value = []
+      mostPopularFormats.value = {}
       return
     }
   }

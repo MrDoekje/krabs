@@ -88,6 +88,7 @@ declare module 'vue' {
     KAddExistingCommand: typeof import('./src/components/command/k-add-existing-command.vue')['default']
     KArgumentOrManage: typeof import('./src/components/argument/k-argument-or-manage.vue')['default']
     KCommand: typeof import('./src/components/command/k-command.vue')['default']
+    KCommandFormat: typeof import('./src/components/command/k-command-format.vue')['default']
     KCommandOrManage: typeof import('./src/components/command/k-command-or-manage.vue')['default']
     KCreateArgument: typeof import('./src/components/argument/k-create-argument.vue')['default']
     KCreateCommand: typeof import('./src/components/command/k-create-command.vue')['default']
