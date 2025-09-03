@@ -4,8 +4,9 @@ import { Plus, X, ChevronUp, ChevronDown, Terminal } from 'lucide-vue-next'
 import { useTasksStore } from '@/stores/tasks'
 import type { Command, CreateCommandDto } from '@/krabs-sdk/models'
 import { useRouter } from 'vue-router'
+import { useWithLoading } from '@/composables/withLoading'
 
-const { createTask } = useTasksStore()
+const { createTask, createTaskState } = useTasksStore()
 const router = useRouter()
 
 const taskName = ref('')
@@ -28,6 +29,10 @@ const handleMoveCommand = (index: number, direction: 'up' | 'down') => {
     selectedCommands.value = newCommands
   }
 }
+
+const { loading } = useWithLoading({
+  state: createTaskState,
+})
 
 const handleCreateTask = async () => {
   const taskData = {
@@ -148,7 +153,12 @@ const onCommandAdded = (command: Command) => {
     </Card>
 
     <div class="flex justify-end">
-      <Button @click="handleCreateTask" :disabled="!isFormValid" size="lg" class="min-w-[150px]"
+      <Button
+        @click="handleCreateTask"
+        :loading="loading"
+        :disabled="!isFormValid"
+        size="lg"
+        class="min-w-[150px]"
         >Create Task</Button
       >
     </div>

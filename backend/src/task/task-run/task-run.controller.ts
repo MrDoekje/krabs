@@ -1,6 +1,16 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { TaskRunService } from './task-run.service';
 import { ExecuteTaskRunDto } from '../dto/execute-task-run.dto';
+import { UpdateTaskRunDto } from './dto/update-task-run.dto';
+import { TaskRun } from './entities/task-run.entity';
 
 @Controller('task')
 export class TaskRunController {
@@ -17,13 +27,18 @@ export class TaskRunController {
     return await this.taskRunService.findAll();
   }
 
-  // @Patch('run/:id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() updateTaskRunDto: UpdateTaskRunDto,
-  // ) {
-  //   return await this.taskRunService.update(id, updateTaskRunDto);
-  // }
+  @Patch('run/:id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateTaskRunDto: UpdateTaskRunDto,
+  ): Promise<TaskRun> {
+    return await this.taskRunService.update(id, updateTaskRunDto);
+  }
+
+  @Delete('run/:id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return await this.taskRunService.delete(id);
+  }
 
   //   TODO: instead update the getAll to accept query parameters for filtering, sorting, etc.
   @Get('run/favorites')

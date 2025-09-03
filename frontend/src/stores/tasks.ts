@@ -2,30 +2,45 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { CreateTaskDto, Task, UpdateTaskDto } from '@/krabs-sdk/models'
 import { useKrabsSdk } from '@/lib/krabs-sdk'
+import { createWithLoading, useWithLoading, type WithLoading } from '@/composables/withLoading'
 
 export const useTasksStore = defineStore('tasks', () => {
   const krabsSdk = useKrabsSdk()
 
   // state
   const tasks = ref<Record<string, Task>>({})
+  const taskList = ref<WithLoading<Task[]>>(createWithLoading([]))
+
+  // state: actions
+  const createTaskState = ref<WithLoading<null>>(createWithLoading(null))
+
   // getters
-  const getTaskList = () => computed(() => Object.values(tasks.value))
+  const getTaskList = () => computed(() => taskList.value)
   const getTask = (taskId: string) => computed(() => tasks.value[taskId])
+
   // actions
   const loadTasks = async () => {
-    try {
-      const loadedTasks = await krabsSdk.tasks.get()
-      loadedTasks?.forEach((task) => {
-        if (!task.id) {
-          console.error(`loaded task does not have id`)
-          return
+    const { executeAction } = useWithLoading({
+      state: taskList,
+      action: async () => {
+        try {
+          const loadedTasks = await krabsSdk.tasks.get()
+          loadedTasks?.forEach((task) => {
+            if (!task.id) {
+              console.error(`loaded task does not have id`)
+              return
+            }
+            tasks.value[task.id] = task
+          })
+          return loadedTasks
+        } catch {
+          console.error('failed to load tasks')
         }
-        tasks.value[task.id] = task
-      })
-    } catch {
-      console.error('failed to load tasks')
-    }
+      },
+    })
+    await executeAction()
   }
+
   const loadTask = async (taskId: string) => {
     try {
       const loadedTask = await krabsSdk.tasks.byId(taskId).get()
@@ -51,14 +66,20 @@ export const useTasksStore = defineStore('tasks', () => {
   }
 
   const updateTask = async (taskId: string, task: UpdateTaskDto) => {
-    try {
-      const updatedTask = await krabsSdk.tasks.byId(taskId).put(task)
-      if (updatedTask != undefined && updatedTask.id) {
-        tasks.value[updatedTask.id] = updatedTask
-      }
-    } catch {
-      console.error('could not update task')
-    }
+    const { executeAction } = useWithLoading({
+      state: createTaskState,
+      action: async () => {
+        try {
+          const updatedTask = await krabsSdk.tasks.byId(taskId).put(task)
+          if (updatedTask != undefined && updatedTask.id) {
+            tasks.value[updatedTask.id] = updatedTask
+          }
+        } catch {
+          console.error('could not update task')
+        }
+      },
+    })
+    await executeAction()
   }
 
   const executeTask = async (
@@ -98,6 +119,8 @@ export const useTasksStore = defineStore('tasks', () => {
 
   return {
     tasks,
+    taskList,
+    createTaskState,
     getTask,
     getTaskList,
     loadTask,

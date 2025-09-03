@@ -96,6 +96,7 @@ declare module 'vue' {
     KManageArgument: typeof import('./src/components/argument/k-manage-argument.vue')['default']
     KManageCommandInfo: typeof import('./src/components/command/k-manage-command-info.vue')['default']
     KTaskResult: typeof import('./src/components/task-result/k-task-result.vue')['default']
+    KWithLoading: typeof import('./src/components/k-with-loading.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
     Popover: typeof import('./src/components/ui/popover/Popover.vue')['default']
     PopoverAnchor: typeof import('./src/components/ui/popover/PopoverAnchor.vue')['default']

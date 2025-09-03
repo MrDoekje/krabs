@@ -1,5 +1,4 @@
 - better inclusion of krabs-sdk in other projects (instead of npm link)
-- Rename task-run to task-configuration
 
 CLI
 
@@ -13,8 +12,9 @@ backend
   - Actually I looked into this, it just runs 2x the amount of jobs it should, due to using npm run start:dev
 - Better config handling
 - Can we run the tasks in a separate process?
-- Crud for task-run
 - Make API more restful (/task-result/task-result-output) => /task/result/output
+- Add CommandsArguments to task result entity (as task runs can be updated)
+- Rename task-run to task-configuration
 
 Frontend
 

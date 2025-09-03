@@ -1,31 +1,60 @@
-import { unref, type MaybeRef } from 'vue'
+import { computed, unref, type MaybeRef } from 'vue'
 
 // TODO: for pagination, extend, keep data as current page, but extend the state
 export interface WithLoading<T> {
   loading: boolean
-  data: T | null
+  data: T
   error: Error | null
+  hasLoadedOnce: boolean
 }
 
-export const useWithLoading = <T>(withLoading: MaybeRef<WithLoading<T>>) => {
-  const state = unref(withLoading)
+export const createWithLoading = <T>(defaultData: T): WithLoading<T> => ({
+  loading: false,
+  data: defaultData,
+  error: null,
+  hasLoadedOnce: false,
+})
 
-  const setLoading = (loading: boolean) => {
-    state.loading = loading
+export interface UseWithLoadingOptions<T> {
+  state: MaybeRef<WithLoading<T>>
+  action?: () => Promise<T>
+}
+
+export const useWithLoading = <T>(options: UseWithLoadingOptions<T>) => {
+  const { action, state: stateRef } = options
+
+  const state = unref(stateRef)
+
+  const executeAction = async () => {
+    if (!action) return
+
+    state.loading = true
+    state.error = null
+
+    try {
+      // TODO: create util for wrapper around promise with toasts
+      state.data = await action()
+      state.hasLoadedOnce = true
+    } catch (error) {
+      if (error instanceof Error) {
+        state.error = error
+      }
+      state.error = new Error('An unknown error occurred')
+    } finally {
+      state.loading = false
+    }
   }
 
-  const setData = (data: T | null) => {
-    state.data = data
-  }
-
-  const setError = (error: Error | null) => {
-    state.error = error
-  }
+  const data = computed(() => state.data)
+  const loading = computed(() => state.loading)
+  const error = computed(() => state.error)
+  const hasLoadedOnce = computed(() => state.hasLoadedOnce)
 
   return {
-    ...state,
-    setLoading,
-    setData,
-    setError,
+    data,
+    loading,
+    error,
+    hasLoadedOnce,
+    executeAction,
   }
 }

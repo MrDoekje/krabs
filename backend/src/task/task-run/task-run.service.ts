@@ -12,6 +12,7 @@ import { TaskService } from 'src/task/task.service';
 import { TaskRun } from 'src/task/task-run/entities/task-run.entity';
 import { Task } from 'src/task/entities/task.entity';
 import type { WrapperType } from 'src/utils/wrapper';
+import { UpdateTaskRunDto } from './dto/update-task-run.dto';
 
 @Injectable()
 export class TaskRunService {
@@ -168,5 +169,21 @@ export class TaskRunService {
     );
 
     return updatedTaskRun;
+  }
+
+  async update(
+    taskRunId: string,
+    updateDto: UpdateTaskRunDto,
+  ): Promise<TaskRun> {
+    const taskRun = await this.findById(taskRunId);
+
+    Object.assign(taskRun, updateDto);
+    return this.taskRunRepository.save(taskRun);
+  }
+
+  async delete(taskRunId: string) {
+    const taskRun = await this.findById(taskRunId);
+
+    await this.taskRunRepository.delete(taskRun);
   }
 }
