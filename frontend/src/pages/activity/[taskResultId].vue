@@ -144,16 +144,11 @@ watch(isScrolling, (newVal) => {
 })
 
 const scrollToBottom = () => {
-  nextTick(() => {
-    if (viewport.value) {
-      viewport.value.scrollTo(0, viewport.value.scrollHeight)
-    }
-  })
-  setTimeout(() => {
-    if (viewport.value) {
-      viewport.value.scrollTo(0, viewport.value.scrollHeight)
-    }
-  }, 100)
+  1
+  if (viewport.value) {
+    viewport.value.scrollTo(0, viewport.value.scrollHeight)
+    hasScrolled.value = false
+  }
 }
 
 const activityEvents = computed(() => {
