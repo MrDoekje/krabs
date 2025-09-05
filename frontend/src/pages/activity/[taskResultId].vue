@@ -18,7 +18,7 @@
         <CardDescription> Last updated: {{ new Date().toLocaleTimeString() }} </CardDescription>
       </CardHeader>
       <CardContent>
-        <ScrollArea class="h-96">
+        <ScrollArea class="h-96 group" ref="scrollArea">
           <div class="font-mono text-sm">
             <div
               v-if="!activityEvents.length && !taskResultOutputs.length"
@@ -76,6 +76,11 @@
               </template>
             </div>
           </div>
+          <div class="absolute bottom-4 right-4 hidden group-hover:block">
+            <Button variant="outline" size="sm" @click="scrollToBottom" title="Scroll to bottom">
+              <ArrowDown class="w-4 h-4" />
+            </Button>
+          </div>
         </ScrollArea>
       </CardContent>
     </Card>
@@ -83,7 +88,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import {
+  ref,
+  computed,
+  onMounted,
+  watch,
+  onUnmounted,
+  useTemplateRef,
+  shallowRef,
+  nextTick,
+} from 'vue'
 import { useRoute } from 'vue-router'
 import { useActivityStore } from '@/stores/activity'
 import {
@@ -96,11 +110,13 @@ import {
   Slash,
   Code,
   TerminalIcon,
+  ArrowDown,
 } from 'lucide-vue-next'
 import type { TaskResult } from '@/krabs-sdk/models'
 import { useTaskResultStore } from '@/stores/taskResult'
 import { TaskResultStatus } from '@/stores/activity/types'
 import { useTaskResultOutputStore } from '@/stores/taskResultOutput'
+import { useElementBounding, useElementSize, useScroll } from '@vueuse/core'
 
 const route = useRoute('/activity/[taskResultId]')
 // TODO: fix making this reactive
@@ -114,6 +130,32 @@ const { getTaskResultById, loadResultById } = useTaskResultStore()
 const eventSource = ref<EventSource | null>(null)
 const taskResult = ref<TaskResult | null>(null)
 
+const scrollAreaRef = useTemplateRef('scrollArea')
+
+const viewport = computed(() => scrollAreaRef.value?.scrollArea?.viewport)
+const hasScrolled = ref(false)
+
+const { isScrolling, arrivedState } = useScroll(viewport)
+
+watch(isScrolling, (newVal) => {
+  if (newVal) {
+    hasScrolled.value = newVal
+  }
+})
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (viewport.value) {
+      viewport.value.scrollTo(0, viewport.value.scrollHeight)
+    }
+  })
+  setTimeout(() => {
+    if (viewport.value) {
+      viewport.value.scrollTo(0, viewport.value.scrollHeight)
+    }
+  }, 100)
+}
+
 const activityEvents = computed(() => {
   if (!taskResult.value?.id) return []
   return getTaskResultActivity(taskResult.value.id).value || []
@@ -124,6 +166,25 @@ const taskResultOutputs = computed(() => {
   return getTaskResultOutputsByTaskResultId(taskResult.value.id).value || []
 })
 
+watch(
+  () => arrivedState.bottom,
+  (atBottom) => {
+    if (atBottom) {
+      hasScrolled.value = false
+    }
+  },
+)
+
+// TODO: improve this logic
+watch(
+  () => activityEvents.value,
+  () => {
+    if (viewport.value && (!hasScrolled.value || arrivedState.bottom)) {
+      scrollToBottom()
+    }
+  },
+)
+
 const fetchTaskResult = async () => {
   eventSource.value = await loadTaskResult(taskResultId)
   await loadResultById(taskResultId)
@@ -133,6 +194,7 @@ const fetchTaskResult = async () => {
 
 onMounted(async () => {
   await fetchTaskResult()
+  scrollToBottom()
 })
 
 onUnmounted(() => {

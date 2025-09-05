@@ -29,6 +29,7 @@ Frontend
 
 - [x] Show task runs in frontend
   - including crud
+- Destructive actions should have confirmation modal
 
 Tasks
 

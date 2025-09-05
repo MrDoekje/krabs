@@ -16,7 +16,7 @@
           </Label>
           <Input id="name" v-model="command.name" placeholder="Enter command name" />
         </div>
-        <k-command-format v-model="command.format" />
+        <k-command-format v-model:format="command.format" />
       </div>
 
       <div class="flex flex-col gap-y-2">
